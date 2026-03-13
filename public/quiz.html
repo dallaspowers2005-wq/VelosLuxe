@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Med Spa Growth Score — VelosLuxe</title>
+  <meta name="description" content="2-minute assessment. See exactly where your med spa is leaking revenue and how to fix it.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050508; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.6);
+      --border: rgba(255,255,255,.06); --border-hover: rgba(255,255,255,.12);
+      --text: #a09db1; --text-bright: #eeedf2;
+      --gold: #c9a46c; --gold-light: #e2c99b;
+      --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-sans);
+      font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+      overflow-x: hidden; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: .025;
+    }
+    h1, h2, h3 { color: var(--text-bright); line-height: 1.15; }
+
+    /* ═══ LAYOUT ═══ */
+    .quiz-shell {
+      max-width: 640px; margin: 0 auto; padding: 2rem 1.5rem;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* ═══ TOPBAR ═══ */
+    .quiz-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0 2rem;
+    }
+    .logo { font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); text-decoration: none; }
+    .logo span { color: var(--gold); }
+    .quiz-topbar-step { font-size: .72rem; color: var(--text); letter-spacing: .04em; }
+
+    /* ═══ PROGRESS BAR ═══ */
+    .progress-wrap { margin-bottom: 3rem; }
+    .progress-bar { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 4px; transition: width .5s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 12px rgba(201,164,108,.4);
+    }
+
+    /* ═══ SCREENS ═══ */
+    .screen { display: none; flex-direction: column; flex: 1; animation: fadeUp .4s ease; }
+    .screen.active { display: flex; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══ COVER SCREEN ═══ */
+    .cover { text-align: center; justify-content: center; align-items: center; padding: 2rem 0; }
+    .cover-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); padding: .45rem 1.1rem; border-radius: 100px;
+      background: rgba(201,164,108,.08); border: 1px solid rgba(201,164,108,.15);
+      margin-bottom: 2rem;
+    }
+    .cover h1 {
+      font-family: var(--font-serif); font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 400; margin-bottom: 1.25rem;
+    }
+    .cover h1 em { font-style: italic; color: var(--gold); }
+    .cover-sub { font-size: 1rem; color: var(--text); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.75; }
+    .cover-meta { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2.5rem; }
+    .cover-meta-item { text-align: center; }
+    .cover-meta-val { font-size: 1.1rem; font-weight: 700; color: var(--text-bright); }
+    .cover-meta-label { font-size: .68rem; color: var(--text); letter-spacing: .05em; text-transform: uppercase; margin-top: .1rem; }
+    .btn-start {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: 1rem 2.8rem; border-radius: 100px; border: none; cursor: pointer;
+      background: var(--gold); color: var(--bg); font-family: var(--font-sans);
+      font-weight: 600; font-size: .95rem; letter-spacing: .01em;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 40px rgba(201,164,108,.2);
+    }
+    .btn-start:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
+    .cover-trust { margin-top: 2rem; font-size: .75rem; color: rgba(255,255,255,.3); }
+
+    /* ═══ QUESTION SCREEN ═══ */
+    .question-screen { padding: 1rem 0; }
+    .q-label {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+    }
+    .q-title {
+      font-family: var(--font-serif); font-size: 1.6rem; font-weight: 400;
+      margin-bottom: .5rem;
+    }
+    .q-subtitle { font-size: .88rem; color: var(--text); margin-bottom: 2rem; }
+    .q-options { display: flex; flex-direction: column; gap: .65rem; }
+    .q-option {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.4rem; border-radius: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      cursor: pointer; transition: all .2s;
+      font-size: .9rem; color: var(--text-bright);
+    }
+    .q-option:hover { border-color: var(--border-hover); background: rgba(15,15,26,.9); }
+    .q-option.selected {
+      border-color: var(--gold); background: rgba(201,164,108,.06);
+      box-shadow: 0 0 20px rgba(201,164,108,.08);
+    }
+    .q-option-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border-hover); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .q-option.selected .q-option-dot {
+      border-color: var(--gold); background: var(--gold);
+    }
+    .q-option.selected .q-option-dot::after {
+      content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bg);
+    }
+
+    /* ═══ GATE SCREEN ═══ */
+    .gate-screen { justify-content: center; align-items: center; text-align: center; padding: 2rem 0; }
+    .gate-ready {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1.5rem;
+    }
+    .gate-screen h2 {
+      font-family: var(--font-serif); font-size: 1.8rem; font-weight: 400; margin-bottom: .75rem;
+    }
+    .gate-sub { font-size: .9rem; color: var(--text); margin-bottom: 2rem; }
+    .gate-form { display: flex; flex-direction: column; gap: .75rem; max-width: 360px; width: 100%; }
+    .gate-input {
+      padding: .9rem 1.2rem; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-bright); font-family: var(--font-sans); font-size: .88rem;
+      outline: none; transition: border-color .2s;
+    }
+    .gate-input:focus { border-color: var(--gold); }
+    .gate-input::placeholder { color: rgba(255,255,255,.2); }
+    .btn-results {
+      padding: .9rem 2rem; border-radius: 100px; border: none; cursor: pointer;
+      background: var(--gold); color: var(--bg); font-family: var(--font-sans);
+      font-weight: 600; font-size: .9rem; margin-top: .5rem;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 30px rgba(201,164,108,.15);
+    }
+    .btn-results:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-results:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .gate-privacy { font-size: .7rem; color: rgba(255,255,255,.2); margin-top: 1rem; }
+
+    /* ═══ RESULTS SCREEN ═══ */
+    .results-screen { padding: 1rem 0 4rem; }
+
+    .score-card {
+      border-radius: 24px; padding: 3rem 2.5rem; text-align: center;
+      position: relative; overflow: hidden; margin-bottom: 2rem;
+    }
+    .score-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, var(--glow-color, rgba(201,164,108,.15)), transparent 70%);
+      pointer-events: none;
+    }
+    .score-tier-foundation { background: var(--bg-card); border: 1px solid rgba(232,119,119,.2); --glow-color: rgba(232,119,119,.1); }
+    .score-tier-growth { background: var(--bg-card); border: 1px solid rgba(201,164,108,.2); --glow-color: rgba(201,164,108,.1); }
+    .score-tier-high { background: var(--bg-card); border: 1px solid rgba(110,207,138,.2); --glow-color: rgba(110,207,138,.1); }
+    .score-label-top {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 1rem; position: relative;
+    }
+    .score-tier-foundation .score-label-top { color: var(--rose); }
+    .score-tier-growth .score-label-top { color: var(--gold); }
+    .score-tier-high .score-label-top { color: var(--sage); }
+    .score-number {
+      font-family: var(--font-serif); font-size: 5rem; font-weight: 400;
+      line-height: 1; margin-bottom: .25rem; position: relative;
+    }
+    .score-tier-foundation .score-number { color: var(--rose); }
+    .score-tier-growth .score-number { color: var(--gold); }
+    .score-tier-high .score-number { color: var(--sage); }
+    .score-out-of { font-size: .82rem; color: var(--text); position: relative; }
+    .score-tier-name {
+      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 400;
+      margin-top: 1rem; position: relative;
+    }
+
+    .results-mirror {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; margin-bottom: 2rem;
+    }
+    .results-mirror p { font-size: .92rem; line-height: 1.8; color: var(--text); }
+    .results-mirror strong { color: var(--text-bright); }
+
+    .leaks-section { margin-bottom: 2rem; }
+    .leaks-title {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 1.25rem;
+    }
+    .leak-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.25rem 1.5rem; border-radius: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      margin-bottom: .65rem;
+    }
+    .leak-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700;
+    }
+    .leak-icon-rose { background: rgba(232,119,119,.1); color: var(--rose); }
+    .leak-icon-gold { background: rgba(201,164,108,.1); color: var(--gold); }
+    .leak-icon-violet { background: rgba(139,123,200,.1); color: var(--violet); }
+    .leak-amount {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 400;
+      color: var(--text-bright); margin-bottom: .15rem;
+    }
+    .leak-desc { font-size: .82rem; color: var(--text); line-height: 1.5; }
+
+    .total-loss {
+      border-radius: 20px; padding: 2.5rem; text-align: center;
+      background: linear-gradient(135deg, rgba(232,119,119,.08), rgba(232,119,119,.02));
+      border: 1px solid rgba(232,119,119,.15);
+      margin-bottom: 2.5rem;
+    }
+    .total-loss-label {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: .5rem;
+    }
+    .total-loss-number {
+      font-family: var(--font-serif); font-size: 3.5rem; font-weight: 400;
+      color: var(--rose); line-height: 1;
+    }
+    .total-loss-per { font-size: .88rem; color: var(--text); margin-top: .5rem; }
+
+    .fix-section {
+      border-radius: 20px; padding: 2.5rem;
+      background: linear-gradient(135deg, rgba(110,207,138,.06), rgba(201,164,108,.04));
+      border: 1px solid rgba(110,207,138,.15);
+      margin-bottom: 2.5rem;
+    }
+    .fix-label {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: .75rem;
+    }
+    .fix-section h3 { font-family: var(--font-sans); font-size: 1.15rem; font-weight: 600; margin-bottom: .75rem; }
+    .fix-section p { font-size: .88rem; color: var(--text); line-height: 1.75; }
+
+    .results-cta {
+      text-align: center; padding: 2rem 0;
+    }
+    .results-cta h3 {
+      font-family: var(--font-serif); font-size: 1.5rem; font-weight: 400; margin-bottom: .75rem;
+    }
+    .results-cta p { font-size: .88rem; color: var(--text); margin-bottom: 1.5rem; line-height: 1.6; }
+    .btn-book {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: 1rem 2.8rem; border-radius: 100px; border: none; cursor: pointer;
+      background: var(--gold); color: var(--bg); font-family: var(--font-sans);
+      font-weight: 600; font-size: .95rem;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 40px rgba(201,164,108,.2);
+      text-decoration: none;
+    }
+    .btn-book:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
+    .results-cta .no-pitch { font-size: .78rem; color: rgba(255,255,255,.3); margin-top: 1rem; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 600px) {
+      .quiz-shell { padding: 1.5rem 1.25rem; }
+      .cover h1 { font-size: 1.8rem; }
+      .q-title { font-size: 1.3rem; }
+      .score-number { font-size: 3.5rem; }
+      .total-loss-number { font-size: 2.5rem; }
+      .cover-meta { gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-shell">
+
+  <!-- TOPBAR -->
+  <div class="quiz-topbar">
+    <a href="/" class="logo">VELOS<span>LUXE</span></a>
+    <div class="quiz-topbar-step" id="stepLabel"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- ═══ COVER ═══ -->
+  <div class="screen active" id="coverScreen">
+    <div class="cover">
+      <div class="cover-badge">Free Assessment</div>
+      <h1>See Where Your Med Spa<br>Is <em>Leaking Revenue</em></h1>
+      <p class="cover-sub">Answer 8 quick questions. Get a personalized Growth Score showing exactly how much you're leaving on the table — and what to fix first.</p>
+      <div class="cover-meta">
+        <div class="cover-meta-item">
+          <div class="cover-meta-val">2 min</div>
+          <div class="cover-meta-label">To Complete</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-val">8</div>
+          <div class="cover-meta-label">Questions</div>
+        </div>
+        <div class="cover-meta-item">
+          <div class="cover-meta-val">Free</div>
+          <div class="cover-meta-label">Always</div>
+        </div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Get My Growth Score &rarr;</button>
+      <div class="cover-trust">No credit card. No spam. Just clarity.</div>
+    </div>
+  </div>
+
+  <!-- ═══ QUESTIONS (rendered by JS) ═══ -->
+  <div class="screen question-screen" id="questionScreen">
+    <div class="q-label" id="qLabel"></div>
+    <h2 class="q-title" id="qTitle"></h2>
+    <p class="q-subtitle" id="qSubtitle"></p>
+    <div class="q-options" id="qOptions"></div>
+  </div>
+
+  <!-- ═══ GATE ═══ -->
+  <div class="screen gate-screen" id="gateScreen">
+    <div class="gate-ready">Your results are ready</div>
+    <h2>Where should we send<br>your Growth Score?</h2>
+    <p class="gate-sub">We'll also send a detailed breakdown to your inbox.</p>
+    <div class="gate-form">
+      <input class="gate-input" type="text" id="gateName" placeholder="Your name" autocomplete="name">
+      <input class="gate-input" type="email" id="gateEmail" placeholder="Email address" autocomplete="email">
+      <input class="gate-input" type="tel" id="gatePhone" placeholder="Phone (optional)" autocomplete="tel">
+      <button class="btn-results" id="gateBtn" onclick="showResults()" disabled>See My Results &rarr;</button>
+    </div>
+    <div class="gate-privacy">We respect your privacy. Unsubscribe anytime.</div>
+  </div>
+
+  <!-- ═══ RESULTS ═══ -->
+  <div class="screen results-screen" id="resultsScreen">
+    <div class="score-card" id="scoreCard">
+      <div class="score-label-top" id="scoreLabelTop"></div>
+      <div class="score-number" id="scoreNumber">0</div>
+      <div class="score-out-of">out of 100</div>
+      <div class="score-tier-name" id="scoreTierName"></div>
+    </div>
+
+    <div class="results-mirror" id="resultsMirror"></div>
+
+    <div class="leaks-section">
+      <div class="leaks-title">Where You're Losing Revenue</div>
+      <div id="leakItems"></div>
+    </div>
+
+    <div class="total-loss" id="totalLoss">
+      <div class="total-loss-label">Estimated Revenue Left on the Table</div>
+      <div class="total-loss-number" id="totalLossNumber">$0</div>
+      <div class="total-loss-per">per month, based on your answers</div>
+    </div>
+
+    <div class="fix-section" id="fixSection">
+      <div class="fix-label">Your #1 Priority</div>
+      <h3 id="fixTitle"></h3>
+      <p id="fixDesc"></p>
+    </div>
+
+    <div class="results-cta">
+      <h3>Want us to walk through<br>your score together?</h3>
+      <p>In 15 minutes, we'll show you exactly what to fix first and give you a clear action plan — whether you work with us or not.</p>
+      <a href="https://calendly.com/velosluxe/strategy" class="btn-book">Book My Free Growth Call &rarr;</a>
+      <div class="no-pitch">No sales pitch. Just clarity on your next move.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var questions = [
+  {
+    label: 'About Your Practice',
+    title: 'How long have you been operating your med spa?',
+    options: ['Less than 1 year', '1-3 years', '3-5 years', '5+ years'],
+    scores: [4, 8, 10, 12],
+    key: 'years'
+  },
+  {
+    label: 'Practice Size',
+    title: 'How many treatment rooms do you currently have?',
+    options: ['1-2 rooms', '3-4 rooms', '5-7 rooms', '8+ rooms'],
+    scores: [6, 10, 12, 14],
+    key: 'rooms'
+  },
+  {
+    label: 'Patient Retention',
+    title: 'What percentage of your patients rebook before leaving?',
+    subtitle: 'Industry benchmark: 80% prebooking rate for top performers.',
+    options: ['Under 20%', '20-40%', '40-60%', 'Over 60%', "I don't track this"],
+    scores: [2, 5, 8, 14, 1],
+    key: 'rebook'
+  },
+  {
+    label: 'Lead Response',
+    title: 'How quickly does someone respond when a new patient inquires?',
+    subtitle: '78% of patients choose whoever responds first.',
+    options: ['Within minutes', 'Within a few hours', 'Same day', 'Next day or later', 'It depends on who is working'],
+    scores: [14, 8, 5, 2, 3],
+    key: 'response'
+  },
+  {
+    label: 'Missed Calls',
+    title: 'How many calls go to voicemail per week?',
+    subtitle: 'Most callers hang up and call the next spa.',
+    options: ['Rarely — we answer almost every call', 'A few (3-5 per week)', 'Quite a few (5-10 per week)', 'A lot (10+ per week)', "I honestly don't know"],
+    scores: [14, 8, 4, 2, 3],
+    key: 'missed'
+  },
+  {
+    label: 'Consultation Conversion',
+    title: 'What percentage of consultations convert to a paid treatment same-day?',
+    options: ['Over 70%', '50-70%', '30-50%', 'Under 30%', "I don't track this"],
+    scores: [14, 10, 6, 3, 1],
+    key: 'conversion'
+  },
+  {
+    label: 'Average Revenue',
+    title: "What's your average treatment value?",
+    subtitle: "This helps us estimate your revenue potential.",
+    options: ['Under $200', '$200-$400', '$400-$700', '$700-$1,200', '$1,200+'],
+    scores: [6, 8, 10, 12, 14],
+    key: 'avgTicket',
+    values: [150, 300, 550, 950, 1400]
+  },
+  {
+    label: 'Your Goal',
+    title: "What's your #1 priority for the next 12 months?",
+    options: ['Get more new patients', 'Increase revenue per patient', 'Build predictable recurring revenue', 'Free up my own time', 'Scale to multiple locations'],
+    scores: [8, 10, 10, 8, 12],
+    key: 'goal'
+  }
+];
+
+var currentQ = 0;
+var answers = {};
+var totalQuestions = questions.length;
+
+function startQuiz() {
+  document.getElementById('coverScreen').classList.remove('active');
+  document.getElementById('questionScreen').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q = questions[currentQ];
+  document.getElementById('qLabel').textContent = 'Question ' + (currentQ + 1) + ' of ' + totalQuestions + ' — ' + q.label;
+  document.getElementById('qTitle').textContent = q.title;
+  document.getElementById('qSubtitle').textContent = q.subtitle || '';
+  document.getElementById('stepLabel').textContent = (currentQ + 1) + ' / ' + totalQuestions;
+  document.getElementById('progressFill').style.width = ((currentQ) / totalQuestions * 100) + '%';
+
+  var optionsHtml = '';
+  for (var i = 0; i < q.options.length; i++) {
+    optionsHtml += '<div class="q-option" onclick="selectOption(' + i + ')" data-idx="' + i + '">'
+      + '<div class="q-option-dot"></div>'
+      + '<span>' + q.options[i] + '</span>'
+      + '</div>';
+  }
+  document.getElementById('qOptions').innerHTML = optionsHtml;
+}
+
+function selectOption(idx) {
+  var q = questions[currentQ];
+  answers[q.key] = { index: idx, text: q.options[idx], score: q.scores[idx], value: q.values ? q.values[idx] : null };
+
+  // Highlight
+  var opts = document.querySelectorAll('.q-option');
+  opts.forEach(function(o) { o.classList.remove('selected'); });
+  opts[idx].classList.add('selected');
+
+  // Auto-advance after brief delay
+  setTimeout(function() {
+    currentQ++;
+    if (currentQ < totalQuestions) {
+      // Re-trigger animation
+      var screen = document.getElementById('questionScreen');
+      screen.style.animation = 'none';
+      screen.offsetHeight;
+      screen.style.animation = 'fadeUp .4s ease';
+      renderQuestion();
+    } else {
+      // Show gate
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('questionScreen').classList.remove('active');
+      document.getElementById('gateScreen').classList.add('active');
+      document.getElementById('stepLabel').textContent = '';
+    }
+  }, 350);
+}
+
+// Gate validation
+document.addEventListener('input', function() {
+  var name = document.getElementById('gateName').value.trim();
+  var email = document.getElementById('gateEmail').value.trim();
+  var btn = document.getElementById('gateBtn');
+  btn.disabled = !(name.length > 0 && email.includes('@') && email.includes('.'));
+});
+
+function showResults() {
+  var name = document.getElementById('gateName').value.trim();
+  var email = document.getElementById('gateEmail').value.trim();
+  var phone = document.getElementById('gatePhone').value.trim();
+
+  // Send lead to server
+  fetch('/api/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, email: email, spa_name: 'Quiz Lead', source: 'growth_quiz' })
+  }).catch(function() {});
+
+  // Calculate score
+  var totalScore = 0;
+  var maxScore = 0;
+  for (var key in answers) {
+    totalScore += answers[key].score;
+    maxScore += 14;
+  }
+  var score = Math.round((totalScore / maxScore) * 100);
+
+  // Revenue leakage calculations
+  var avgTicket = answers.avgTicket ? answers.avgTicket.value : 400;
+  var missedIdx = answers.missed ? answers.missed.index : 2;
+  var responseIdx = answers.response ? answers.response.index : 2;
+  var conversionIdx = answers.conversion ? answers.conversion.index : 2;
+  var rebookIdx = answers.rebook ? answers.rebook.index : 2;
+
+  // Missed calls leak
+  var missedCallsPerWeek = [1, 4, 7.5, 12, 6][missedIdx];
+  var missedCallRevenue = Math.round(missedCallsPerWeek * 4.3 * avgTicket * 0.35);
+
+  // Slow response leak
+  var responseMultiplier = [0.05, 0.2, 0.35, 0.55, 0.4][responseIdx];
+  var slowResponseRevenue = Math.round(20 * responseMultiplier * avgTicket);
+
+  // Low rebooking leak
+  var rebookLoss = [0.6, 0.45, 0.25, 0.1, 0.5][rebookIdx];
+  var rebookRevenue = Math.round(40 * rebookLoss * avgTicket * 0.15);
+
+  var totalLossMonthly = missedCallRevenue + slowResponseRevenue + rebookRevenue;
+
+  // Determine tier
+  var tier, tierName, tierClass, mirror, fixTitle, fixDesc;
+
+  if (score >= 70) {
+    tier = 'high'; tierName = 'High Performer'; tierClass = 'score-tier-high';
+    mirror = '<p>Your practice has <strong>strong fundamentals</strong>. You\'re ahead of most med spas when it comes to operations and patient experience. But even top performers have blind spots — and at your revenue level, small optimizations can unlock <strong>significant upside</strong>. The gaps below represent money that\'s quietly slipping through the cracks.</p>';
+    fixTitle = 'Optimize your rebooking and follow-up automation';
+    fixDesc = 'At your stage, the biggest ROI comes from systemizing what\'s already working. Automated rebooking, review generation, and reactivation campaigns can add $3,000-$6,000/month without adding any new patients.';
+  } else if (score >= 40) {
+    tier = 'growth'; tierName = 'Growth-Ready'; tierClass = 'score-tier-growth';
+    mirror = '<p>Your med spa has <strong>real potential</strong>, but key systems are missing that are costing you every month. You\'re likely working harder than you need to — <strong>the gap isn\'t effort, it\'s infrastructure</strong>. The revenue numbers below aren\'t hypothetical. They\'re based on your actual answers and industry conversion rates.</p>';
+    fixTitle = 'Fix your lead response time and missed call problem first';
+    fixDesc = 'This is your highest-leverage move. Responding to every inquiry in under 60 seconds and answering every call — even after hours — typically recovers $3,000-$5,000/month on its own. Everything else compounds on top of that.';
+  } else {
+    tier = 'foundation'; tierName = 'Foundation Phase'; tierClass = 'score-tier-foundation';
+    mirror = '<p>Your practice has <strong>significant gaps</strong> that are likely costing you thousands every month. The good news: <strong>these are fixable, and fast</strong>. Most of the revenue you\'re losing isn\'t because of bad treatments or low demand — it\'s because patients can\'t reach you, aren\'t being followed up with, and aren\'t being asked to rebook.</p>';
+    fixTitle = 'You need a system that answers every call and responds to every lead — today';
+    fixDesc = 'At your current stage, the single most impactful change is ensuring no lead or call goes unanswered. This alone can shift your revenue trajectory within the first week. Everything else — rebooking, reviews, reactivation — builds on that foundation.';
+  }
+
+  // Render results
+  document.getElementById('gateScreen').classList.remove('active');
+  document.getElementById('resultsScreen').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('stepLabel').textContent = '';
+
+  var scoreCard = document.getElementById('scoreCard');
+  scoreCard.className = 'score-card ' + tierClass;
+  document.getElementById('scoreLabelTop').textContent = 'Your Growth Score';
+  document.getElementById('scoreTierName').textContent = tierName;
+  document.getElementById('resultsMirror').innerHTML = mirror;
+
+  // Animate score number
+  animateNumber('scoreNumber', 0, score, 1200);
+
+  // Leak items
+  var leaksHtml = '';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-rose">&#9742;</div><div><div class="leak-amount">~$' + missedCallRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from missed calls and voicemails. Patients who can\'t reach you call the next spa.</div></div></div>';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-gold">&#9203;</div><div><div class="leak-amount">~$' + slowResponseRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from slow lead response. After 5 minutes, lead qualification drops 80%.</div></div></div>';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-violet">&#128260;</div><div><div class="leak-amount">~$' + rebookRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from patients who don\'t rebook. Without automated follow-up, they drift to competitors.</div></div></div>';
+  document.getElementById('leakItems').innerHTML = leaksHtml;
+
+  animateNumber('totalLossNumber', 0, totalLossMonthly, 1800, '$', '/mo');
+
+  document.getElementById('fixTitle').textContent = fixTitle;
+  document.getElementById('fixDesc').textContent = fixDesc;
+}
+
+function animateNumber(elId, start, end, duration, prefix, suffix) {
+  prefix = prefix || '';
+  suffix = suffix || '';
+  var el = document.getElementById(elId);
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var current = Math.round(start + (end - start) * eased);
+    el.textContent = prefix + current.toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+</script>
+
+</body>
+</html>
