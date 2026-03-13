@@ -3,359 +3,520 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VelosLuxe — Never Miss a Lead Again | AI-Powered Med Spa Automation</title>
-  <meta name="description" content="VelosLuxe responds to every med spa lead in under 60 seconds, books appointments automatically, and recovers $4,400/mo in lost revenue.">
+  <title>VelosLuxe — AI That Answers Every Call & Books Every Lead for Med Spas</title>
+  <meta name="description" content="VelosLuxe gives med spas an AI receptionist that picks up every call, responds to every lead in under 60 seconds, and books appointments 24/7.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
-    /* ═══ RESET & BASE ═══ */
+    /* ═══ TOKENS ═══ */
+    :root {
+      --bg: #050508;
+      --bg-raised: #0c0c14;
+      --bg-card: #0f0f1a;
+      --bg-glass: rgba(15, 15, 26, .6);
+      --border: rgba(255,255,255,.06);
+      --border-hover: rgba(255,255,255,.12);
+      --text: #a09db1;
+      --text-bright: #eeedf2;
+      --gold: #c9a46c;
+      --gold-light: #e2c99b;
+      --sage: #6ecf8a;
+      --rose: #e87777;
+      --violet: #8b7bc8;
+      --blue: #5b9cf5;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    /* ═══ RESET ═══ */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      background: #08070c;
-      color: #ccc8be;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
       font-size: 16px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
-    h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #e8e4dc; line-height: 1.2; }
-    a { color: #d4a574; text-decoration: none; transition: opacity .2s; }
-    a:hover { opacity: .85; }
+    h1, h2, h3, h4 { color: var(--text-bright); line-height: 1.15; }
+    a { color: var(--gold); text-decoration: none; }
     img { max-width: 100%; display: block; }
-    strong { color: #e8e4dc; font-weight: 600; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-    section { padding: 5rem 0; }
+    .wrap { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ═══ NOISE OVERLAY ═══ */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: .025;
+    }
 
     /* ═══ TOPBAR ═══ */
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: .85rem 2rem;
-      transition: background .3s, box-shadow .3s;
+      padding: 1rem 2.5rem;
+      transition: all .4s cubic-bezier(.16,1,.3,1);
     }
     .topbar.scrolled {
-      background: rgba(8, 7, 12, .92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 1px 0 rgba(212,165,116,.08);
+      background: rgba(5, 5, 8, .85);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid var(--border);
     }
-    .logo {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 1.1rem; font-weight: 700; letter-spacing: .15em; color: #e8e4dc;
-      text-decoration: none;
-    }
-    .logo span { color: #d4a574; }
-    .topbar-nav { display: flex; gap: 2rem; }
-    .topbar-nav a { color: #8a8578; font-size: .85rem; letter-spacing: .04em; text-decoration: none; transition: color .2s; }
-    .topbar-nav a:hover { color: #ccc8be; opacity: 1; }
+    .logo { font-family: var(--font-sans); font-size: 1rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); }
+    .logo span { color: var(--gold); }
+    .topbar-nav { display: flex; gap: 2.5rem; align-items: center; }
+    .topbar-nav a { color: var(--text); font-size: .82rem; font-weight: 500; letter-spacing: .02em; transition: color .2s; }
+    .topbar-nav a:hover { color: var(--text-bright); }
     .topbar-cta {
-      font-size: .8rem; font-weight: 600; letter-spacing: .05em;
-      padding: .55rem 1.4rem; border-radius: 6px;
-      background: #d4a574; color: #08070c; text-decoration: none;
-      transition: background .2s, transform .15s;
+      font-size: .78rem; font-weight: 600; letter-spacing: .04em;
+      padding: .6rem 1.6rem; border-radius: 100px;
+      background: var(--gold); color: var(--bg);
+      transition: all .25s cubic-bezier(.16,1,.3,1);
     }
-    .topbar-cta:hover { background: #c4955f; opacity: 1; transform: translateY(-1px); }
+    .topbar-cta:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,164,108,.3); }
 
     /* ═══ HERO ═══ */
     .hero {
-      position: relative; padding: 8rem 0 4rem; min-height: 90vh;
-      display: flex; align-items: center; overflow: hidden;
+      position: relative; padding: 10rem 0 6rem; min-height: 100vh;
+      display: flex; align-items: center;
     }
-    .hero-bg {
-      position: absolute; inset: 0; z-index: 0; overflow: hidden;
+    .hero-bg { position: absolute; inset: 0; overflow: hidden; }
+    .hero-mesh {
+      position: absolute; width: 800px; height: 800px; border-radius: 50%;
+      filter: blur(120px); opacity: .12;
     }
-    .orb {
-      position: absolute; border-radius: 50%; filter: blur(100px); opacity: .15;
+    .hero-mesh-1 { background: var(--gold); top: -20%; right: -10%; }
+    .hero-mesh-2 { background: var(--violet); bottom: -30%; left: -15%; opacity: .08; }
+    .hero-mesh-3 { background: var(--sage); top: 40%; left: 50%; width: 400px; height: 400px; opacity: .05; }
+    .hero-grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
     }
-    .orb-a { width: 500px; height: 500px; background: #d4a574; top: -10%; right: 10%; }
-    .orb-b { width: 400px; height: 400px; background: #7fb685; bottom: -5%; left: -5%; opacity: .08; }
-    .orb-c { width: 300px; height: 300px; background: #d4a574; top: 50%; left: 40%; opacity: .06; }
-    .hero-lines {
-      position: absolute; inset: 0; display: flex; justify-content: space-between; padding: 0 10%;
+    .hero .wrap { position: relative; z-index: 1; }
+    .hero-content { text-align: center; max-width: 800px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2rem;
+      padding: .5rem 1.2rem; border-radius: 100px;
+      background: rgba(201,164,108,.08); border: 1px solid rgba(201,164,108,.15);
     }
-    .hero-lines div {
-      width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(212,165,116,.04), transparent);
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+      font-weight: 400; letter-spacing: -.01em;
+      margin-bottom: 1.5rem;
     }
-    .hero .wrap { position: relative; z-index: 1; width: 100%; }
-    .hero-inner {
-      display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center;
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--text); max-width: 600px;
+      margin: 0 auto 2.5rem; line-height: 1.75;
     }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: .5rem;
-      font-size: .78rem; color: #d4a574; letter-spacing: .06em;
-      margin-bottom: 1.5rem; text-transform: uppercase;
-    }
-    .pulse {
-      width: 8px; height: 8px; border-radius: 50%; background: #7fb685;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
-    .hero h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.25rem; }
-    .hero h1 em { font-style: normal; color: #d4a574; }
-    .hero-p { font-size: 1.05rem; color: #8a8578; max-width: 540px; margin-bottom: 2rem; line-height: 1.7; }
-    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* Buttons */
+    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
-      display: inline-block; padding: .85rem 2rem; border-radius: 8px;
-      background: #d4a574; color: #08070c; font-weight: 600; font-size: .88rem;
-      letter-spacing: .02em; text-decoration: none;
-      transition: background .2s, transform .15s, box-shadow .2s;
-      box-shadow: 0 0 30px rgba(212,165,116,.15);
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .9rem 2.2rem; border-radius: 100px;
+      background: var(--gold); color: var(--bg);
+      font-weight: 600; font-size: .88rem; letter-spacing: .01em;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 40px rgba(201,164,108,.15);
     }
-    .btn-primary:hover { background: #c4955f; opacity: 1; transform: translateY(-2px); box-shadow: 0 4px 40px rgba(212,165,116,.25); }
-    .btn-secondary {
-      display: inline-block; padding: .85rem 2rem; border-radius: 8px;
-      border: 1px solid rgba(212,165,116,.25); color: #d4a574;
-      font-weight: 500; font-size: .88rem; text-decoration: none;
-      transition: border-color .2s, background .2s;
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.3); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .9rem 2.2rem; border-radius: 100px;
+      border: 1px solid var(--border-hover); color: var(--text-bright);
+      font-weight: 500; font-size: .88rem;
+      transition: all .25s;
     }
-    .btn-secondary:hover { border-color: #d4a574; background: rgba(212,165,116,.06); opacity: 1; }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.03); }
+    .hero-proof {
+      margin-top: 3.5rem; display: flex; align-items: center; justify-content: center; gap: .75rem;
+      font-size: .8rem; color: var(--text);
+    }
+    .hero-avatars { display: flex; }
+    .hero-avatars span {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--bg); margin-left: -8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700; color: var(--bg);
+    }
+    .hero-avatars span:first-child { margin-left: 0; }
 
-    /* Counter Card */
-    .counter-card {
-      background: #14131e; border: 1px solid rgba(212,165,116,.1);
-      border-radius: 16px; padding: 2.5rem 2rem; text-align: center;
+    /* ═══ LOGO BAR ═══ */
+    .logo-bar {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-bar-inner {
+      display: flex; align-items: center; justify-content: center; gap: 3.5rem; flex-wrap: wrap;
+    }
+    .logo-bar-label {
+      font-size: .68rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase;
+      color: rgba(255,255,255,.25); white-space: nowrap;
+    }
+    .logo-bar-item {
+      font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.2);
+      letter-spacing: .08em;
+    }
+
+    /* ═══ BENTO METRICS ═══ */
+    .bento-section { padding: 6rem 0; }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+    .bento-card {
+      border-radius: 20px; padding: 2.5rem;
       position: relative; overflow: hidden;
+      transition: transform .3s cubic-bezier(.16,1,.3,1), border-color .3s;
     }
-    .counter-card::before {
+    .bento-card:hover { transform: translateY(-2px); }
+    .bento-dark {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
+    .bento-dark:hover { border-color: var(--border-hover); }
+    .bento-glass {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .bento-glass:hover { border-color: rgba(255,255,255,.15); }
+    .bento-accent {
+      background: linear-gradient(135deg, rgba(201,164,108,.12), rgba(201,164,108,.04));
+      border: 1px solid rgba(201,164,108,.15);
+    }
+    .bento-accent:hover { border-color: rgba(201,164,108,.3); }
+    .bento-wide { grid-column: span 2; }
+    .bento-tall { grid-row: span 2; display: flex; flex-direction: column; justify-content: center; }
+    .bento-label {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .bento-label-gold { color: var(--gold); }
+    .bento-label-sage { color: var(--sage); }
+    .bento-label-rose { color: var(--rose); }
+    .bento-label-violet { color: var(--violet); }
+    .bento-label-blue { color: var(--blue); }
+    .bento-big {
+      font-family: var(--font-serif); font-size: 3.5rem; font-weight: 400;
+      line-height: 1; margin-bottom: .5rem;
+    }
+    .bento-desc { font-size: .88rem; color: var(--text); line-height: 1.6; }
+    .bento-card .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 1.5rem; }
+    .bento-card .bar {
+      flex: 1; border-radius: 4px 4px 0 0;
+      background: rgba(201,164,108,.15);
+      transition: height .6s cubic-bezier(.16,1,.3,1);
+    }
+    .bento-card .bar.active { background: var(--gold); }
+
+    /* ═══ WHAT WE DO — SPLIT SECTION ═══ */
+    .split-section { padding: 8rem 0; position: relative; }
+    .split-section::before {
       content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 60%; height: 1px;
-      background: linear-gradient(90deg, transparent, #d4a574, transparent);
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139,123,200,.06), transparent);
+      pointer-events: none;
     }
-    .counter-label { font-size: .75rem; color: #8a8578; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1rem; }
-    .counter-big {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 4rem; color: #d4a574; font-weight: 400; line-height: 1;
-    }
-    .counter-unit { font-size: .9rem; color: #8a8578; margin-top: .25rem; margin-bottom: 1.5rem; }
-    .counter-vs { display: flex; justify-content: center; gap: 2rem; }
-    .counter-vs-item { text-align: center; }
-    .cvv { font-size: 1.1rem; font-weight: 600; margin-bottom: .15rem; }
-    .vs-bad .cvv { color: #ef4444; }
-    .vs-good .cvv { color: #7fb685; }
-    .cvl { font-size: .7rem; color: #8a8578; }
-
-    /* ═══ TRUST BAR ═══ */
-    .trust-bar {
-      border-top: 1px solid rgba(212,165,116,.06);
-      border-bottom: 1px solid rgba(212,165,116,.06);
-      padding: 2rem 0;
-    }
-    .trust-inner { display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; }
-    .trust-stat { text-align: center; padding: .5rem 1.5rem; }
-    .ts-val { font-family: Georgia, 'Times New Roman', serif; font-size: 1.6rem; color: #d4a574; margin-bottom: .15rem; }
-    .ts-label { font-size: .72rem; color: #8a8578; letter-spacing: .06em; text-transform: uppercase; }
-    .trust-divider { width: 1px; height: 40px; background: rgba(212,165,116,.12); }
-
-    /* ═══ PROBLEM ═══ */
-    #problem { text-align: center; }
+    .split-header { text-align: center; max-width: 700px; margin: 0 auto 4rem; position: relative; }
     .section-label {
-      font-size: .72rem; color: #d4a574; letter-spacing: .15em; text-transform: uppercase;
-      margin-bottom: .75rem;
+      font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
     }
     .section-title {
-      font-size: clamp(1.5rem, 3vw, 2.2rem); margin: 0 auto 2.5rem;
+      font-family: var(--font-serif); font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 400; margin-bottom: 1rem;
     }
-    .prob-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 2rem; }
-    .prob-card {
-      background: #14131e; border: 1px solid rgba(212,165,116,.06);
-      border-radius: 12px; padding: 2rem 1.25rem; text-align: center;
-      transition: border-color .3s, transform .3s;
+    .section-sub { font-size: 1rem; color: var(--text); max-width: 550px; margin: 0 auto; line-height: 1.7; }
+    .features-list { display: flex; flex-direction: column; gap: 1rem; }
+    .feature-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch;
     }
-    .prob-card:hover { border-color: rgba(212,165,116,.15); transform: translateY(-3px); }
-    .prob-num {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 2.2rem; color: #d4a574; margin-bottom: .5rem;
-    }
-    .prob-desc { font-size: .85rem; color: #8a8578; line-height: 1.5; }
-
-    /* ═══ CALL SOPHIA ═══ */
-    #call { text-align: center; }
-    .call-card {
-      max-width: 820px; margin: 2.5rem auto 0;
-      background: #14131e; border: 1px solid rgba(212,165,116,.12);
-      border-radius: 20px; overflow: hidden;
-      box-shadow: 0 8px 60px rgba(0,0,0,.4);
-    }
-    .call-card-inner {
-      display: grid; grid-template-columns: 1fr 1fr; min-height: 380px;
-    }
-    .call-form-side {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; text-align: center; padding: 2.5rem 2rem;
-      border-right: 1px solid rgba(212,165,116,.06);
-    }
-    .avatar-ring {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: linear-gradient(135deg, #d4a574, #b8916a);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto .75rem;
-      box-shadow: 0 0 40px rgba(212,165,116,.2);
-    }
-    .avatar-icon {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 2rem; color: #08070c; font-weight: 400;
-    }
-    .avatar-name { font-size: 1.15rem; font-weight: 600; color: #e8e4dc; }
-    .avatar-role { font-size: .78rem; color: #8a8578; margin-top: .1rem; }
-
-    .sophia-phone-btn {
-      display: flex; flex-direction: column; align-items: center;
-      margin-top: 1.5rem; cursor: pointer; border: none;
-      background: linear-gradient(135deg, #d4a574, #c4955f);
-      padding: 1rem 2.5rem; border-radius: 12px;
-      transition: transform .2s, box-shadow .2s;
-      box-shadow: 0 4px 30px rgba(212,165,116,.3);
-    }
-    .sophia-phone-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 40px rgba(212,165,116,.4); }
-    .sophia-phone-btn.call-active {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 4px 30px rgba(239,68,68,.3);
-    }
-    .sophia-phone-number {
-      font-size: 1.05rem; font-weight: 700; color: #08070c;
-      letter-spacing: .01em;
-    }
-    .sophia-phone-cta {
-      font-size: .72rem; color: rgba(8,7,12,.6); margin-top: .15rem;
-    }
-    .call-status {
-      margin-top: .75rem; font-size: .82rem; min-height: 1.2em;
-    }
-    .call-direct-link {
-      font-size: .82rem; color: #d4a574; margin-top: .75rem;
-      text-decoration: none;
-    }
-
-    .call-info-side {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 2.5rem 2rem; gap: 1.5rem;
-    }
-    .call-info-item {
-      display: flex; gap: 1rem; text-align: left; align-items: flex-start;
-    }
-    .call-info-num {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: .85rem; color: #d4a574; min-width: 28px;
-      padding-top: .15rem;
-    }
-    .call-info-item strong { font-size: .9rem; }
-    .call-info-item p { margin: .15rem 0 0; font-size: .82rem; color: #8a8578; }
-
-    /* ═══ HOW IT WORKS ═══ */
-    #how { text-align: center; }
-    .hw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; }
-    .hw-card {
-      background: #14131e; border: 1px solid rgba(212,165,116,.06);
-      border-radius: 14px; padding: 2rem 1.5rem; text-align: left;
-      transition: border-color .3s, transform .3s;
+    .feature-card {
+      border-radius: 16px; padding: 2rem 1.75rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      transition: all .3s cubic-bezier(.16,1,.3,1);
       position: relative;
     }
-    .hw-card:hover { border-color: rgba(212,165,116,.15); transform: translateY(-3px); }
-    .hw-num {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: .85rem; color: #d4a574; margin-bottom: .75rem;
+    .feature-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .feature-card-wide { grid-column: span 2; }
+    .feature-card-wide .feature-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 1rem;
     }
-    .hw-card h3 { font-size: 1.15rem; margin-bottom: .75rem; }
-    .hw-card p { font-size: .85rem; color: #8a8578; line-height: 1.65; margin-bottom: 1rem; }
-    .hw-tag {
-      display: inline-block; font-size: .68rem; padding: .3rem .7rem;
-      border-radius: 20px; margin-right: .4rem; letter-spacing: .03em;
+    .feature-icon-gold { background: rgba(201,164,108,.1); color: var(--gold); }
+    .feature-icon-sage { background: rgba(110,207,138,.1); color: var(--sage); }
+    .feature-icon-violet { background: rgba(139,123,200,.1); color: var(--violet); }
+    .feature-icon-blue { background: rgba(91,156,245,.1); color: var(--blue); }
+    .feature-icon-rose { background: rgba(232,119,119,.1); color: var(--rose); }
+    .feature-card h3 { font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; margin-bottom: .5rem; }
+    .feature-card p { font-size: .85rem; color: var(--text); line-height: 1.65; }
+    .feature-tag {
+      display: inline-block; font-size: .65rem; font-weight: 600; letter-spacing: .06em;
+      padding: .25rem .65rem; border-radius: 100px; margin-top: .75rem;
     }
-    .hw-tag-speed { background: rgba(212,165,116,.1); color: #d4a574; }
-    .hw-tag-auto { background: rgba(127,182,133,.1); color: #7fb685; }
-    .hw-tag-data { background: rgba(147,130,200,.1); color: #9382c8; }
-    .hw-card .hear-link {
-      display: block; margin-top: 1rem; font-size: .8rem;
-      color: #d4a574; text-decoration: none;
-    }
-    .hw-card .hear-link:hover { text-decoration: underline; }
+    .tag-gold { background: rgba(201,164,108,.1); color: var(--gold); }
+    .tag-sage { background: rgba(110,207,138,.1); color: var(--sage); }
 
-    /* ═══ FAQ ═══ */
-    #faq { }
-    .faq-item {
-      border-bottom: 1px solid rgba(212,165,116,.06);
+    /* ═══ COMPARISON — GLASSMORPHIC ═══ */
+    .compare-section {
+      padding: 8rem 0; position: relative;
     }
+    .compare-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 40% at 50% 50%, rgba(201,164,108,.04), transparent);
+      pointer-events: none;
+    }
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+      max-width: 900px; margin: 0 auto; position: relative;
+    }
+    .compare-card {
+      border-radius: 20px; padding: 2.5rem; position: relative;
+    }
+    .compare-them {
+      background: var(--bg-card); border: 1px solid var(--border);
+    }
+    .compare-us {
+      background: linear-gradient(135deg, rgba(201,164,108,.08), rgba(110,207,138,.04));
+      border: 1px solid rgba(201,164,108,.2);
+      box-shadow: 0 8px 40px rgba(201,164,108,.08);
+    }
+    .compare-card h3 {
+      font-family: var(--font-sans); font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 2rem;
+    }
+    .compare-them h3 { color: var(--text); }
+    .compare-us h3 { color: var(--gold); }
+    .compare-list { list-style: none; display: flex; flex-direction: column; gap: 1.1rem; }
+    .compare-list li {
+      display: flex; align-items: flex-start; gap: .75rem;
+      font-size: .88rem; line-height: 1.5;
+    }
+    .compare-list .icon {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; margin-top: 1px;
+    }
+    .compare-them .icon { background: rgba(232,119,119,.1); color: var(--rose); }
+    .compare-us .icon { background: rgba(110,207,138,.15); color: var(--sage); }
+    .compare-divider {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: var(--text);
+      z-index: 2;
+    }
+
+    /* ═══ DEMO SOPHIA — DARK INSET ═══ */
+    .demo-section {
+      padding: 8rem 0; position: relative;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-raised) 50%, var(--bg) 100%);
+    }
+    .demo-card {
+      max-width: 700px; margin: 3rem auto 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,.5);
+    }
+    .demo-card-inner { padding: 3rem; text-align: center; }
+    .demo-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #a07b4a);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 60px rgba(201,164,108,.2);
+    }
+    .demo-avatar-letter {
+      font-family: var(--font-serif); font-size: 2.2rem; color: var(--bg); font-weight: 400;
+    }
+    .demo-name { font-size: 1.25rem; font-weight: 600; color: var(--text-bright); }
+    .demo-role { font-size: .82rem; color: var(--text); margin-top: .15rem; margin-bottom: 1.5rem; }
+    .demo-phone-btn {
+      display: inline-flex; flex-direction: column; align-items: center;
+      padding: 1rem 3rem; border-radius: 16px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--gold), #b8935c);
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 4px 30px rgba(201,164,108,.25);
+      text-decoration: none;
+    }
+    .demo-phone-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
+    .demo-phone-number { font-size: 1.15rem; font-weight: 700; color: var(--bg); letter-spacing: .01em; }
+    .demo-phone-sub { font-size: .72rem; color: rgba(5,5,8,.55); margin-top: .15rem; }
+    .demo-hint { margin-top: 1rem; font-size: .78rem; color: var(--text); }
+    .demo-features {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;
+      border-top: 1px solid var(--border); margin-top: 2rem;
+    }
+    .demo-feat {
+      padding: 1.25rem; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .demo-feat:last-child { border-right: none; }
+    .demo-feat-val { font-size: 1.1rem; font-weight: 700; color: var(--text-bright); margin-bottom: .15rem; }
+    .demo-feat-label { font-size: .68rem; color: var(--text); letter-spacing: .05em; text-transform: uppercase; }
+
+    /* ═══ HOW IT WORKS — TIMELINE ═══ */
+    .timeline-section { padding: 8rem 0; }
+    .timeline { max-width: 700px; margin: 3rem auto 0; position: relative; }
+    .timeline::before {
+      content: ''; position: absolute; left: 24px; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold), rgba(201,164,108,.2), transparent);
+    }
+    .timeline-step {
+      display: flex; gap: 2rem; padding: 2rem 0;
+      position: relative;
+    }
+    .timeline-dot {
+      flex-shrink: 0; width: 49px; height: 49px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 500;
+      position: relative; z-index: 1;
+    }
+    .tl-dot-1 { background: rgba(201,164,108,.15); color: var(--gold); border: 1px solid rgba(201,164,108,.3); }
+    .tl-dot-2 { background: rgba(110,207,138,.1); color: var(--sage); border: 1px solid rgba(110,207,138,.2); }
+    .tl-dot-3 { background: rgba(139,123,200,.1); color: var(--violet); border: 1px solid rgba(139,123,200,.2); }
+    .tl-dot-4 { background: rgba(91,156,245,.1); color: var(--blue); border: 1px solid rgba(91,156,245,.2); }
+    .timeline-content h3 {
+      font-family: var(--font-sans); font-size: 1.05rem; font-weight: 600; margin-bottom: .4rem;
+    }
+    .timeline-content p { font-size: .88rem; color: var(--text); line-height: 1.7; }
+
+    /* ═══ RESULTS — GRADIENT SECTION ═══ */
+    .results-section {
+      padding: 8rem 0; position: relative;
+    }
+    .results-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 90% 50% at 50% 50%, rgba(110,207,138,.04), transparent);
+      pointer-events: none;
+    }
+    .results-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .result-card {
+      border-radius: 20px; padding: 2.5rem 2rem; text-align: center;
+      background: var(--bg-card); border: 1px solid var(--border);
+      transition: all .3s;
+    }
+    .result-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+    .result-number {
+      font-family: var(--font-serif); font-size: 3rem; font-weight: 400;
+      margin-bottom: .25rem;
+    }
+    .result-number-gold { color: var(--gold); }
+    .result-number-sage { color: var(--sage); }
+    .result-number-violet { color: var(--violet); }
+    .result-label { font-size: .82rem; color: var(--text); line-height: 1.5; }
+
+    /* ═══ FAQ — CLEAN ═══ */
+    .faq-section { padding: 8rem 0; }
+    .faq-list { max-width: 700px; margin: 3rem auto 0; }
+    .faq-item { border-bottom: 1px solid var(--border); }
     .faq-q {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 1.25rem 0; cursor: pointer;
+      padding: 1.5rem 0; cursor: pointer;
+    }
+    .faq-q h3 {
+      font-family: var(--font-sans); font-size: .95rem; font-weight: 500;
       transition: color .2s;
     }
-    .faq-q:hover h3 { color: #d4a574; }
-    .faq-q h3 { font-size: 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-weight: 500; transition: color .2s; }
+    .faq-q:hover h3 { color: var(--gold); }
     .faq-icon {
-      font-size: 1.4rem; color: #d4a574; transition: transform .3s;
-      flex-shrink: 0; margin-left: 1rem; line-height: 1;
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: var(--gold); flex-shrink: 0; margin-left: 1rem;
+      transition: all .3s;
     }
-    .faq-item.open .faq-icon { transform: rotate(45deg); }
-    .faq-a {
-      max-height: 0; overflow: hidden;
-      transition: max-height .35s ease, padding .35s ease;
-    }
-    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 1.25rem; }
-    .faq-a p { font-size: .9rem; color: #8a8578; line-height: 1.7; }
+    .faq-item.open .faq-icon { background: var(--gold); color: var(--bg); border-color: var(--gold); transform: rotate(45deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .4s ease; }
+    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 1.5rem; }
+    .faq-a p { font-size: .88rem; color: var(--text); line-height: 1.75; }
 
     /* ═══ FINAL CTA ═══ */
     .final-cta {
-      text-align: center; padding: 5rem 0 4rem;
-      position: relative;
+      padding: 8rem 0; text-align: center; position: relative;
     }
     .final-cta::before {
-      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 200px; height: 1px;
-      background: linear-gradient(90deg, transparent, #d4a574, transparent);
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,164,108,.06), transparent);
+      pointer-events: none;
     }
     .final-cta h2 {
-      font-size: clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom: 1rem;
+      font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400; margin-bottom: 1rem; position: relative;
     }
-    .final-cta p { color: #8a8578; margin-bottom: 2rem; font-size: 1rem; }
+    .final-cta h2 em { font-style: italic; color: var(--gold); }
+    .final-cta p { color: var(--text); margin-bottom: 2.5rem; font-size: 1.05rem; position: relative; }
+    .final-cta .hero-ctas { position: relative; }
 
     /* ═══ FOOTER ═══ */
     footer {
-      text-align: center; padding: 3rem 0 2rem;
-      border-top: 1px solid rgba(212,165,116,.06);
+      text-align: center; padding: 3rem 0 2.5rem;
+      border-top: 1px solid var(--border);
     }
     .footer-logo {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: .95rem; font-weight: 700; letter-spacing: .15em; color: #e8e4dc;
+      font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright);
       margin-bottom: .5rem;
     }
-    .footer-logo span { color: #d4a574; }
-    footer p { font-size: .78rem; color: #8a8578; }
+    .footer-logo span { color: var(--gold); }
+    footer p { font-size: .75rem; color: rgba(255,255,255,.25); }
 
-    /* ═══ REVEAL ANIMATION ═══ */
-    .rv {
-      opacity: 0; transform: translateY(20px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
+    /* ═══ ANIMATIONS ═══ */
+    .rv { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
     .rv.visible { opacity: 1; transform: translateY(0); }
     .rv-d1 { transition-delay: .1s; }
     .rv-d2 { transition-delay: .2s; }
     .rv-d3 { transition-delay: .3s; }
     .rv-d4 { transition-delay: .4s; }
+    .rv-d5 { transition-delay: .5s; }
 
     /* ═══ RESPONSIVE ═══ */
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; text-align: center; }
-      .hero-p { margin-left: auto; margin-right: auto; }
-      .hero-ctas { justify-content: center; }
-      .hero-counter { margin-top: 2rem; }
-      .prob-grid { grid-template-columns: repeat(2, 1fr); }
-      .hw-grid { grid-template-columns: 1fr; max-width: 500px; margin-left: auto; margin-right: auto; }
-      .call-card-inner { grid-template-columns: 1fr; }
-      .call-form-side { border-right: none; border-bottom: 1px solid rgba(212,165,116,.06); }
+      .hero { padding: 7rem 0 4rem; min-height: auto; }
+      .hero h1 { font-size: 2.2rem; }
+      .bento-grid { grid-template-columns: 1fr 1fr; }
+      .bento-wide { grid-column: span 2; }
+      .bento-tall { grid-row: span 1; }
+      .feature-row { grid-template-columns: 1fr; }
+      .feature-card-wide { grid-column: span 1; }
+      .feature-card-wide .feature-inner { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; max-width: 500px; }
+      .compare-divider { position: static; transform: none; margin: -0.75rem auto; }
+      .results-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+      .demo-features { grid-template-columns: 1fr; }
+      .demo-feat { border-right: none; border-bottom: 1px solid var(--border); }
+      .demo-feat:last-child { border-bottom: none; }
     }
     @media (max-width: 600px) {
-      .topbar-nav { display: none; }
       .topbar { padding: .75rem 1.25rem; }
-      section { padding: 3.5rem 0; }
-      .hero { min-height: auto; padding: 6rem 0 3rem; }
-      .hero h1 { font-size: 1.7rem; }
-      .prob-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
-      .trust-inner { gap: 1rem; }
-      .trust-divider { display: none; }
-      .trust-stat { padding: .5rem .75rem; }
+      .topbar-nav { display: none; }
+      section, .bento-section, .split-section, .compare-section, .demo-section, .timeline-section, .results-section, .faq-section, .final-cta { padding: 4rem 0; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-wide { grid-column: span 1; }
+      .hero h1 { font-size: 1.8rem; }
+      .bento-big { font-size: 2.5rem; }
     }
   </style>
 </head>
@@ -365,232 +526,342 @@
 <div class="topbar" id="topbar">
   <a href="#" class="logo">VELOS<span>LUXE</span></a>
   <nav class="topbar-nav">
+    <a href="#what">What We Do</a>
     <a href="#how">How It Works</a>
+    <a href="#demo">Try Sophia</a>
     <a href="#faq">FAQ</a>
   </nav>
-  <a href="tel:+17403018119" class="topbar-cta">Call Sophia</a>
+  <a href="#cta" class="topbar-cta">Book a Call</a>
 </div>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-bg">
-    <div class="orb orb-a"></div>
-    <div class="orb orb-b"></div>
-    <div class="orb orb-c"></div>
-    <div class="hero-lines"><div></div><div></div><div></div><div></div><div></div></div>
+    <div class="hero-mesh hero-mesh-1"></div>
+    <div class="hero-mesh hero-mesh-2"></div>
+    <div class="hero-mesh hero-mesh-3"></div>
+    <div class="hero-grid-lines"></div>
   </div>
   <div class="wrap">
-    <div class="hero-inner">
-      <div>
-        <div class="hero-tag rv"><span class="pulse"></span>AI-Powered Lead Response for Med Spas</div>
-        <h1 class="rv rv-d1">Your front desk takes <em>42 hours</em> to respond. Your leads are already gone.</h1>
-        <p class="hero-p rv rv-d2">VelosLuxe responds to every inquiry in under 60 seconds, books the appointment, and follows up automatically — 24/7. Med spas using our system recover an average of <strong>$4,400/mo in lost revenue.</strong></p>
-        <div class="hero-ctas rv rv-d3">
-          <a href="tel:+17403018119" class="btn-primary">Call Sophia Now — (740) 301-8119</a>
-          <a href="#how" class="btn-secondary">See How It Works</a>
-        </div>
+    <div class="hero-content">
+      <div class="hero-badge rv"><span class="dot"></span> AI-Powered for Medical Spas</div>
+      <h1 class="rv rv-d1">Your Med Spa Is Losing $4,400/mo<br>to <em>Missed Calls</em></h1>
+      <p class="hero-sub rv rv-d2">VelosLuxe gives you an AI receptionist that answers every call, responds to every lead in under 60 seconds, and books appointments automatically — 24/7/365.</p>
+      <div class="hero-ctas rv rv-d3">
+        <a href="#cta" class="btn-primary">Book a Strategy Call &rarr;</a>
+        <a href="#demo" class="btn-ghost">Hear Our AI Live</a>
       </div>
-      <div class="hero-counter rv rv-d4">
-        <div class="counter-card">
-          <div class="counter-label">Industry Average Response Time</div>
-          <div class="counter-big"><span id="heroCounter">42</span></div>
-          <div class="counter-unit" id="heroUnit">hours</div>
-          <div class="counter-vs">
-            <div class="counter-vs-item vs-bad">
-              <div class="cvv">42 hrs</div>
-              <div class="cvl">Without VelosLuxe</div>
-            </div>
-            <div class="counter-vs-item vs-good">
-              <div class="cvv">&lt;1 sec</div>
-              <div class="cvl">With VelosLuxe</div>
-            </div>
-          </div>
+      <div class="hero-proof rv rv-d4">
+        <div class="hero-avatars">
+          <span style="background: var(--gold)">M</span>
+          <span style="background: var(--sage)">K</span>
+          <span style="background: var(--violet)">R</span>
+          <span style="background: var(--blue)">A</span>
         </div>
+        Trusted by med spas recovering thousands in lost revenue
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ TRUST BAR ═══ -->
-<div class="trust-bar">
+<!-- ═══ LOGO BAR ═══ -->
+<div class="logo-bar rv">
   <div class="wrap">
-    <div class="trust-inner rv">
-      <div class="trust-stat">
-        <div class="ts-val">&lt;60s</div>
-        <div class="ts-label">Response Time</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-stat">
-        <div class="ts-val">391%</div>
-        <div class="ts-label">Conversion Boost</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-stat">
-        <div class="ts-val">$4,400</div>
-        <div class="ts-label">Avg Monthly Recovery</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-stat">
-        <div class="ts-val">24/7</div>
-        <div class="ts-label">Always On</div>
-      </div>
+    <div class="logo-bar-inner">
+      <span class="logo-bar-label">Works with</span>
+      <span class="logo-bar-item">Vagaro</span>
+      <span class="logo-bar-item">Boulevard</span>
+      <span class="logo-bar-item">Mangomint</span>
+      <span class="logo-bar-item">AestheticsPro</span>
+      <span class="logo-bar-item">Google Calendar</span>
     </div>
   </div>
 </div>
 
-<!-- ═══ PROBLEM ═══ -->
-<section id="problem">
+<!-- ═══ BENTO METRICS ═══ -->
+<section class="bento-section">
   <div class="wrap">
-    <div class="section-label rv">The Problem</div>
-    <h2 class="section-title rv rv-d1" style="max-width:700px">78% of patients choose whoever responds first. Is that you?</h2>
-    <div class="prob-grid">
-      <div class="prob-card rv rv-d1">
-        <div class="prob-num">78%</div>
-        <div class="prob-desc">of customers buy from the <strong>first responder</strong></div>
+    <div class="bento-grid">
+      <div class="bento-card bento-accent bento-tall rv">
+        <div class="bento-label bento-label-gold">Response Time</div>
+        <div class="bento-big" style="color: var(--gold)">&#60;1<span style="font-size:1.5rem">s</span></div>
+        <div class="bento-desc" style="margin-top:.75rem">Every inquiry gets a personalized response — SMS, email, and voice — before your competitor even sees the notification.</div>
       </div>
-      <div class="prob-card rv rv-d2">
-        <div class="prob-num">51%</div>
-        <div class="prob-desc">of leads are <strong>never contacted</strong> at all</div>
+      <div class="bento-card bento-dark rv rv-d1">
+        <div class="bento-label bento-label-rose">The Problem</div>
+        <div class="bento-big" style="color: var(--rose)">78%</div>
+        <div class="bento-desc">of patients choose whoever responds first. The average med spa takes <strong style="color:var(--text-bright)">42 hours</strong>.</div>
       </div>
-      <div class="prob-card rv rv-d3">
-        <div class="prob-num">80%</div>
-        <div class="prob-desc">drop in qualification after just <strong>5 minutes</strong></div>
+      <div class="bento-card bento-dark rv rv-d2">
+        <div class="bento-label bento-label-sage">Revenue Recovered</div>
+        <div class="bento-big" style="color: var(--sage)">$4,400</div>
+        <div class="bento-desc">Average monthly revenue recovered per med spa by responding in seconds, not days.</div>
       </div>
-      <div class="prob-card rv rv-d4">
-        <div class="prob-num">$4,400</div>
-        <div class="prob-desc"><strong>lost every month</strong> from slow follow-up</div>
+      <div class="bento-card bento-glass rv rv-d3">
+        <div class="bento-label bento-label-violet">Conversion Increase</div>
+        <div class="bento-big" style="color: var(--violet)">391%</div>
+        <div class="bento-desc">Responding in the first minute vs. the first hour increases conversion by 391%.</div>
+      </div>
+      <div class="bento-card bento-dark rv rv-d4">
+        <div class="bento-label bento-label-blue">Always On</div>
+        <div class="bento-big" style="color: var(--blue)">24/7</div>
+        <div class="bento-desc">Nights, weekends, holidays. Sophia never takes a break and never forgets to follow up.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ CALL THE AI RECEPTIONIST — PRIMARY CTA ═══ -->
-<section id="call">
+<!-- ═══ WHAT WE DO — FEATURES ═══ -->
+<section class="split-section" id="what">
   <div class="wrap">
-    <div style="text-align:center;max-width:650px;margin:0 auto">
-      <div class="section-label rv">Try It Right Now</div>
-      <h2 class="section-title rv rv-d1">Talk to Sophia — Our AI Receptionist</h2>
-      <p class="rv rv-d2" style="margin-top:1rem;color:#8a8578">This is the exact AI your patients will experience. Call her right now — she answers instantly, 24/7.</p>
+    <div class="split-header">
+      <div class="section-label rv">What We Do</div>
+      <h2 class="section-title rv rv-d1">One system that handles <em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">everything</em><br>between "new lead" and "booked appointment"</h2>
+      <p class="section-sub rv rv-d2">No software to learn. No workflows to build. We set it up, you get more patients.</p>
     </div>
-    <div class="call-card rv rv-d2">
-      <div class="call-card-inner">
-        <div class="call-form-side">
-          <div class="browser-call-avatar">
-            <div class="avatar-ring">
-              <div class="avatar-icon">S</div>
-            </div>
-            <div class="avatar-name">Sophia</div>
-            <div class="avatar-role">AI Receptionist</div>
-          </div>
-          <a href="tel:+17403018119" class="sophia-phone-btn" style="text-decoration:none;display:flex;flex-direction:column;align-items:center">
-            <span class="sophia-phone-number">(740) 301-8119</span>
-            <span class="sophia-phone-cta">Tap to Call Sophia Now</span>
-          </a>
-          <div class="call-status" id="browserCallStatus" style="margin-top:.5rem;font-size:.8rem;color:#8a8578">She picks up instantly — try it</div>
+    <div class="features-list">
+      <div class="feature-row">
+        <div class="feature-card rv">
+          <div class="feature-icon feature-icon-gold">&#9889;</div>
+          <h3>Instant Lead Response</h3>
+          <p>Website form, Instagram DM, Facebook message, Google ad — every lead gets a personalized response in under 60 seconds via SMS, email, and voice.</p>
+          <span class="feature-tag tag-gold">&lt; 60 seconds</span>
         </div>
-        <div class="call-info-side">
-          <div class="call-info-item">
-            <div class="call-info-num">01</div>
+        <div class="feature-card rv rv-d1">
+          <div class="feature-icon feature-icon-sage">&#9742;</div>
+          <h3>AI Receptionist</h3>
+          <p>Sophia answers every call with natural conversation, handles questions about services and pricing, and books appointments directly into your calendar.</p>
+          <span class="feature-tag tag-sage">24/7 Coverage</span>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-card feature-card-wide rv">
+          <div class="feature-inner">
             <div>
-              <strong>Click the button or call the number</strong>
-              <p>Sophia picks up instantly, no waiting</p>
+              <div class="feature-icon feature-icon-violet">&#128197;</div>
+              <h3>Smart Booking &amp; No-Show Prevention</h3>
+              <p>Leads get a booking link in their first message. Calendar syncs automatically. Then multi-channel reminders at 48hr, 24hr, and 1hr cut no-shows by 60%.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.75rem">
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--sage)"></span>
+                <span style="font-size:.82rem;color:var(--text)">Automated SMS reminders</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--sage)"></span>
+                <span style="font-size:.82rem;color:var(--text)">Email confirmation + calendar invite</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--sage)"></span>
+                <span style="font-size:.82rem;color:var(--text)">Automatic rebooking for cancellations</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.75rem">
+                <span style="width:8px;height:8px;border-radius:50%;background:var(--sage)"></span>
+                <span style="font-size:.82rem;color:var(--text)">Works with Vagaro, Boulevard, etc.</span>
+              </div>
             </div>
           </div>
-          <div class="call-info-item">
-            <div class="call-info-num">02</div>
-            <div>
-              <strong>Ask her anything</strong>
-              <p>Services, pricing, availability — have a real conversation</p>
-            </div>
-          </div>
-          <div class="call-info-item">
-            <div class="call-info-num">03</div>
-            <div>
-              <strong>Imagine this for your spa</strong>
-              <p>Every call answered, every lead captured — 24/7</p>
-            </div>
-          </div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-card rv">
+          <div class="feature-icon feature-icon-rose">&#11088;</div>
+          <h3>Review Generation</h3>
+          <p>Automated 5-star review requests post-visit. Builds your Google and Yelp reputation on autopilot while you focus on treatments.</p>
+        </div>
+        <div class="feature-card rv rv-d1">
+          <div class="feature-icon feature-icon-blue">&#128260;</div>
+          <h3>Client Reactivation</h3>
+          <p>Automatically re-engages past clients who haven't booked in 60+ days with personalized offers. A 5% retention increase boosts profits by up to 95%.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ HOW IT WORKS ═══ -->
-<section id="how">
+<!-- ═══ COMPARISON ═══ -->
+<section class="compare-section">
   <div class="wrap">
-    <div style="text-align:center;max-width:600px;margin:0 auto">
+    <div class="split-header">
+      <div class="section-label rv">Why VelosLuxe</div>
+      <h2 class="section-title rv rv-d1">This isn't another tool <em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">you</em> have to run</h2>
+      <p class="section-sub rv rv-d2">Most "solutions" hand you a login and say good luck. We do the work.</p>
+    </div>
+    <div class="compare-grid rv">
+      <div class="compare-card compare-them">
+        <h3>The Typical Approach</h3>
+        <ul class="compare-list">
+          <li><span class="icon">&times;</span> You buy software and build your own workflows</li>
+          <li><span class="icon">&times;</span> Leads sit for hours (or days) before someone responds</li>
+          <li><span class="icon">&times;</span> Missed calls go to voicemail — and patients hang up</li>
+          <li><span class="icon">&times;</span> No-shows eat into your revenue every week</li>
+          <li><span class="icon">&times;</span> You pay $3-5K/mo for a receptionist who still misses calls</li>
+        </ul>
+      </div>
+      <div class="compare-card compare-us">
+        <h3>With VelosLuxe</h3>
+        <ul class="compare-list">
+          <li><span class="icon">&#10003;</span> Done-for-you setup — we build everything in 48 hours</li>
+          <li><span class="icon">&#10003;</span> Every lead gets a response in under 60 seconds</li>
+          <li><span class="icon">&#10003;</span> AI answers every call naturally, 24/7/365</li>
+          <li><span class="icon">&#10003;</span> Automated reminders cut no-shows by 60%</li>
+          <li><span class="icon">&#10003;</span> Fraction of the cost — and it never calls in sick</li>
+        </ul>
+      </div>
+      <div class="compare-divider">VS</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRY SOPHIA — DEMO ═══ -->
+<section class="demo-section" id="demo">
+  <div class="wrap">
+    <div class="split-header">
+      <div class="section-label rv">Live Demo</div>
+      <h2 class="section-title rv rv-d1">Don't take our word for it.<br><em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">Call Sophia yourself.</em></h2>
+      <p class="section-sub rv rv-d2">This is the exact AI receptionist your patients will talk to. She answers instantly.</p>
+    </div>
+    <div class="demo-card rv rv-d2">
+      <div class="demo-card-inner">
+        <div class="demo-avatar">
+          <span class="demo-avatar-letter">S</span>
+        </div>
+        <div class="demo-name">Sophia</div>
+        <div class="demo-role">AI Receptionist &mdash; VelosLuxe</div>
+        <a href="tel:+17403018119" class="demo-phone-btn">
+          <span class="demo-phone-number">(740) 301-8119</span>
+          <span class="demo-phone-sub">Tap to call — she picks up instantly</span>
+        </a>
+        <div class="demo-hint">Ask about services, pricing, availability — have a real conversation</div>
+      </div>
+      <div class="demo-features">
+        <div class="demo-feat">
+          <div class="demo-feat-val">0.8s</div>
+          <div class="demo-feat-label">Avg Pickup</div>
+        </div>
+        <div class="demo-feat">
+          <div class="demo-feat-val">24/7</div>
+          <div class="demo-feat-label">Availability</div>
+        </div>
+        <div class="demo-feat">
+          <div class="demo-feat-val">Natural</div>
+          <div class="demo-feat-label">Conversation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS — TIMELINE ═══ -->
+<section class="timeline-section" id="how">
+  <div class="wrap">
+    <div class="split-header">
       <div class="section-label rv">How It Works</div>
-      <h2 class="section-title rv rv-d1">We Handle Everything. You Focus on Patients.</h2>
-      <p class="rv rv-d2" style="margin-top:1rem;color:#8a8578">Live in 48 hours. No software to learn. No workflows to build.</p>
+      <h2 class="section-title rv rv-d1">Live in 48 hours.<br>No learning curve.</h2>
+      <p class="section-sub rv rv-d2">We handle the entire setup. You just keep doing what you do.</p>
     </div>
-    <div class="hw-grid">
-      <div class="hw-card rv rv-d1">
-        <div class="hw-num">01</div>
-        <h3>Instant Lead Response</h3>
-        <p>Every inquiry — website, Instagram, Facebook, Google — gets a personalized response in under 60 seconds. SMS, email, and voice. While competitors take 42 hours, you've already booked the appointment.</p>
-        <span class="hw-tag hw-tag-speed">&lt;60 sec</span><span class="hw-tag hw-tag-auto">Fully Automated</span>
-        <a href="#call" class="hear-link">Hear Sophia in Action &rarr;</a>
+    <div class="timeline">
+      <div class="timeline-step rv">
+        <div class="timeline-dot tl-dot-1">1</div>
+        <div class="timeline-content">
+          <h3>15-Minute Strategy Call</h3>
+          <p>We learn about your spa — services, pricing, booking system, peak hours. No homework on your end.</p>
+        </div>
       </div>
-      <div class="hw-card rv rv-d2">
-        <div class="hw-num">02</div>
-        <h3>Smart Booking + No-Show Prevention</h3>
-        <p>Leads get a booking link in their first message. Calendar syncs automatically. Then multi-channel reminders at 48hr, 24hr, and 1hr prevent no-shows — saving you $500-$1,500 per missed appointment.</p>
-        <span class="hw-tag hw-tag-auto">Auto-Sync</span><span class="hw-tag hw-tag-speed">SMS + Email</span>
-        <a href="#call" class="hear-link">Hear Sophia in Action &rarr;</a>
+      <div class="timeline-step rv rv-d1">
+        <div class="timeline-dot tl-dot-2">2</div>
+        <div class="timeline-content">
+          <h3>We Build Everything</h3>
+          <p>AI receptionist trained on your spa, lead response flows, booking integrations, review automation — all done for you in 48 hours.</p>
+        </div>
       </div>
-      <div class="hw-card rv rv-d3">
-        <div class="hw-num">03</div>
-        <h3>Reviews + Client Reactivation</h3>
-        <p>Automated 5-star review requests post-visit. Plus, we re-engage past clients who haven't booked in 60+ days with personalized offers. A 5% retention increase boosts profits by up to 95%.</p>
-        <span class="hw-tag hw-tag-data">Google + Yelp</span><span class="hw-tag hw-tag-speed">Revenue Recovery</span>
-        <a href="#call" class="hear-link">Hear Sophia in Action &rarr;</a>
+      <div class="timeline-step rv rv-d2">
+        <div class="timeline-dot tl-dot-3">3</div>
+        <div class="timeline-content">
+          <h3>Go Live &amp; Start Capturing</h3>
+          <p>Flip the switch. Every call answered, every lead captured, every appointment booked — instantly and automatically.</p>
+        </div>
+      </div>
+      <div class="timeline-step rv rv-d3">
+        <div class="timeline-dot tl-dot-4">4</div>
+        <div class="timeline-content">
+          <h3>We Optimize &amp; You Grow</h3>
+          <p>We monitor performance weekly and continuously improve. You focus on patients while revenue climbs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RESULTS ═══ -->
+<section class="results-section">
+  <div class="wrap">
+    <div class="split-header">
+      <div class="section-label rv">Results</div>
+      <h2 class="section-title rv rv-d1">Numbers that actually <em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">matter</em></h2>
+    </div>
+    <div class="results-grid">
+      <div class="result-card rv">
+        <div class="result-number result-number-gold">$4,400</div>
+        <div class="result-label">Average monthly revenue recovered per med spa</div>
+      </div>
+      <div class="result-card rv rv-d1">
+        <div class="result-number result-number-sage">60%</div>
+        <div class="result-label">Reduction in no-shows with automated reminders</div>
+      </div>
+      <div class="result-card rv rv-d2">
+        <div class="result-number result-number-violet">100%</div>
+        <div class="result-label">Of calls answered — no voicemail, no missed leads, ever</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section id="faq">
-  <div class="wrap" style="max-width:750px">
-    <div style="text-align:center;margin-bottom:3rem">
+<section class="faq-section" id="faq">
+  <div class="wrap">
+    <div class="split-header">
       <div class="section-label rv">FAQ</div>
       <h2 class="section-title rv rv-d1">Common Questions</h2>
     </div>
-
-    <div class="faq-item rv">
-      <div class="faq-q"><h3>How long does setup take?</h3><span class="faq-icon">+</span></div>
-      <div class="faq-a"><p>48 hours from kickoff to live. We handle everything — you don't need to learn any new software.</p></div>
-    </div>
-
-    <div class="faq-item rv">
-      <div class="faq-q"><h3>Will this work with my booking system?</h3><span class="faq-icon">+</span></div>
-      <div class="faq-a"><p>Yes. We integrate with Vagaro, AestheticsPro, Mangomint, Boulevard, Google Calendar, and most platforms. If yours isn't listed, we build a custom integration at no extra cost.</p></div>
-    </div>
-
-    <div class="faq-item rv">
-      <div class="faq-q"><h3>Is this HIPAA compliant?</h3><span class="faq-icon">+</span></div>
-      <div class="faq-a"><p>Yes. We sign a BAA with every client, use HIPAA-eligible messaging tools, and never store PHI in unsecured systems.</p></div>
-    </div>
-
-    <div class="faq-item rv">
-      <div class="faq-q"><h3>How is this different from GoHighLevel?</h3><span class="faq-icon">+</span></div>
-      <div class="faq-a"><p>GHL is a DIY toolbox — you still need to build everything. VelosLuxe is done-for-you: we build, deploy, monitor, and optimize. You never configure a workflow.</p></div>
-    </div>
-
-    <div class="faq-item rv">
-      <div class="faq-q"><h3>What results can I expect?</h3><span class="faq-icon">+</span></div>
-      <div class="faq-a"><p>Most practices see measurable improvement within the first week. By month two, the system typically recovers $3,000-$6,000/month in previously lost revenue.</p></div>
+    <div class="faq-list">
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>How long does setup take?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>48 hours from our strategy call to going live. We handle 100% of the setup — you don't need to learn any new software or configure anything.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>Will this work with my booking system?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Yes. We integrate with Vagaro, AestheticsPro, Mangomint, Boulevard, Google Calendar, and most platforms. If yours isn't listed, we build a custom integration at no extra cost.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>Does Sophia sound like a robot?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Not at all. Sophia has natural conversation flow, understands context, and sounds professional. Most callers don't realize they're talking to AI. Call (740) 301-8119 right now and judge for yourself.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>Is this HIPAA compliant?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Yes. We sign a BAA with every client, use HIPAA-eligible messaging tools, and never store PHI in unsecured systems.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>How is this different from GoHighLevel or hiring a VA?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>GHL is a DIY toolbox — you still build everything. A VA misses calls, needs training, and costs $3-5K/month. VelosLuxe is fully done-for-you, responds in seconds not minutes, and works 24/7 at a fraction of the cost.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q"><h3>What results can I expect?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>Most practices see measurable improvement within the first week. By month two, the system typically recovers $3,000-$6,000/month in revenue that was previously lost to slow follow-up and missed calls.</p></div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ FINAL CTA ═══ -->
-<section class="final-cta">
+<section class="final-cta" id="cta">
   <div class="wrap">
-    <h2 class="rv">Stop losing leads.<br>Start this week.</h2>
-    <p class="rv rv-d1">Every day without VelosLuxe, your leads are going to the spa down the street.</p>
-    <a href="tel:+17403018119" class="btn-primary rv rv-d2" style="font-size:.9rem;padding:1rem 3rem">Call Sophia — (740) 301-8119</a>
+    <h2 class="rv">Every hour without VelosLuxe,<br>your leads go to the <em>spa down the street</em></h2>
+    <p class="rv rv-d1">Book a 15-minute strategy call. We'll show you exactly how many leads you're losing — and how to capture them all.</p>
+    <div class="hero-ctas rv rv-d2">
+      <a href="https://calendly.com/velosluxe/strategy" class="btn-primary" style="font-size:.92rem;padding:1rem 2.8rem">Book Your Strategy Call &rarr;</a>
+      <a href="tel:+17403018119" class="btn-ghost">Or Call (740) 301-8119</a>
+    </div>
   </div>
 </section>
 
@@ -598,192 +869,50 @@
 <footer>
   <div class="footer-logo">VELOS<span>LUXE</span></div>
   <p>AI-powered lead response for medical aesthetics.</p>
-  <p style="margin-top:.5rem;opacity:.5">&copy; 2026 VelosLuxe. All rights reserved.</p>
+  <p style="margin-top:.5rem">&copy; 2026 VelosLuxe. All rights reserved.</p>
 </footer>
 
-<!-- ═══ INLINE JS ═══ -->
+<!-- ═══ JS ═══ -->
 <script>
-  /* ── Topbar scroll effect ── */
+  /* Topbar scroll */
   (function() {
-    var topbar = document.getElementById('topbar');
-    var scrolled = false;
+    var tb = document.getElementById('topbar'), s = false;
     window.addEventListener('scroll', function() {
-      if (window.scrollY > 40 && !scrolled) {
-        topbar.classList.add('scrolled');
-        scrolled = true;
-      } else if (window.scrollY <= 40 && scrolled) {
-        topbar.classList.remove('scrolled');
-        scrolled = false;
-      }
+      if (window.scrollY > 50 && !s) { tb.classList.add('scrolled'); s = true; }
+      else if (window.scrollY <= 50 && s) { tb.classList.remove('scrolled'); s = false; }
     });
   })();
 
-  /* ── Reveal on scroll ── */
+  /* Reveal on scroll */
   (function() {
     var els = document.querySelectorAll('.rv');
     var obs = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          obs.unobserve(e.target);
-        }
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.1 });
     els.forEach(function(el) { obs.observe(el); });
   })();
 
-  /* ── Hero counter animation ── */
+  /* FAQ */
   (function() {
-    var counterEl = document.getElementById('heroCounter');
-    var unitEl = document.getElementById('heroUnit');
-    if (!counterEl || !unitEl) return;
-    var started = false;
-    var obs = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting && !started) {
-        started = true;
-        runCounter();
-      }
-    }, { threshold: 0.3 });
-    obs.observe(counterEl);
-
-    function runCounter() {
-      var duration = 2400;
-      var startTime = null;
-      var startVal = 42;
-      var endVal = 0.8;
-
-      function step(ts) {
-        if (!startTime) startTime = ts;
-        var progress = Math.min((ts - startTime) / duration, 1);
-        /* ease out cubic */
-        var eased = 1 - Math.pow(1 - progress, 3);
-        var current = startVal - (startVal - endVal) * eased;
-
-        if (current > 1) {
-          counterEl.textContent = Math.round(current);
-          unitEl.textContent = 'hours';
-        } else if (current > 0.8) {
-          /* transition zone — show in seconds */
-          var secs = current * 3600;
-          if (secs > 60) {
-            counterEl.textContent = Math.round(secs / 60);
-            unitEl.textContent = 'minutes';
-          } else {
-            counterEl.textContent = Math.max(0.8, secs).toFixed(1);
-            unitEl.textContent = 'seconds';
-          }
-        } else {
-          counterEl.textContent = '0.8';
-          unitEl.textContent = 'seconds';
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          counterEl.textContent = '0.8';
-          unitEl.textContent = 'seconds';
-        }
-      }
-      requestAnimationFrame(step);
-    }
-  })();
-
-  /* ── FAQ accordion ── */
-  (function() {
-    var items = document.querySelectorAll('.faq-q');
-    items.forEach(function(q) {
+    document.querySelectorAll('.faq-q').forEach(function(q) {
       q.addEventListener('click', function() {
-        var item = q.parentElement;
-        var wasOpen = item.classList.contains('open');
-        /* close all */
-        document.querySelectorAll('.faq-item.open').forEach(function(el) {
-          el.classList.remove('open');
-        });
-        /* toggle clicked */
+        var item = q.parentElement, wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
         if (!wasOpen) item.classList.add('open');
       });
     });
   })();
 
-  /* ── Toggle browser call ── */
-  function toggleBrowserCall() {
-    var statusEl = document.getElementById('browserCallStatus');
-    // Find and click the Vapi widget's internal button
-    var vapiButtons = document.querySelectorAll('button');
-    for (var i = 0; i < vapiButtons.length; i++) {
-      var b = vapiButtons[i];
-      // The Vapi widget button has specific data attributes or is inside a vapi container
-      if (b.closest('[id^="vapi"]') || b.closest('.vapi-btn') || (b.parentElement && b.parentElement.id && b.parentElement.id.indexOf('vapi') > -1)) {
-        b.click();
-        return;
-      }
-    }
-    // Try shadow DOM approach (vapi-widget custom element)
-    var vapiWidget = document.querySelector('vapi-widget');
-    if (vapiWidget && vapiWidget.shadowRoot) {
-      var btn = vapiWidget.shadowRoot.querySelector('button');
-      if (btn) { btn.click(); return; }
-    }
-    // Try finding the pill button by its style/position (Vapi injects a fixed-position button)
-    var allButtons = document.querySelectorAll('button');
-    for (var j = 0; j < allButtons.length; j++) {
-      var style = window.getComputedStyle(allButtons[j]);
-      if (style.position === 'fixed' && allButtons[j] !== document.getElementById('browserCallBtn')) {
-        allButtons[j].click();
-        return;
-      }
-    }
-    if (statusEl) { statusEl.textContent = 'Loading... try again in a moment.'; statusEl.style.color = '#ef4444'; }
-  }
+  /* Smooth scroll for anchor links */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
 </script>
 
-<!-- ═══ VAPI WIDGET ═══ -->
-<script>
-  var vapiScript = document.createElement('script');
-  vapiScript.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-  vapiScript.async = true;
-  vapiScript.onload = function() {
-    try {
-      window._vapiWidget = window.vapiSDK.run({
-        apiKey: "5cf58147-4ed1-48df-aa2e-3c97531e1ec5",
-        assistant: "27f1960c-a5e6-48d8-a0ca-3e6da698eb52",
-        config: {
-          position: "bottom-right",
-          idle: {
-            color: "rgb(212, 165, 116)",
-            type: "pill",
-            title: "Talk to Sophia",
-            style: { display: "none" }
-          }
-        }
-      });
-      window._vapiActive = false;
-      window._vapiWidget.on('call-start', function() {
-        window._vapiActive = true;
-        var btn = document.getElementById('browserCallBtn');
-        var st = document.getElementById('browserCallStatus');
-        if (btn) {
-          btn.querySelector('.sophia-phone-number').textContent = 'End Call';
-          btn.querySelector('.sophia-phone-cta').textContent = 'Click to hang up';
-          btn.classList.add('call-active');
-        }
-        if (st) { st.textContent = 'Connected — speak with Sophia'; st.style.color = '#7fb685'; }
-      });
-      window._vapiWidget.on('call-end', function() {
-        window._vapiActive = false;
-        var btn = document.getElementById('browserCallBtn');
-        var st = document.getElementById('browserCallStatus');
-        if (btn) {
-          btn.querySelector('.sophia-phone-number').textContent = 'Talk to Sophia';
-          btn.querySelector('.sophia-phone-cta').textContent = 'Click to Start a Call';
-          btn.classList.remove('call-active');
-        }
-        if (st) { st.textContent = ''; }
-      });
-    } catch(e) { console.error('Vapi error:', e); }
-  };
-  vapiScript.onerror = function(e) { console.error('Failed to load Vapi:', e); };
-  document.body.appendChild(vapiScript);
-</script>
 </body>
 </html>
