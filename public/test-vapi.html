@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Vapi Test</title></head>
+<body>
+<h1>Vapi Test Page</h1>
+<p>If the widget loads, you'll see a button in the bottom-right corner. Click it to talk to Sophia.</p>
+<script>
+  var vapiScript = document.createElement('script');
+  vapiScript.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+  vapiScript.async = true;
+  vapiScript.onload = function() {
+    console.log('Vapi SDK loaded, vapiSDK:', typeof window.vapiSDK);
+    try {
+      var instance = window.vapiSDK.run({
+        apiKey: "5cf58147-4ed1-48df-aa2e-3c97531e1ec5",
+        assistant: "27f1960c-a5e6-48d8-a0ca-3e6da698eb52",
+        config: {
+          position: "bottom-right",
+          idle: {
+            color: "rgb(93, 254, 202)",
+            type: "pill",
+            title: "Talk to Sophia"
+          }
+        }
+      });
+      console.log('Vapi instance:', instance);
+    } catch(e) {
+      console.error('Vapi error:', e);
+    }
+  };
+  vapiScript.onerror = function(e) {
+    console.error('Failed to load Vapi script:', e);
+  };
+  document.body.appendChild(vapiScript);
+</script>
+</body>
+</html>

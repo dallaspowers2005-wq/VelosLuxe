@@ -1,0 +1,127 @@
+{
+  "name": "VelosLuxe — AI Receptionist Outbound Call",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "velosluxe-call",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-1",
+      "name": "Webhook — Call Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "sheets-1",
+      "name": "Google Sheets — Log Call",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [480, 200],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call/phone",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"assistantId\": \"27f1960c-a5e6-48d8-a0ca-3e6da698eb52\",\n  \"phoneNumberId\": \"d28c8a9f-b051-4a92-b074-c3df7c47c526\",\n  \"customer\": {\n    \"number\": \"{{ $json.body.phone }}\",\n    \"name\": \"{{ $json.body.name }}\"\n  },\n  \"assistantOverrides\": {\n    \"firstMessage\": \"Hi {{ $json.body.name }}! Thank you for requesting a call from VelosLuxe. This is Sophia, your AI receptionist. I would love to help you learn about our med spa services. What are you interested in today?\"\n  }\n}",
+        "options": {}
+      },
+      "id": "vapi-call-1",
+      "name": "Vapi — Trigger Outbound Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 420],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Vapi API Key"
+        }
+      },
+      "notes": "SETUP: Create an HTTP Header Auth credential in n8n with Name: 'Authorization' and Value: 'Bearer 0847dc3a-0353-4592-9e4c-6616a83214af'"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        },
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\", \"message\": \"Call initiated\" }"
+      },
+      "id": "respond-1",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Webhook — Call Request": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets — Log Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Vapi — Trigger Outbound Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets — Log Call": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}
