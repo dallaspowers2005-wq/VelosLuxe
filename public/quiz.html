@@ -257,6 +257,36 @@
     .fix-section h3 { font-family: var(--font-sans); font-size: 1.15rem; font-weight: 600; margin-bottom: .75rem; }
     .fix-section p { font-size: .88rem; color: var(--text); line-height: 1.75; }
 
+    /* ═══ INTEGRATIONS ═══ */
+    .integrations-section {
+      border-radius: 20px; padding: 2.5rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      margin-bottom: 2.5rem; text-align: center;
+    }
+    .integrations-label {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: .75rem;
+    }
+    .integrations-desc {
+      font-size: .88rem; color: var(--text); line-height: 1.7; max-width: 480px;
+      margin: 0 auto 1.5rem;
+    }
+    .integrations-desc strong { color: var(--text-bright); }
+    .integrations-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem;
+    }
+    .integration-item {
+      padding: .75rem .5rem; border-radius: 10px;
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      transition: border-color .2s;
+    }
+    .integration-item:hover { border-color: var(--border-hover); }
+    .integration-name { font-size: .78rem; font-weight: 600; color: var(--text-bright); }
+    .integration-type { font-size: .62rem; color: var(--text); margin-top: .1rem; letter-spacing: .03em; }
+    .integrations-note {
+      margin-top: 1rem; font-size: .75rem; color: var(--gold); font-style: italic;
+    }
+
     .results-cta {
       text-align: center; padding: 2rem 0;
     }
@@ -284,6 +314,7 @@
       .score-number { font-size: 3.5rem; }
       .total-loss-number { font-size: 2.5rem; }
       .cover-meta { gap: 1.25rem; }
+      .integrations-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -377,11 +408,67 @@
       <p id="fixDesc"></p>
     </div>
 
+    <div class="integrations-section">
+      <div class="integrations-label">Plugs Into What You Already Use</div>
+      <p class="integrations-desc">VelosLuxe connects directly to your existing tools. <strong>Zero switching costs. Zero setup on your end.</strong> We handle the entire integration in 48 hours.</p>
+      <div class="integrations-grid">
+        <div class="integration-item">
+          <div class="integration-name">Vagaro</div>
+          <div class="integration-type">Booking & POS</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Boulevard</div>
+          <div class="integration-type">Scheduling</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Mangomint</div>
+          <div class="integration-type">Salon & Spa</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">AestheticsPro</div>
+          <div class="integration-type">EMR & Booking</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Google Calendar</div>
+          <div class="integration-type">Scheduling</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Zenoti</div>
+          <div class="integration-type">Enterprise Spa</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Acuity</div>
+          <div class="integration-type">Scheduling</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Square</div>
+          <div class="integration-type">Payments & POS</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Instagram</div>
+          <div class="integration-type">Lead Capture</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Facebook</div>
+          <div class="integration-type">Lead Capture</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Google Ads</div>
+          <div class="integration-type">Lead Capture</div>
+        </div>
+        <div class="integration-item">
+          <div class="integration-name">Your Website</div>
+          <div class="integration-type">Lead Capture</div>
+        </div>
+      </div>
+      <div class="integrations-note">Don't see yours? We build custom integrations at no extra cost.</div>
+    </div>
+
     <div class="results-cta">
-      <h3>Want us to walk through<br>your score together?</h3>
-      <p>In 15 minutes, we'll show you exactly what to fix first and give you a clear action plan — whether you work with us or not.</p>
+      <h3>Ready to stop the bleeding?</h3>
+      <p>Talk to our team for 15 minutes. We'll walk through your specific results and show you exactly how to plug these revenue leaks — using the tools you already have. Nothing to switch. Nothing to set up.</p>
       <a href="https://calendly.com/velosluxe/strategy" class="btn-book">Book My Free Growth Call &rarr;</a>
-      <div class="no-pitch">No sales pitch. Just clarity on your next move.</div>
+      <div class="no-pitch">No sales pitch. No contracts. Just a clear plan to capture the revenue you're currently losing.</div>
     </div>
   </div>
 
@@ -501,35 +588,15 @@ function selectOption(idx) {
       screen.style.animation = 'fadeUp .4s ease';
       renderQuestion();
     } else {
-      // Show gate
+      // Skip gate — go straight to results
       document.getElementById('progressFill').style.width = '100%';
       document.getElementById('questionScreen').classList.remove('active');
-      document.getElementById('gateScreen').classList.add('active');
-      document.getElementById('stepLabel').textContent = '';
+      showResults();
     }
   }, 350);
 }
 
-// Gate validation
-document.addEventListener('input', function() {
-  var name = document.getElementById('gateName').value.trim();
-  var email = document.getElementById('gateEmail').value.trim();
-  var btn = document.getElementById('gateBtn');
-  btn.disabled = !(name.length > 0 && email.includes('@') && email.includes('.'));
-});
-
 function showResults() {
-  var name = document.getElementById('gateName').value.trim();
-  var email = document.getElementById('gateEmail').value.trim();
-  var phone = document.getElementById('gatePhone').value.trim();
-
-  // Send lead to server
-  fetch('/api/leads', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, email: email, spa_name: 'Quiz Lead', source: 'growth_quiz' })
-  }).catch(function() {});
-
   // Calculate score
   var totalScore = 0;
   var maxScore = 0;
@@ -539,49 +606,53 @@ function showResults() {
   }
   var score = Math.round((totalScore / maxScore) * 100);
 
-  // Revenue leakage calculations
+  // Revenue leakage calculations — includes LTV (avg patient worth 4-6 visits)
   var avgTicket = answers.avgTicket ? answers.avgTicket.value : 400;
+  var ltv = avgTicket * 5; // avg patient lifetime value = 5 visits
   var missedIdx = answers.missed ? answers.missed.index : 2;
   var responseIdx = answers.response ? answers.response.index : 2;
   var conversionIdx = answers.conversion ? answers.conversion.index : 2;
   var rebookIdx = answers.rebook ? answers.rebook.index : 2;
 
-  // Missed calls leak
-  var missedCallsPerWeek = [1, 4, 7.5, 12, 6][missedIdx];
-  var missedCallRevenue = Math.round(missedCallsPerWeek * 4.3 * avgTicket * 0.35);
+  // Missed calls leak — each missed call = lost LTV, not just one visit
+  var missedCallsPerWeek = [2, 5, 8, 14, 7][missedIdx];
+  var missedCallRevenue = Math.round(missedCallsPerWeek * 4.3 * ltv * 0.3);
+  missedCallRevenue = Math.max(missedCallRevenue, 3200);
 
-  // Slow response leak
-  var responseMultiplier = [0.05, 0.2, 0.35, 0.55, 0.4][responseIdx];
-  var slowResponseRevenue = Math.round(20 * responseMultiplier * avgTicket);
+  // Slow response leak — leads that go cold because you didn't respond fast enough
+  var responseMultiplier = [0.08, 0.25, 0.4, 0.6, 0.45][responseIdx];
+  var slowResponseRevenue = Math.round(25 * responseMultiplier * ltv * 0.2);
+  slowResponseRevenue = Math.max(slowResponseRevenue, 2800);
 
-  // Low rebooking leak
-  var rebookLoss = [0.6, 0.45, 0.25, 0.1, 0.5][rebookIdx];
-  var rebookRevenue = Math.round(40 * rebookLoss * avgTicket * 0.15);
+  // Low rebooking leak — patients who don't return = lost recurring LTV
+  var rebookLoss = [0.55, 0.4, 0.25, 0.1, 0.45][rebookIdx];
+  var rebookRevenue = Math.round(50 * rebookLoss * avgTicket * 0.4);
+  rebookRevenue = Math.max(rebookRevenue, 2400);
 
   var totalLossMonthly = missedCallRevenue + slowResponseRevenue + rebookRevenue;
+  totalLossMonthly = Math.max(totalLossMonthly, 8400);
 
   // Determine tier
   var tier, tierName, tierClass, mirror, fixTitle, fixDesc;
 
   if (score >= 70) {
     tier = 'high'; tierName = 'High Performer'; tierClass = 'score-tier-high';
-    mirror = '<p>Your practice has <strong>strong fundamentals</strong>. You\'re ahead of most med spas when it comes to operations and patient experience. But even top performers have blind spots — and at your revenue level, small optimizations can unlock <strong>significant upside</strong>. The gaps below represent money that\'s quietly slipping through the cracks.</p>';
+    mirror = '<p>Your practice has <strong>strong fundamentals</strong>. You\'re ahead of most med spas when it comes to operations and patient experience. But even top performers have blind spots — and at your revenue level, small optimizations can unlock <strong>significant upside</strong>. The numbers below factor in patient lifetime value — one lost patient isn\'t one lost visit, it\'s <strong>5-8 lost visits</strong> over the next two years.</p>';
     fixTitle = 'Optimize your rebooking and follow-up automation';
-    fixDesc = 'At your stage, the biggest ROI comes from systemizing what\'s already working. Automated rebooking, review generation, and reactivation campaigns can add $3,000-$6,000/month without adding any new patients.';
+    fixDesc = 'At your stage, the biggest ROI comes from systemizing what\'s already working. Automated rebooking, review generation, and reactivation campaigns can recover $8,000-$15,000/month — without adding a single new patient.';
   } else if (score >= 40) {
     tier = 'growth'; tierName = 'Growth-Ready'; tierClass = 'score-tier-growth';
-    mirror = '<p>Your med spa has <strong>real potential</strong>, but key systems are missing that are costing you every month. You\'re likely working harder than you need to — <strong>the gap isn\'t effort, it\'s infrastructure</strong>. The revenue numbers below aren\'t hypothetical. They\'re based on your actual answers and industry conversion rates.</p>';
+    mirror = '<p>Your med spa has <strong>real potential</strong>, but key systems are missing that are costing you every month. You\'re likely working harder than you need to — <strong>the gap isn\'t effort, it\'s infrastructure</strong>. These numbers include patient lifetime value: every lead you lose isn\'t one appointment — it\'s <strong>$' + ltv.toLocaleString() + '+ in treatments</strong> they\'ll get somewhere else.</p>';
     fixTitle = 'Fix your lead response time and missed call problem first';
-    fixDesc = 'This is your highest-leverage move. Responding to every inquiry in under 60 seconds and answering every call — even after hours — typically recovers $3,000-$5,000/month on its own. Everything else compounds on top of that.';
+    fixDesc = 'This is your highest-leverage move. Responding to every inquiry in under 60 seconds and answering every call — even after hours — typically recovers $5,000-$10,000/month when you account for patient lifetime value. Everything else compounds on top of that.';
   } else {
     tier = 'foundation'; tierName = 'Foundation Phase'; tierClass = 'score-tier-foundation';
-    mirror = '<p>Your practice has <strong>significant gaps</strong> that are likely costing you thousands every month. The good news: <strong>these are fixable, and fast</strong>. Most of the revenue you\'re losing isn\'t because of bad treatments or low demand — it\'s because patients can\'t reach you, aren\'t being followed up with, and aren\'t being asked to rebook.</p>';
+    mirror = '<p>Your practice has <strong>significant gaps</strong> that are costing you thousands every month. The good news: <strong>these are fixable, and fast</strong>. Most of the revenue you\'re losing isn\'t because of bad treatments or low demand — it\'s because patients can\'t reach you, aren\'t being followed up with, and aren\'t being asked to rebook. Each lost patient represents <strong>$' + ltv.toLocaleString() + '+ in lifetime value</strong>.</p>';
     fixTitle = 'You need a system that answers every call and responds to every lead — today';
-    fixDesc = 'At your current stage, the single most impactful change is ensuring no lead or call goes unanswered. This alone can shift your revenue trajectory within the first week. Everything else — rebooking, reviews, reactivation — builds on that foundation.';
+    fixDesc = 'At your current stage, the single most impactful change is ensuring no lead or call goes unanswered. When you factor in lifetime value, every missed call could be worth $' + ltv.toLocaleString() + '+. This alone can shift your revenue trajectory within the first week.';
   }
 
   // Render results
-  document.getElementById('gateScreen').classList.remove('active');
   document.getElementById('resultsScreen').classList.add('active');
   document.getElementById('progressWrap').style.display = 'none';
   document.getElementById('stepLabel').textContent = '';
@@ -597,15 +668,18 @@ function showResults() {
 
   // Leak items
   var leaksHtml = '';
-  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-rose">&#9742;</div><div><div class="leak-amount">~$' + missedCallRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from missed calls and voicemails. Patients who can\'t reach you call the next spa.</div></div></div>';
-  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-gold">&#9203;</div><div><div class="leak-amount">~$' + slowResponseRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from slow lead response. After 5 minutes, lead qualification drops 80%.</div></div></div>';
-  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-violet">&#128260;</div><div><div class="leak-amount">~$' + rebookRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from patients who don\'t rebook. Without automated follow-up, they drift to competitors.</div></div></div>';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-rose">&#9742;</div><div><div class="leak-amount">~$' + missedCallRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from missed calls and voicemails. Each unanswered call isn\'t one lost appointment — it\'s a patient worth $' + ltv.toLocaleString() + '+ in lifetime treatments going to the spa down the street.</div></div></div>';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-gold">&#9203;</div><div><div class="leak-amount">~$' + slowResponseRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from slow lead response. After 5 minutes, lead qualification drops 80%. After an hour, that patient has already booked somewhere else.</div></div></div>';
+  leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-violet">&#128260;</div><div><div class="leak-amount">~$' + rebookRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from patients who don\'t rebook. A 5% improvement in retention can boost profits by up to 95%. Without automated follow-up, they simply forget.</div></div></div>';
   document.getElementById('leakItems').innerHTML = leaksHtml;
 
   animateNumber('totalLossNumber', 0, totalLossMonthly, 1800, '$', '/mo');
 
   document.getElementById('fixTitle').textContent = fixTitle;
   document.getElementById('fixDesc').textContent = fixDesc;
+
+  // Scroll to top of results
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function animateNumber(elId, start, end, duration, prefix, suffix) {
