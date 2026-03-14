@@ -11,8 +11,8 @@
   <style>
     :root {
       --bg: #050508; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.6);
-      --border: rgba(255,255,255,.06); --border-hover: rgba(255,255,255,.12);
-      --text: #a09db1; --text-bright: #eeedf2;
+      --border: rgba(255,255,255,.08); --border-hover: rgba(255,255,255,.15);
+      --text: #b8b5c6; --text-bright: #f2f1f5;
       --gold: #c9a46c; --gold-light: #e2c99b;
       --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
       --font-sans: 'Inter', -apple-system, sans-serif;
@@ -164,8 +164,56 @@
     /* ═══ RESULTS SCREEN ═══ */
     .results-screen { padding: 1rem 0 4rem; }
 
+    /* ═══ HERO LOSS — the big shocking number ═══ */
+    .hero-loss {
+      border-radius: 28px; padding: 3.5rem 2.5rem 2.5rem; text-align: center;
+      position: relative; overflow: hidden; margin-bottom: 1rem;
+      background: linear-gradient(135deg, rgba(232,119,119,.1), rgba(232,119,119,.03));
+      border: 1px solid rgba(232,119,119,.2);
+    }
+    .hero-loss::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 20%, rgba(232,119,119,.18), transparent 65%);
+      pointer-events: none;
+    }
+    .hero-loss-label {
+      font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 1.25rem; position: relative;
+    }
+    .hero-loss-number {
+      font-family: var(--font-serif); font-size: clamp(3.5rem, 10vw, 6rem); font-weight: 400;
+      color: var(--rose); line-height: 1; position: relative;
+      text-shadow: 0 0 60px rgba(232,119,119,.3);
+    }
+    .hero-loss-per {
+      font-size: 1rem; color: #d4a0a0; margin-top: .75rem; position: relative;
+      font-weight: 500;
+    }
+    .hero-loss-context {
+      font-size: .9rem; color: var(--text); margin-top: 1.25rem; position: relative;
+      line-height: 1.7;
+    }
+    .hero-loss-context strong { color: var(--text-bright); }
+
+    /* ═══ SCROLL INDICATOR ═══ */
+    .scroll-hint {
+      text-align: center; padding: 1.5rem 0 2rem; animation: bounceDown 2s ease infinite;
+    }
+    .scroll-hint-text {
+      font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.3); margin-bottom: .5rem;
+    }
+    .scroll-hint-arrow {
+      font-size: 1.2rem; color: rgba(255,255,255,.2);
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* ═══ SCORE CARD (secondary) ═══ */
     .score-card {
-      border-radius: 24px; padding: 3rem 2.5rem; text-align: center;
+      border-radius: 20px; padding: 2rem 2rem; text-align: center;
       position: relative; overflow: hidden; margin-bottom: 2rem;
     }
     .score-card::before {
@@ -173,66 +221,66 @@
       background: radial-gradient(ellipse at 50% 0%, var(--glow-color, rgba(201,164,108,.15)), transparent 70%);
       pointer-events: none;
     }
-    .score-tier-foundation { background: var(--bg-card); border: 1px solid rgba(232,119,119,.2); --glow-color: rgba(232,119,119,.1); }
-    .score-tier-growth { background: var(--bg-card); border: 1px solid rgba(201,164,108,.2); --glow-color: rgba(201,164,108,.1); }
-    .score-tier-high { background: var(--bg-card); border: 1px solid rgba(110,207,138,.2); --glow-color: rgba(110,207,138,.1); }
+    .score-tier-foundation { background: var(--bg-card); border: 1px solid rgba(232,119,119,.15); --glow-color: rgba(232,119,119,.06); }
+    .score-tier-growth { background: var(--bg-card); border: 1px solid rgba(201,164,108,.15); --glow-color: rgba(201,164,108,.06); }
+    .score-tier-high { background: var(--bg-card); border: 1px solid rgba(110,207,138,.15); --glow-color: rgba(110,207,138,.06); }
     .score-label-top {
-      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      margin-bottom: 1rem; position: relative;
+      font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: .75rem; position: relative;
     }
     .score-tier-foundation .score-label-top { color: var(--rose); }
     .score-tier-growth .score-label-top { color: var(--gold); }
     .score-tier-high .score-label-top { color: var(--sage); }
     .score-number {
-      font-family: var(--font-serif); font-size: 5rem; font-weight: 400;
-      line-height: 1; margin-bottom: .25rem; position: relative;
+      font-family: var(--font-serif); font-size: 3rem; font-weight: 400;
+      line-height: 1; margin-bottom: .15rem; position: relative;
     }
     .score-tier-foundation .score-number { color: var(--rose); }
     .score-tier-growth .score-number { color: var(--gold); }
     .score-tier-high .score-number { color: var(--sage); }
-    .score-out-of { font-size: .82rem; color: var(--text); position: relative; }
+    .score-out-of { font-size: .78rem; color: var(--text); position: relative; }
     .score-tier-name {
-      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 400;
-      margin-top: 1rem; position: relative;
+      font-family: var(--font-serif); font-size: 1.15rem; font-weight: 400;
+      margin-top: .75rem; position: relative;
     }
 
     .results-mirror {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
-      padding: 2rem; margin-bottom: 2rem;
+      padding: 2rem; margin-bottom: 2.5rem;
     }
-    .results-mirror p { font-size: .92rem; line-height: 1.8; color: var(--text); }
-    .results-mirror strong { color: var(--text-bright); }
+    .results-mirror p { font-size: .95rem; line-height: 1.85; color: #c4c1d0; }
+    .results-mirror strong { color: #ffffff; }
 
-    .leaks-section { margin-bottom: 2rem; }
+    .leaks-section { margin-bottom: 2.5rem; }
     .leaks-title {
-      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
       color: var(--rose); margin-bottom: 1.25rem;
     }
     .leak-item {
       display: flex; gap: 1rem; align-items: flex-start;
-      padding: 1.25rem 1.5rem; border-radius: 14px;
+      padding: 1.4rem 1.5rem; border-radius: 14px;
       background: var(--bg-card); border: 1px solid var(--border);
-      margin-bottom: .65rem;
+      margin-bottom: .75rem;
     }
     .leak-icon {
-      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: .85rem; font-weight: 700;
+      font-size: .95rem; font-weight: 700;
     }
     .leak-icon-rose { background: rgba(232,119,119,.1); color: var(--rose); }
     .leak-icon-gold { background: rgba(201,164,108,.1); color: var(--gold); }
     .leak-icon-violet { background: rgba(139,123,200,.1); color: var(--violet); }
     .leak-amount {
-      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 400;
-      color: var(--text-bright); margin-bottom: .15rem;
+      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 400;
+      color: #ffffff; margin-bottom: .25rem;
     }
-    .leak-desc { font-size: .82rem; color: var(--text); line-height: 1.5; }
+    .leak-desc { font-size: .88rem; color: #c4c1d0; line-height: 1.65; }
 
     .total-loss {
       border-radius: 20px; padding: 2.5rem; text-align: center;
       background: linear-gradient(135deg, rgba(232,119,119,.08), rgba(232,119,119,.02));
       border: 1px solid rgba(232,119,119,.15);
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.5rem; display: none;
     }
     .total-loss-label {
       font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
@@ -251,11 +299,11 @@
       margin-bottom: 2.5rem;
     }
     .fix-label {
-      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
       color: var(--sage); margin-bottom: .75rem;
     }
-    .fix-section h3 { font-family: var(--font-sans); font-size: 1.15rem; font-weight: 600; margin-bottom: .75rem; }
-    .fix-section p { font-size: .88rem; color: var(--text); line-height: 1.75; }
+    .fix-section h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 600; margin-bottom: .75rem; color: #ffffff; }
+    .fix-section p { font-size: .92rem; color: #c4c1d0; line-height: 1.8; }
 
     /* ═══ INTEGRATIONS ═══ */
     .integrations-section {
@@ -264,14 +312,14 @@
       margin-bottom: 2.5rem; text-align: center;
     }
     .integrations-label {
-      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
       color: var(--sage); margin-bottom: .75rem;
     }
     .integrations-desc {
-      font-size: .88rem; color: var(--text); line-height: 1.7; max-width: 480px;
+      font-size: .92rem; color: #c4c1d0; line-height: 1.75; max-width: 480px;
       margin: 0 auto 1.5rem;
     }
-    .integrations-desc strong { color: var(--text-bright); }
+    .integrations-desc strong { color: #ffffff; }
     .integrations-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem;
     }
@@ -281,40 +329,69 @@
       transition: border-color .2s;
     }
     .integration-item:hover { border-color: var(--border-hover); }
-    .integration-name { font-size: .78rem; font-weight: 600; color: var(--text-bright); }
-    .integration-type { font-size: .62rem; color: var(--text); margin-top: .1rem; letter-spacing: .03em; }
+    .integration-name { font-size: .8rem; font-weight: 600; color: #ffffff; }
+    .integration-type { font-size: .65rem; color: #c4c1d0; margin-top: .1rem; letter-spacing: .03em; }
     .integrations-note {
-      margin-top: 1rem; font-size: .75rem; color: var(--gold); font-style: italic;
+      margin-top: 1rem; font-size: .78rem; color: var(--gold); font-style: italic;
     }
 
+    /* ═══ HEROIC CTA ═══ */
     .results-cta {
-      text-align: center; padding: 2rem 0;
+      text-align: center; padding: 3rem 2rem; margin-top: 1rem;
+      border-radius: 28px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(201,164,108,.1), rgba(110,207,138,.05));
+      border: 1px solid rgba(201,164,108,.2);
+    }
+    .results-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(201,164,108,.15), transparent 60%);
+      pointer-events: none;
     }
     .results-cta h3 {
-      font-family: var(--font-serif); font-size: 1.5rem; font-weight: 400; margin-bottom: .75rem;
+      font-family: var(--font-serif); font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 400;
+      margin-bottom: 1rem; position: relative; color: #ffffff;
     }
-    .results-cta p { font-size: .88rem; color: var(--text); margin-bottom: 1.5rem; line-height: 1.6; }
+    .results-cta h3 em { font-style: italic; color: var(--gold); }
+    .results-cta p {
+      font-size: .95rem; color: #c4c1d0; margin-bottom: 2rem; line-height: 1.75;
+      max-width: 480px; margin-left: auto; margin-right: auto; position: relative;
+    }
     .btn-book {
-      display: inline-flex; align-items: center; gap: .5rem;
-      padding: 1rem 2.8rem; border-radius: 100px; border: none; cursor: pointer;
-      background: var(--gold); color: var(--bg); font-family: var(--font-sans);
-      font-weight: 600; font-size: .95rem;
-      transition: all .25s cubic-bezier(.16,1,.3,1);
-      box-shadow: 0 0 40px rgba(201,164,108,.2);
-      text-decoration: none;
+      display: inline-flex; align-items: center; gap: .6rem;
+      padding: 1.25rem 3.5rem; border-radius: 100px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--bg); font-family: var(--font-sans);
+      font-weight: 700; font-size: 1.1rem; letter-spacing: .01em;
+      transition: all .3s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 50px rgba(201,164,108,.3), 0 0 100px rgba(201,164,108,.1);
+      text-decoration: none; position: relative;
+      animation: ctaPulse 3s ease-in-out infinite;
     }
-    .btn-book:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
-    .results-cta .no-pitch { font-size: .78rem; color: rgba(255,255,255,.3); margin-top: 1rem; }
+    .btn-book:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 50px rgba(201,164,108,.45), 0 0 120px rgba(201,164,108,.15);
+    }
+    @keyframes ctaPulse {
+      0%, 100% { box-shadow: 0 0 50px rgba(201,164,108,.3), 0 0 100px rgba(201,164,108,.1); }
+      50% { box-shadow: 0 0 60px rgba(201,164,108,.4), 0 0 120px rgba(201,164,108,.15); }
+    }
+    .results-cta .no-pitch {
+      font-size: .8rem; color: rgba(255,255,255,.35); margin-top: 1.25rem; position: relative;
+    }
 
     /* ═══ RESPONSIVE ═══ */
     @media (max-width: 600px) {
       .quiz-shell { padding: 1.5rem 1.25rem; }
       .cover h1 { font-size: 1.8rem; }
       .q-title { font-size: 1.3rem; }
-      .score-number { font-size: 3.5rem; }
-      .total-loss-number { font-size: 2.5rem; }
+      .hero-loss { padding: 2.5rem 1.5rem 2rem; }
+      .hero-loss-number { font-size: 3.2rem; }
+      .score-number { font-size: 2.5rem; }
       .cover-meta { gap: 1.25rem; }
       .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+      .results-cta { padding: 2.5rem 1.5rem; }
+      .btn-book { padding: 1.1rem 2.5rem; font-size: 1rem; }
+      .results-cta h3 { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -382,6 +459,22 @@
 
   <!-- ═══ RESULTS ═══ -->
   <div class="screen results-screen" id="resultsScreen">
+
+    <!-- HERO: Shocking total loss number -->
+    <div class="hero-loss" id="heroLoss">
+      <div class="hero-loss-label">Your Estimated Revenue Leak</div>
+      <div class="hero-loss-number" id="heroLossNumber">$0</div>
+      <div class="hero-loss-per">lost every month</div>
+      <p class="hero-loss-context">Based on your answers, this is what's slipping through the cracks — <strong>before you even realize it</strong>.</p>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-hint" id="scrollHint">
+      <div class="scroll-hint-text">See the full breakdown</div>
+      <div class="scroll-hint-arrow">&darr;</div>
+    </div>
+
+    <!-- Growth Score (secondary) -->
     <div class="score-card" id="scoreCard">
       <div class="score-label-top" id="scoreLabelTop"></div>
       <div class="score-number" id="scoreNumber">0</div>
@@ -392,7 +485,7 @@
     <div class="results-mirror" id="resultsMirror"></div>
 
     <div class="leaks-section">
-      <div class="leaks-title">Where You're Losing Revenue</div>
+      <div class="leaks-title">Here's Exactly Where It's Going</div>
       <div id="leakItems"></div>
     </div>
 
@@ -465,10 +558,10 @@
     </div>
 
     <div class="results-cta">
-      <h3>Ready to stop the bleeding?</h3>
-      <p>Talk to our team for 15 minutes. We'll walk through your specific results and show you exactly how to plug these revenue leaks — using the tools you already have. Nothing to switch. Nothing to set up.</p>
-      <a href="https://calendly.com/velosluxe/strategy" class="btn-book">Book My Free Growth Call &rarr;</a>
-      <div class="no-pitch">No sales pitch. No contracts. Just a clear plan to capture the revenue you're currently losing.</div>
+      <h3>You Don't Have to <em>Keep Losing</em> This Money</h3>
+      <p>15 minutes. We'll walk through your specific leaks and show you exactly how to plug them — using the tools you already have. Nothing to switch. Nothing to set up. Just revenue you're currently losing, recovered.</p>
+      <a href="https://calendly.com/velosluxe/strategy" class="btn-book">Claim My Free Strategy Call &rarr;</a>
+      <div class="no-pitch">No sales pitch. No contracts. Free forever if you don't see the value.</div>
     </div>
   </div>
 
@@ -663,8 +756,22 @@ function showResults() {
   document.getElementById('scoreTierName').textContent = tierName;
   document.getElementById('resultsMirror').innerHTML = mirror;
 
-  // Animate score number
+  // Animate the HERO loss number (big shock number at top)
+  animateNumber('heroLossNumber', 0, totalLossMonthly, 2200, '$', '');
+
+  // Animate score number (secondary)
   animateNumber('scoreNumber', 0, score, 1200);
+
+  // Hide scroll hint after user scrolls past it
+  var scrollHint = document.getElementById('scrollHint');
+  function hideScrollHint() {
+    if (window.scrollY > 200) {
+      scrollHint.style.opacity = '0';
+      scrollHint.style.transition = 'opacity .5s';
+      window.removeEventListener('scroll', hideScrollHint);
+    }
+  }
+  window.addEventListener('scroll', hideScrollHint);
 
   // Leak items
   var leaksHtml = '';
@@ -672,8 +779,6 @@ function showResults() {
   leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-gold">&#9203;</div><div><div class="leak-amount">~$' + slowResponseRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from slow lead response. After 5 minutes, lead qualification drops 80%. After an hour, that patient has already booked somewhere else.</div></div></div>';
   leaksHtml += '<div class="leak-item"><div class="leak-icon leak-icon-violet">&#128260;</div><div><div class="leak-amount">~$' + rebookRevenue.toLocaleString() + '/mo</div><div class="leak-desc">Lost from patients who don\'t rebook. A 5% improvement in retention can boost profits by up to 95%. Without automated follow-up, they simply forget.</div></div></div>';
   document.getElementById('leakItems').innerHTML = leaksHtml;
-
-  animateNumber('totalLossNumber', 0, totalLossMonthly, 1800, '$', '/mo');
 
   document.getElementById('fixTitle').textContent = fixTitle;
   document.getElementById('fixDesc').textContent = fixDesc;
