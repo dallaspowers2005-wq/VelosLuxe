@@ -7,7 +7,6 @@ const initSqlJs = require('sql.js');
 
 const { createClient } = require('@supabase/supabase-js');
 const { sendSMS, sendFollowUpSMS } = require('./lib/sms');
-const gcal = require('./lib/google-calendar');
 const reminders = require('./lib/reminders');
 
 const app = express();
@@ -159,22 +158,18 @@ async function startServer() {
     )
   `);
   db.run(`
-    CREATE TABLE IF NOT EXISTS settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
+    CREATE TABLE IF NOT EXISTS blocked_times (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      reason TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
     )
   `);
   saveDb();
 
   // DB helpers for modules
   const dbHelpers = {
-    getSetting(key) {
-      const row = getOne('SELECT value FROM settings WHERE key = ?', [key]);
-      return row ? row.value : null;
-    },
-    setSetting(key, value) {
-      runQuery('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)', [key, value]);
-    },
     getBookingsForDate(dateStr) {
       return getAll(
         "SELECT * FROM bookings WHERE status = 'confirmed' AND start_time LIKE ?",
@@ -212,11 +207,71 @@ async function startServer() {
       const p = [];
       if (limit) { q += ' LIMIT ?'; p.push(parseInt(limit)); }
       return getAll(q, p);
+    },
+    getBlockedTimesForDate(dateStr) {
+      return getAll(
+        "SELECT * FROM blocked_times WHERE start_time LIKE ? OR end_time LIKE ?",
+        [dateStr + '%', dateStr + '%']
+      );
+    },
+    insertBlockedTime(startTime, endTime, reason) {
+      return insertAndGetId(
+        'INSERT INTO blocked_times (start_time, end_time, reason) VALUES (?, ?, ?)',
+        [startTime, endTime, reason || null]
+      );
     }
   };
 
+  // Local availability function (replaces Google Calendar)
+  function getAvailableSlots(dateStr) {
+    const startHour = parseInt(process.env.BOOKING_START_HOUR || '9');
+    const endHour = parseInt(process.env.BOOKING_END_HOUR || '17');
+    const slotMinutes = parseInt(process.env.BOOKING_SLOT_DURATION || '30');
+
+    // Generate candidate slots
+    const slots = [];
+    for (let h = startHour; h < endHour; h++) {
+      for (let m = 0; m < 60; m += slotMinutes) {
+        const endM = m + slotMinutes;
+        const endSlotH = h + Math.floor(endM / 60);
+        const endSlotM = endM % 60;
+        if (endSlotH > endHour || (endSlotH === endHour && endSlotM > 0)) break;
+
+        const start = `${dateStr}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+        const end = `${dateStr}T${String(endSlotH).padStart(2, '0')}:${String(endSlotM).padStart(2, '0')}:00`;
+        slots.push({ start, end });
+      }
+    }
+
+    // Get confirmed bookings and blocked times for this date
+    const bookings = dbHelpers.getBookingsForDate(dateStr);
+    const blockedTimes = dbHelpers.getBlockedTimesForDate(dateStr);
+
+    // Combine all busy periods
+    const busyPeriods = [
+      ...bookings.map(b => ({ start: b.start_time, end: b.end_time })),
+      ...blockedTimes.map(b => ({ start: b.start_time, end: b.end_time }))
+    ];
+
+    // Filter out overlapping slots
+    const available = slots.filter(slot => {
+      return !busyPeriods.some(busy => slot.start < busy.end && slot.end > busy.start);
+    });
+
+    // If today, filter out past slots
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    if (dateStr === todayStr) {
+      const tz = process.env.BOOKING_TIMEZONE || 'America/New_York';
+      const nowInTz = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+      const nowTime = `${String(nowInTz.getHours()).padStart(2, '0')}:${String(nowInTz.getMinutes()).padStart(2, '0')}`;
+      return available.filter(slot => slot.start.slice(11, 16) > nowTime);
+    }
+
+    return available;
+  }
+
   // Initialize modules with DB access
-  gcal.init(dbHelpers);
   reminders.init(dbHelpers);
 
   // ═══ PUBLIC API ROUTES ═══
@@ -352,29 +407,6 @@ async function startServer() {
     res.json({ ok: true });
   });
 
-  // ═══ GOOGLE OAUTH ROUTES ═══
-
-  app.get('/api/auth/google', requireAdminKey, (req, res) => {
-    if (!process.env.GOOGLE_CLIENT_ID) {
-      return res.status(500).json({ error: 'Google OAuth not configured' });
-    }
-    res.redirect(gcal.getAuthUrl());
-  });
-
-  app.get('/api/auth/google/callback', async (req, res) => {
-    try {
-      await gcal.handleCallback(req.query.code);
-      res.redirect('/admin/?google=connected');
-    } catch (err) {
-      console.error('Google OAuth error:', err.message);
-      res.redirect('/admin/?google=error');
-    }
-  });
-
-  app.get('/api/auth/google/status', (req, res) => {
-    res.json({ connected: gcal.isConnected() });
-  });
-
   // ═══ BOOKING API ROUTES ═══
 
   // GET available slots for a date
@@ -396,13 +428,8 @@ async function startServer() {
     const day = requestedDate.getDay();
     if (day === 0 || day === 6) return res.json({ slots: [] });
 
-    try {
-      const slots = await gcal.getAvailableSlots(date);
-      res.json({ slots });
-    } catch (err) {
-      console.error('Slots error:', err.message);
-      res.status(500).json({ error: 'Could not fetch availability' });
-    }
+    const slots = getAvailableSlots(date);
+    res.json({ slots });
   });
 
   // POST create a booking
@@ -413,21 +440,11 @@ async function startServer() {
     }
 
     try {
-      // Create Google Calendar event
-      let googleEventId = null;
-      try {
-        googleEventId = await gcal.createBookingEvent({ name, phone, email, start, end });
-      } catch (err) {
-        console.error('Google Calendar event creation failed:', err.message);
-        // Still proceed with local booking even if GCal fails
-      }
-
       // Insert booking
       const bookingId = dbHelpers.insertBooking({
         name, email, phone,
         start_time: start,
-        end_time: end,
-        google_event_id: googleEventId
+        end_time: end
       });
 
       const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end };
@@ -447,7 +464,7 @@ async function startServer() {
         notes: `Booked strategy call for ${start}`
       });
 
-      res.json({ success: true, bookingId, googleEventId });
+      res.json({ success: true, bookingId });
     } catch (err) {
       console.error('Booking error:', err.message);
       res.status(500).json({ error: 'Booking failed' });
@@ -498,6 +515,13 @@ async function startServer() {
 
   app.get('/api/admin/bookings', (req, res) => {
     res.json(dbHelpers.getAllBookings(req.query.limit));
+  });
+
+  app.post('/api/admin/block-time', (req, res) => {
+    const { start, end, reason } = req.body;
+    if (!start || !end) return res.status(400).json({ error: 'start and end are required' });
+    const id = dbHelpers.insertBlockedTime(start, end, reason);
+    res.json({ success: true, id });
   });
 
   app.post('/api/admin/test-call', async (req, res) => {
