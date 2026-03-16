@@ -6,6 +6,10 @@ const fs = require('fs');
 const initSqlJs = require('sql.js');
 
 const { createClient } = require('@supabase/supabase-js');
+const { sendSMS, sendFollowUpSMS } = require('./lib/sms');
+const gcal = require('./lib/google-calendar');
+const reminders = require('./lib/reminders');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -14,35 +18,6 @@ const spaceship = createClient(
   process.env.SPACESHIP_SUPABASE_URL,
   process.env.SPACESHIP_SUPABASE_KEY
 );
-
-// Vonage SMS (using REST API with API key/secret)
-async function sendFollowUpSMS(phone, name) {
-  if (!process.env.VONAGE_API_KEY || !process.env.VONAGE_API_SECRET) {
-    console.log('Vonage not configured — skipping SMS to', phone);
-    return;
-  }
-  try {
-    const res = await fetch('https://rest.nexmo.com/sms/json', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: process.env.VONAGE_API_KEY,
-        api_secret: process.env.VONAGE_API_SECRET,
-        from: process.env.VONAGE_PHONE_NUMBER || '12053832837',
-        to: phone.replace(/\D/g, ''),
-        text: `Hi${name ? ' ' + name : ''}! Thanks for speaking with Sophia at VelosLuxe. We'd love to help your med spa never miss a lead again. Reply here or call us back anytime at (740) 301-8119.`
-      })
-    });
-    const data = await res.json();
-    if (data.messages && data.messages[0].status === '0') {
-      console.log('SMS sent to', phone, '— ID:', data.messages[0]['message-id']);
-    } else {
-      console.error('SMS error:', data.messages?.[0]?.['error-text'] || 'Unknown error');
-    }
-  } catch (err) {
-    console.error('SMS failed to', phone, ':', err.message);
-  }
-}
 
 async function pushToSpaceship(lead) {
   try {
@@ -159,7 +134,90 @@ async function startServer() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bookings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT,
+      phone TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      google_event_id TEXT,
+      status TEXT DEFAULT 'confirmed',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS reminders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_id INTEGER,
+      phone TEXT NOT NULL,
+      message TEXT NOT NULL,
+      send_at TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
   saveDb();
+
+  // DB helpers for modules
+  const dbHelpers = {
+    getSetting(key) {
+      const row = getOne('SELECT value FROM settings WHERE key = ?', [key]);
+      return row ? row.value : null;
+    },
+    setSetting(key, value) {
+      runQuery('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)', [key, value]);
+    },
+    getBookingsForDate(dateStr) {
+      return getAll(
+        "SELECT * FROM bookings WHERE status = 'confirmed' AND start_time LIKE ?",
+        [dateStr + '%']
+      );
+    },
+    insertBooking(booking) {
+      return insertAndGetId(
+        'INSERT INTO bookings (name, email, phone, start_time, end_time, google_event_id) VALUES (?, ?, ?, ?, ?, ?)',
+        [booking.name, booking.email || null, booking.phone, booking.start_time, booking.end_time, booking.google_event_id || null]
+      );
+    },
+    insertReminder(bookingId, phone, message, sendAt) {
+      runQuery(
+        'INSERT INTO reminders (booking_id, phone, message, send_at) VALUES (?, ?, ?, ?)',
+        [bookingId, phone, message, sendAt]
+      );
+    },
+    getDueReminders() {
+      return getAll(
+        "SELECT * FROM reminders WHERE status = 'pending' AND send_at <= datetime('now')"
+      );
+    },
+    updateReminderStatus(id, status) {
+      runQuery('UPDATE reminders SET status = ? WHERE id = ?', [status, id]);
+    },
+    cleanupOldReminders(days) {
+      runQuery(
+        "DELETE FROM reminders WHERE status IN ('sent', 'failed') AND created_at < datetime('now', ?)",
+        ['-' + days + ' days']
+      );
+    },
+    getAllBookings(limit) {
+      let q = "SELECT * FROM bookings ORDER BY start_time DESC";
+      const p = [];
+      if (limit) { q += ' LIMIT ?'; p.push(parseInt(limit)); }
+      return getAll(q, p);
+    }
+  };
+
+  // Initialize modules with DB access
+  gcal.init(dbHelpers);
+  reminders.init(dbHelpers);
 
   // ═══ PUBLIC API ROUTES ═══
 
@@ -294,6 +352,108 @@ async function startServer() {
     res.json({ ok: true });
   });
 
+  // ═══ GOOGLE OAUTH ROUTES ═══
+
+  app.get('/api/auth/google', requireAdminKey, (req, res) => {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ error: 'Google OAuth not configured' });
+    }
+    res.redirect(gcal.getAuthUrl());
+  });
+
+  app.get('/api/auth/google/callback', async (req, res) => {
+    try {
+      await gcal.handleCallback(req.query.code);
+      res.redirect('/admin/?google=connected');
+    } catch (err) {
+      console.error('Google OAuth error:', err.message);
+      res.redirect('/admin/?google=error');
+    }
+  });
+
+  app.get('/api/auth/google/status', (req, res) => {
+    res.json({ connected: gcal.isConnected() });
+  });
+
+  // ═══ BOOKING API ROUTES ═══
+
+  // GET available slots for a date
+  app.get('/api/booking/slots', async (req, res) => {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ error: 'Date parameter required (YYYY-MM-DD)' });
+
+    // Validate date is within allowed range
+    const maxDays = parseInt(process.env.BOOKING_DAYS_AHEAD || '14');
+    const requestedDate = new Date(date + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today.getTime() + maxDays * 86400000);
+
+    if (requestedDate < today) return res.json({ slots: [] });
+    if (requestedDate > maxDate) return res.json({ slots: [] });
+
+    // Skip weekends
+    const day = requestedDate.getDay();
+    if (day === 0 || day === 6) return res.json({ slots: [] });
+
+    try {
+      const slots = await gcal.getAvailableSlots(date);
+      res.json({ slots });
+    } catch (err) {
+      console.error('Slots error:', err.message);
+      res.status(500).json({ error: 'Could not fetch availability' });
+    }
+  });
+
+  // POST create a booking
+  app.post('/api/booking', async (req, res) => {
+    const { name, phone, email, start, end } = req.body;
+    if (!name || !phone || !start || !end) {
+      return res.status(400).json({ error: 'Name, phone, start, and end are required' });
+    }
+
+    try {
+      // Create Google Calendar event
+      let googleEventId = null;
+      try {
+        googleEventId = await gcal.createBookingEvent({ name, phone, email, start, end });
+      } catch (err) {
+        console.error('Google Calendar event creation failed:', err.message);
+        // Still proceed with local booking even if GCal fails
+      }
+
+      // Insert booking
+      const bookingId = dbHelpers.insertBooking({
+        name, email, phone,
+        start_time: start,
+        end_time: end,
+        google_event_id: googleEventId
+      });
+
+      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end };
+
+      // Send immediate confirmation SMS
+      await reminders.sendConfirmation(booking);
+
+      // Schedule future reminders (24h, 1h, 15min)
+      reminders.scheduleReminders(booking);
+
+      // Sync to Spaceship CRM
+      pushToSpaceship({
+        name,
+        email,
+        phone,
+        source: 'booking',
+        notes: `Booked strategy call for ${start}`
+      });
+
+      res.json({ success: true, bookingId, googleEventId });
+    } catch (err) {
+      console.error('Booking error:', err.message);
+      res.status(500).json({ error: 'Booking failed' });
+    }
+  });
+
   // ═══ ADMIN API ROUTES ═══
 
   app.get('/api/admin/stats', (req, res) => {
@@ -334,6 +494,10 @@ async function startServer() {
   app.delete('/api/admin/leads/:id', (req, res) => {
     runQuery('DELETE FROM leads WHERE id = ?', [parseInt(req.params.id)]);
     res.json({ success: true });
+  });
+
+  app.get('/api/admin/bookings', (req, res) => {
+    res.json(dbHelpers.getAllBookings(req.query.limit));
   });
 
   app.post('/api/admin/test-call', async (req, res) => {
@@ -512,6 +676,9 @@ async function startServer() {
   // Poll every 60 seconds
   pollVapiCalls(); // Initial sync on startup
   setInterval(pollVapiCalls, 60000);
+
+  // Start SMS reminder scheduler
+  reminders.startReminderLoop();
 
   // ═══ START SERVER ═══
   app.listen(PORT, () => {

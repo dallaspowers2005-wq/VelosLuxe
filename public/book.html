@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Your Free Strategy Call — VelosLuxe</title>
+  <meta name="description" content="Book a free 15-minute strategy call. We'll show you exactly how to plug your revenue leaks using the tools you already have.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050508; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.6);
+      --border: rgba(255,255,255,.08); --border-hover: rgba(255,255,255,.15);
+      --text: #b8b5c6; --text-bright: #f2f1f5;
+      --gold: #c9a46c; --gold-light: #e2c99b;
+      --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-sans);
+      font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+      overflow-x: hidden; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: .025;
+    }
+    h1, h2, h3 { color: var(--text-bright); line-height: 1.15; }
+
+    .shell {
+      max-width: 640px; margin: 0 auto; padding: 2rem 1.5rem; min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0 2rem;
+    }
+    .logo { font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); text-decoration: none; }
+    .logo span { color: var(--gold); }
+
+    /* HEADER */
+    .book-header { text-align: center; margin-bottom: 2.5rem; }
+    .book-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); padding: .45rem 1.1rem; border-radius: 100px;
+      background: rgba(110,207,138,.08); border: 1px solid rgba(110,207,138,.15);
+      margin-bottom: 1.5rem;
+    }
+    .book-header h1 {
+      font-family: var(--font-serif); font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+      font-weight: 400; margin-bottom: 1rem;
+    }
+    .book-header h1 em { font-style: italic; color: var(--gold); }
+    .book-header p { font-size: .95rem; color: #c4c1d0; max-width: 480px; margin: 0 auto; line-height: 1.75; }
+
+    /* STEPS */
+    .step-label {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.25rem;
+    }
+
+    /* DATE PICKER */
+    .dates-section { margin-bottom: 2.5rem; }
+    .dates-scroll {
+      display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .dates-scroll::-webkit-scrollbar { display: none; }
+    .date-card {
+      flex-shrink: 0; width: 72px; padding: .75rem .5rem; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      text-align: center; cursor: pointer; transition: all .2s;
+    }
+    .date-card:hover { border-color: var(--border-hover); }
+    .date-card.selected { border-color: var(--gold); background: rgba(201,164,108,.06); }
+    .date-card.today { border-color: rgba(110,207,138,.2); }
+    .date-day { font-size: .65rem; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: .05em; }
+    .date-num { font-size: 1.3rem; font-weight: 700; color: var(--text-bright); margin: .15rem 0; }
+    .date-month { font-size: .6rem; color: var(--text); text-transform: uppercase; letter-spacing: .04em; }
+    .date-card.selected .date-day,
+    .date-card.selected .date-month { color: var(--gold); }
+
+    /* TIME SLOTS */
+    .slots-section { margin-bottom: 2.5rem; display: none; }
+    .slots-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem;
+    }
+    .slot-btn {
+      padding: .75rem .5rem; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text-bright);
+      font-family: var(--font-sans); font-size: .85rem; font-weight: 500;
+      cursor: pointer; transition: all .2s; text-align: center;
+    }
+    .slot-btn:hover { border-color: var(--border-hover); background: rgba(15,15,26,.9); }
+    .slot-btn.selected { border-color: var(--gold); background: rgba(201,164,108,.06); color: var(--gold); }
+    .slots-empty {
+      text-align: center; padding: 2rem; color: var(--text);
+      font-size: .88rem;
+    }
+    .slots-loading {
+      text-align: center; padding: 2rem; color: var(--text); font-size: .85rem;
+    }
+
+    /* CONTACT FORM */
+    .form-section { margin-bottom: 2rem; display: none; }
+    .form-fields { display: flex; flex-direction: column; gap: .75rem; }
+    .form-input {
+      padding: .9rem 1.2rem; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-bright); font-family: var(--font-sans); font-size: .88rem;
+      outline: none; transition: border-color .2s;
+    }
+    .form-input:focus { border-color: var(--gold); }
+    .form-input::placeholder { color: rgba(255,255,255,.2); }
+    .btn-confirm {
+      width: 100%; padding: 1.1rem 2rem; border-radius: 100px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--bg); font-family: var(--font-sans);
+      font-weight: 700; font-size: 1rem; margin-top: .5rem;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 40px rgba(201,164,108,.2);
+    }
+    .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
+    .btn-confirm:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .form-note { font-size: .75rem; color: rgba(255,255,255,.25); text-align: center; margin-top: .75rem; }
+
+    /* CONFIRMATION */
+    .confirm-screen {
+      display: none; text-align: center; padding: 3rem 0;
+    }
+    .confirm-check {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(110,207,138,.1); border: 2px solid var(--sage);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 2rem; color: var(--sage);
+    }
+    .confirm-screen h2 {
+      font-family: var(--font-serif); font-size: 1.8rem; font-weight: 400; margin-bottom: 1rem;
+    }
+    .confirm-screen h2 em { color: var(--gold); font-style: italic; }
+    .confirm-details {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.5rem; margin: 1.5rem 0; text-align: left;
+    }
+    .confirm-detail { display: flex; justify-content: space-between; padding: .5rem 0; }
+    .confirm-detail:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .confirm-detail-label { font-size: .82rem; color: var(--text); }
+    .confirm-detail-value { font-size: .88rem; font-weight: 600; color: var(--text-bright); }
+    .confirm-sms { font-size: .88rem; color: var(--sage); margin-top: 1rem; }
+    .confirm-back {
+      display: inline-block; margin-top: 2rem; padding: .75rem 2rem; border-radius: 100px;
+      border: 1px solid var(--border-hover); color: var(--text-bright);
+      font-family: var(--font-sans); font-size: .85rem; font-weight: 500;
+      text-decoration: none; transition: all .2s;
+    }
+    .confirm-back:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.03); }
+
+    /* WHAT TO EXPECT */
+    .expect-section {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.75rem; margin-bottom: 2rem;
+    }
+    .expect-title {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1rem;
+    }
+    .expect-item {
+      display: flex; gap: .75rem; align-items: flex-start;
+      margin-bottom: .75rem;
+    }
+    .expect-item:last-child { margin-bottom: 0; }
+    .expect-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+      flex-shrink: 0; margin-top: .55rem;
+    }
+    .expect-text { font-size: .88rem; color: #c4c1d0; line-height: 1.6; }
+
+    @media (max-width: 600px) {
+      .shell { padding: 1.5rem 1.25rem; }
+      .book-header h1 { font-size: 1.6rem; }
+      .slots-grid { grid-template-columns: repeat(2, 1fr); }
+      .date-card { width: 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="topbar">
+    <a href="/" class="logo">VELOS<span>LUXE</span></a>
+  </div>
+
+  <!-- BOOKING FLOW -->
+  <div id="bookingFlow">
+    <div class="book-header">
+      <div class="book-badge">Free &bull; 15 Minutes</div>
+      <h1>Book Your Free <em>Strategy Call</em></h1>
+      <p>We'll walk through your specific revenue leaks and show you exactly how to plug them — using the tools you already have. Nothing to switch. Nothing to set up.</p>
+    </div>
+
+    <!-- STEP 1: DATE -->
+    <div class="dates-section">
+      <div class="step-label">Step 1 — Pick a day</div>
+      <div class="dates-scroll" id="datesScroll"></div>
+    </div>
+
+    <!-- STEP 2: TIME -->
+    <div class="slots-section" id="slotsSection">
+      <div class="step-label">Step 2 — Pick a time</div>
+      <div id="slotsContent"></div>
+    </div>
+
+    <!-- STEP 3: CONTACT -->
+    <div class="form-section" id="formSection">
+      <div class="step-label">Step 3 — Your info</div>
+      <div class="form-fields">
+        <input class="form-input" type="text" id="bookName" placeholder="Your name" autocomplete="name" required>
+        <input class="form-input" type="tel" id="bookPhone" placeholder="Phone number" autocomplete="tel" required>
+        <input class="form-input" type="email" id="bookEmail" placeholder="Email (optional)" autocomplete="email">
+        <button class="btn-confirm" id="confirmBtn" onclick="submitBooking()" disabled>Confirm My Call &rarr;</button>
+      </div>
+      <div class="form-note">You'll get a confirmation SMS immediately + reminders before the call.</div>
+    </div>
+
+    <!-- WHAT TO EXPECT -->
+    <div class="expect-section">
+      <div class="expect-title">What to expect on the call</div>
+      <div class="expect-item">
+        <div class="expect-dot"></div>
+        <div class="expect-text">We'll review your specific revenue leaks based on your practice</div>
+      </div>
+      <div class="expect-item">
+        <div class="expect-dot"></div>
+        <div class="expect-text">You'll see exactly how VelosLuxe plugs into your existing tools (Vagaro, Boulevard, etc.)</div>
+      </div>
+      <div class="expect-item">
+        <div class="expect-dot"></div>
+        <div class="expect-text">No sales pitch. If it's not a fit, we'll tell you — and still give you actionable advice</div>
+      </div>
+      <div class="expect-item">
+        <div class="expect-dot"></div>
+        <div class="expect-text">The entire call takes 15 minutes, start to finish</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION SCREEN -->
+  <div class="confirm-screen" id="confirmScreen">
+    <div class="confirm-check">&#10003;</div>
+    <h2>You're <em>booked</em>!</h2>
+    <div class="confirm-details" id="confirmDetails"></div>
+    <div class="confirm-sms">You'll receive a confirmation text shortly, plus reminders before the call.</div>
+    <a href="/" class="confirm-back">&larr; Back to VelosLuxe</a>
+  </div>
+</div>
+
+<script>
+var selectedDate = null;
+var selectedSlot = null;
+
+// Generate next 14 weekdays
+function renderDates() {
+  var container = document.getElementById('datesScroll');
+  var html = '';
+  var now = new Date();
+  var count = 0;
+  var d = new Date(now);
+  // Start from tomorrow
+  d.setDate(d.getDate() + 1);
+
+  while (count < 14) {
+    var day = d.getDay();
+    if (day !== 0 && day !== 6) { // Skip weekends
+      var dateStr = d.toISOString().split('T')[0];
+      var dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+      var monthName = d.toLocaleDateString('en-US', { month: 'short' });
+      var dateNum = d.getDate();
+      html += '<div class="date-card" data-date="' + dateStr + '" onclick="selectDate(this, \'' + dateStr + '\')">'
+        + '<div class="date-day">' + dayName + '</div>'
+        + '<div class="date-num">' + dateNum + '</div>'
+        + '<div class="date-month">' + monthName + '</div>'
+        + '</div>';
+      count++;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  container.innerHTML = html;
+}
+
+function selectDate(el, dateStr) {
+  selectedDate = dateStr;
+  selectedSlot = null;
+
+  // Highlight selected date
+  document.querySelectorAll('.date-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+
+  // Show slots section and fetch
+  var slotsSection = document.getElementById('slotsSection');
+  slotsSection.style.display = 'block';
+  document.getElementById('slotsContent').innerHTML = '<div class="slots-loading">Loading available times...</div>';
+
+  // Hide form until slot is picked
+  document.getElementById('formSection').style.display = 'none';
+
+  fetch('/api/booking/slots?date=' + dateStr)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      renderSlots(data.slots || []);
+    })
+    .catch(function() {
+      document.getElementById('slotsContent').innerHTML = '<div class="slots-empty">Could not load availability. Please try again.</div>';
+    });
+}
+
+function renderSlots(slots) {
+  var container = document.getElementById('slotsContent');
+
+  if (!slots.length) {
+    container.innerHTML = '<div class="slots-empty">No available slots on this day. Try another date.</div>';
+    return;
+  }
+
+  var html = '<div class="slots-grid">';
+  for (var i = 0; i < slots.length; i++) {
+    var start = new Date(slots[i].start);
+    var timeStr = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    html += '<button class="slot-btn" data-start="' + slots[i].start + '" data-end="' + slots[i].end + '" onclick="selectSlot(this)">' + timeStr + '</button>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function selectSlot(el) {
+  selectedSlot = { start: el.dataset.start, end: el.dataset.end };
+
+  document.querySelectorAll('.slot-btn').forEach(function(b) { b.classList.remove('selected'); });
+  el.classList.add('selected');
+
+  // Show form
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  validateForm();
+}
+
+function validateForm() {
+  var name = document.getElementById('bookName').value.trim();
+  var phone = document.getElementById('bookPhone').value.trim();
+  document.getElementById('confirmBtn').disabled = !(name && phone && selectedSlot);
+}
+
+// Validate on input
+document.getElementById('bookName').addEventListener('input', validateForm);
+document.getElementById('bookPhone').addEventListener('input', validateForm);
+
+function submitBooking() {
+  var btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Booking...';
+
+  var name = document.getElementById('bookName').value.trim();
+  var phone = document.getElementById('bookPhone').value.trim();
+  var email = document.getElementById('bookEmail').value.trim();
+
+  fetch('/api/booking', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: name,
+      phone: phone,
+      email: email || null,
+      start: selectedSlot.start,
+      end: selectedSlot.end
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showConfirmation(name, phone, email);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Confirm My Call →';
+      alert('Booking failed: ' + (data.error || 'Please try again.'));
+    }
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Confirm My Call →';
+    alert('Something went wrong. Please try again.');
+  });
+}
+
+function showConfirmation(name, phone, email) {
+  document.getElementById('bookingFlow').style.display = 'none';
+  var screen = document.getElementById('confirmScreen');
+  screen.style.display = 'block';
+
+  var start = new Date(selectedSlot.start);
+  var dateStr = start.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  var timeStr = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+  var html = '';
+  html += '<div class="confirm-detail"><span class="confirm-detail-label">Date</span><span class="confirm-detail-value">' + dateStr + '</span></div>';
+  html += '<div class="confirm-detail"><span class="confirm-detail-label">Time</span><span class="confirm-detail-value">' + timeStr + '</span></div>';
+  html += '<div class="confirm-detail"><span class="confirm-detail-label">Duration</span><span class="confirm-detail-value">15 minutes</span></div>';
+  html += '<div class="confirm-detail"><span class="confirm-detail-label">Name</span><span class="confirm-detail-value">' + name + '</span></div>';
+  html += '<div class="confirm-detail"><span class="confirm-detail-label">Phone</span><span class="confirm-detail-value">' + phone + '</span></div>';
+  if (email) {
+    html += '<div class="confirm-detail"><span class="confirm-detail-label">Email</span><span class="confirm-detail-value">' + email + '</span></div>';
+  }
+  document.getElementById('confirmDetails').innerHTML = html;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init
+renderDates();
+</script>
+
+</body>
+</html>
