@@ -1,582 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Your Free Strategy Call — VelosLuxe</title>
-  <meta name="description" content="Book a free 15-minute strategy call. We'll show you exactly how to plug your revenue leaks using the tools you already have.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #050508; --bg-raised: #0c0c14; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.6);
-      --border: rgba(255,255,255,.08); --border-hover: rgba(255,255,255,.15);
-      --text: #b8b5c6; --text-bright: #f2f1f5; --text-dim: rgba(255,255,255,.35);
-      --gold: #c9a46c; --gold-light: #e2c99b;
-      --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
-      --font-sans: 'Inter', -apple-system, sans-serif;
-      --font-serif: 'Playfair Display', Georgia, serif;
-    }
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg); color: var(--text); font-family: var(--font-sans);
-      font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
-      overflow-x: hidden; min-height: 100vh;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: .025;
-    }
-    h1, h2, h3 { color: var(--text-bright); line-height: 1.15; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your Appointment | VelosLuxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A1628;
+    --navy-light: #111D33;
+    --cyan: #00D4FF;
+    --cyan-glow: rgba(0,212,255,0.12);
+    --white: #F1F5F9;
+    --muted: #94A3B8;
+    --dim: #64748B;
+    --border: rgba(255,255,255,0.08);
+    --surface: #131E32;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    /* ═══ AMBIENT BG ═══ */
-    .ambient {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .ambient-orb {
-      position: absolute; border-radius: 50%; filter: blur(120px); opacity: .07;
-    }
-    .ambient-orb-1 { background: var(--gold); width: 600px; height: 600px; top: -15%; right: -10%; }
-    .ambient-orb-2 { background: var(--violet); width: 500px; height: 500px; bottom: -20%; left: -15%; opacity: .04; }
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--cyan); }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 28px;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--white); }
 
-    .shell {
-      position: relative; z-index: 1;
-      max-width: 640px; margin: 0 auto; padding: 2rem 1.5rem; min-height: 100vh;
-    }
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 60px 24px 40px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
 
-    /* ═══ TOPBAR ═══ */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 0 2.5rem;
-    }
-    .logo { font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); text-decoration: none; }
-    .logo span { color: var(--gold); }
+  /* FORM */
+  .form-container {
+    max-width: 540px;
+    margin: 0 auto 60px;
+    padding: 0 24px;
+  }
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .form-group label .required { color: var(--cyan); }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--white);
+    font-family: 'Sora', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--cyan);
+  }
+  .form-group input::placeholder { color: var(--dim); }
+  .form-group select { cursor: pointer; }
+  .form-group select option { background: var(--navy); }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
 
-    /* ═══ PROGRESS ═══ */
-    .progress-bar {
-      display: flex; gap: .5rem; margin-bottom: 2.5rem;
-    }
-    .progress-seg {
-      flex: 1; height: 3px; border-radius: 3px;
-      background: rgba(255,255,255,.06);
-      transition: background .4s cubic-bezier(.16,1,.3,1);
-      overflow: hidden; position: relative;
-    }
-    .progress-seg.active { background: var(--gold); }
-    .progress-seg.active::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
-      animation: shimmer 2s ease-in-out infinite;
-    }
-    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  /* CONSENT CHECKBOXES */
+  .consent-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .consent-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--white);
+  }
+  .consent-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: rgba(0,212,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .consent-box input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin-top: 2px;
+    accent-color: var(--cyan);
+    cursor: pointer;
+  }
+  .consent-box .consent-text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .consent-box .consent-text strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+  .consent-optional {
+    font-size: 11px;
+    color: var(--dim);
+    font-style: italic;
+    margin-top: 4px;
+  }
 
-    /* ═══ HEADER ═══ */
-    .book-header { text-align: center; margin-bottom: 2.5rem; }
-    .book-badge {
-      display: inline-flex; align-items: center; gap: .5rem;
-      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--sage); padding: .45rem 1.1rem; border-radius: 100px;
-      background: rgba(110,207,138,.08); border: 1px solid rgba(110,207,138,.15);
-      margin-bottom: 1.5rem;
-    }
-    .book-badge .pulse-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--sage);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-    .book-header h1 {
-      font-family: var(--font-serif); font-size: clamp(1.8rem, 4.5vw, 2.4rem);
-      font-weight: 400; margin-bottom: 1rem;
-    }
-    .book-header h1 em { font-style: italic; color: var(--gold); }
-    .book-header p { font-size: .95rem; color: #c4c1d0; max-width: 480px; margin: 0 auto; line-height: 1.75; }
+  /* SUBMIT */
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--cyan);
+    color: var(--navy);
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: opacity 0.2s;
+  }
+  .submit-btn:hover { opacity: 0.9; }
 
-    /* ═══ STEPS ═══ */
-    .step-label {
-      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 1.25rem;
-      display: flex; align-items: center; gap: .6rem;
-    }
-    .step-num {
-      width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: .6rem; font-weight: 700; color: var(--gold);
-    }
-    .step-num.done {
-      background: var(--gold); color: var(--bg); border-color: var(--gold);
-    }
+  /* LEGAL LINKS */
+  .legal-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .legal-links a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+  .legal-links a:hover { text-decoration: underline; }
 
-    /* ═══ CALENDAR ═══ */
-    .dates-section { margin-bottom: 2.5rem; }
-    .calendar-month {
-      font-size: .82rem; font-weight: 600; color: var(--text-bright);
-      margin-bottom: .75rem; padding-left: .25rem;
-    }
-    .dates-scroll {
-      display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .5rem;
-      -webkit-overflow-scrolling: touch; scrollbar-width: none;
-    }
-    .dates-scroll::-webkit-scrollbar { display: none; }
-    .date-card {
-      flex-shrink: 0; width: 72px; padding: .75rem .5rem; border-radius: 12px;
-      background: var(--bg-card); border: 1px solid var(--border);
-      text-align: center; cursor: pointer; transition: all .25s cubic-bezier(.16,1,.3,1);
-      position: relative;
-    }
-    .date-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-    .date-card.selected {
-      border-color: var(--gold); background: rgba(201,164,108,.06);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(201,164,108,.1);
-    }
-    .date-card.today::before {
-      content: ''; position: absolute; top: 4px; right: 4px;
-      width: 5px; height: 5px; border-radius: 50%; background: var(--sage);
-    }
-    .date-day { font-size: .65rem; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: .05em; }
-    .date-num { font-size: 1.3rem; font-weight: 700; color: var(--text-bright); margin: .15rem 0; }
-    .date-month { font-size: .6rem; color: var(--text); text-transform: uppercase; letter-spacing: .04em; }
-    .date-card.selected .date-day,
-    .date-card.selected .date-month { color: var(--gold); }
-    .date-card.selected .date-num { color: var(--gold-light); }
+  /* CONTACT INFO */
+  .contact-bar {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 13px;
+    color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  .contact-bar strong { color: var(--muted); }
+  .contact-bar a { color: var(--cyan); text-decoration: none; }
 
-    /* ═══ TIME SLOTS ═══ */
-    .slots-section {
-      margin-bottom: 2.5rem;
-      opacity: 0; transform: translateY(12px);
-      transition: all .4s cubic-bezier(.16,1,.3,1);
-      pointer-events: none; max-height: 0; overflow: hidden;
-    }
-    .slots-section.visible {
-      opacity: 1; transform: translateY(0);
-      pointer-events: auto; max-height: 800px; overflow: visible;
-    }
-    .slots-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem;
-    }
-    .slot-btn {
-      padding: .8rem .5rem; border-radius: 10px; border: 1px solid var(--border);
-      background: var(--bg-card); color: var(--text-bright);
-      font-family: var(--font-sans); font-size: .85rem; font-weight: 500;
-      cursor: pointer; transition: all .25s cubic-bezier(.16,1,.3,1); text-align: center;
-    }
-    .slot-btn:hover { border-color: var(--border-hover); transform: translateY(-1px); }
-    .slot-btn.selected {
-      border-color: var(--gold); background: rgba(201,164,108,.08); color: var(--gold);
-      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,164,108,.1);
-    }
-    .slots-empty {
-      text-align: center; padding: 2rem; color: var(--text);
-      font-size: .88rem; background: var(--bg-card); border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    .slots-loading {
-      text-align: center; padding: 2rem; color: var(--text); font-size: .85rem;
-    }
-    .slots-loading .spinner {
-      display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border);
-      border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite;
-      vertical-align: middle; margin-right: .5rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 11px;
+    color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer a:hover { color: var(--cyan); }
 
-    /* ═══ CONTACT FORM ═══ */
-    .form-section {
-      margin-bottom: 2rem;
-      opacity: 0; transform: translateY(12px);
-      transition: all .4s cubic-bezier(.16,1,.3,1);
-      pointer-events: none; max-height: 0; overflow: hidden;
-    }
-    .form-section.visible {
-      opacity: 1; transform: translateY(0);
-      pointer-events: auto; max-height: 500px; overflow: visible;
-    }
-    .form-fields { display: flex; flex-direction: column; gap: .75rem; }
-    .form-input {
-      padding: .9rem 1.2rem; border-radius: 12px;
-      background: var(--bg-card); border: 1px solid var(--border);
-      color: var(--text-bright); font-family: var(--font-sans); font-size: .88rem;
-      outline: none; transition: all .25s;
-    }
-    .form-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,164,108,.08); }
-    .form-input::placeholder { color: rgba(255,255,255,.2); }
-    .selected-summary {
-      display: flex; align-items: center; gap: .75rem;
-      padding: .85rem 1.2rem; border-radius: 12px;
-      background: rgba(201,164,108,.05); border: 1px solid rgba(201,164,108,.15);
-      margin-bottom: .25rem;
-    }
-    .selected-summary-icon { font-size: 1rem; }
-    .selected-summary-text { font-size: .82rem; color: var(--gold-light); }
-    .btn-confirm {
-      width: 100%; padding: 1.1rem 2rem; border-radius: 100px; border: none; cursor: pointer;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--bg); font-family: var(--font-sans);
-      font-weight: 700; font-size: 1rem; margin-top: .5rem;
-      transition: all .25s cubic-bezier(.16,1,.3,1);
-      box-shadow: 0 0 40px rgba(201,164,108,.2);
-    }
-    .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
-    .btn-confirm:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
-    .form-note { font-size: .75rem; color: var(--text-dim); text-align: center; margin-top: .75rem; }
-
-    /* ═══ CONFIRMATION ═══ */
-    .confirm-screen {
-      display: none; text-align: center; padding: 3rem 0;
-      animation: fadeUp .5s cubic-bezier(.16,1,.3,1);
-    }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-    .confirm-check {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(110,207,138,.1); border: 2px solid var(--sage);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.5rem; font-size: 2rem; color: var(--sage);
-      animation: scaleIn .5s cubic-bezier(.16,1,.3,1) .1s both;
-    }
-    @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
-    .confirm-screen h2 {
-      font-family: var(--font-serif); font-size: 1.8rem; font-weight: 400; margin-bottom: 1rem;
-    }
-    .confirm-screen h2 em { color: var(--gold); font-style: italic; }
-    .confirm-details {
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
-      padding: 1.5rem; margin: 1.5rem 0; text-align: left;
-    }
-    .confirm-detail { display: flex; justify-content: space-between; padding: .6rem 0; }
-    .confirm-detail:not(:last-child) { border-bottom: 1px solid var(--border); }
-    .confirm-detail-label { font-size: .82rem; color: var(--text); }
-    .confirm-detail-value { font-size: .88rem; font-weight: 600; color: var(--text-bright); }
-    .confirm-sms {
-      display: flex; align-items: center; justify-content: center; gap: .5rem;
-      font-size: .88rem; color: var(--sage); margin-top: 1rem;
-    }
-    .confirm-back {
-      display: inline-block; margin-top: 2rem; padding: .75rem 2rem; border-radius: 100px;
-      border: 1px solid var(--border-hover); color: var(--text-bright);
-      font-family: var(--font-sans); font-size: .85rem; font-weight: 500;
-      text-decoration: none; transition: all .25s;
-    }
-    .confirm-back:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.03); }
-
-    /* ═══ WHAT TO EXPECT ═══ */
-    .expect-section {
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
-      padding: 1.75rem; margin-bottom: 2rem;
-    }
-    .expect-title {
-      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--sage); margin-bottom: 1rem;
-    }
-    .expect-item {
-      display: flex; gap: .75rem; align-items: flex-start;
-      margin-bottom: .75rem;
-    }
-    .expect-item:last-child { margin-bottom: 0; }
-    .expect-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
-      flex-shrink: 0; margin-top: .55rem;
-    }
-    .expect-text { font-size: .88rem; color: #c4c1d0; line-height: 1.6; }
-
-    /* ═══ RESPONSIVE ═══ */
-    @media (max-width: 600px) {
-      .shell { padding: 1.5rem 1.25rem; }
-      .book-header h1 { font-size: 1.6rem; }
-      .slots-grid { grid-template-columns: repeat(2, 1fr); }
-      .date-card { width: 64px; }
-      .selected-summary { flex-direction: column; gap: .25rem; text-align: center; }
-    }
-  </style>
+  @media (max-width: 540px) {
+    .form-row { grid-template-columns: 1fr; }
+    .form-card { padding: 28px 20px; }
+    nav { padding: 16px 20px; }
+    nav a { margin-left: 16px; font-size: 13px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="ambient">
-  <div class="ambient-orb ambient-orb-1"></div>
-  <div class="ambient-orb ambient-orb-2"></div>
+<nav>
+  <div class="logo">Velos<span>Luxe</span></div>
+  <div>
+    <a href="/">Home</a>
+    <a href="/book">Book</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Book Your Appointment</h1>
+  <p>Schedule your next medspa treatment with VelosLuxe. We'll confirm your appointment and send you a reminder so you never miss a visit.</p>
 </div>
 
-<div class="shell">
-  <div class="topbar">
-    <a href="/" class="logo">VELOS<span>LUXE</span></a>
-  </div>
+<div class="form-container">
+  <div class="form-card">
+    <form id="bookingForm" action="#" method="POST">
 
-  <!-- BOOKING FLOW -->
-  <div id="bookingFlow">
-    <div class="progress-bar">
-      <div class="progress-seg active" id="prog1"></div>
-      <div class="progress-seg" id="prog2"></div>
-      <div class="progress-seg" id="prog3"></div>
-    </div>
-
-    <div class="book-header">
-      <div class="book-badge"><span class="pulse-dot"></span> Free &bull; 15 Minutes</div>
-      <h1>Book Your Free <em>Strategy Call</em></h1>
-      <p>We'll walk through your specific revenue leaks and show you exactly how to plug them — using the tools you already have.</p>
-    </div>
-
-    <!-- STEP 1: DATE -->
-    <div class="dates-section">
-      <div class="step-label"><span class="step-num" id="stepNum1">1</span> Pick a day</div>
-      <div id="calendarMonths"></div>
-    </div>
-
-    <!-- STEP 2: TIME -->
-    <div class="slots-section" id="slotsSection">
-      <div class="step-label"><span class="step-num" id="stepNum2">2</span> Pick a time</div>
-      <div id="slotsContent"></div>
-    </div>
-
-    <!-- STEP 3: CONTACT -->
-    <div class="form-section" id="formSection">
-      <div class="step-label"><span class="step-num" id="stepNum3">3</span> Your info</div>
-      <div class="form-fields">
-        <div class="selected-summary" id="selectedSummary"></div>
-        <input class="form-input" type="text" id="bookName" placeholder="Your name" autocomplete="name" required>
-        <input class="form-input" type="tel" id="bookPhone" placeholder="Phone number" autocomplete="tel" required>
-        <input class="form-input" type="email" id="bookEmail" placeholder="Email (optional)" autocomplete="email">
-        <button class="btn-confirm" id="confirmBtn" onclick="submitBooking()" disabled>Confirm My Call &rarr;</button>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span class="required">*</span></label>
+          <input type="text" name="first_name" placeholder="Sarah" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="required">*</span></label>
+          <input type="text" name="last_name" placeholder="Johnson" required>
+        </div>
       </div>
-      <div class="form-note">You'll get a confirmation SMS immediately + reminders before the call.</div>
-    </div>
 
-    <!-- WHAT TO EXPECT -->
-    <div class="expect-section">
-      <div class="expect-title">What to expect on the call</div>
-      <div class="expect-item">
-        <div class="expect-dot"></div>
-        <div class="expect-text">We'll review your specific revenue leaks based on your practice</div>
+      <div class="form-group">
+        <label>Email Address <span class="required">*</span></label>
+        <input type="email" name="email" placeholder="sarah@example.com" required>
       </div>
-      <div class="expect-item">
-        <div class="expect-dot"></div>
-        <div class="expect-text">You'll see exactly how VelosLuxe plugs into your existing tools (Vagaro, Boulevard, etc.)</div>
-      </div>
-      <div class="expect-item">
-        <div class="expect-dot"></div>
-        <div class="expect-text">No sales pitch. If it's not a fit, we'll tell you — and still give you actionable advice</div>
-      </div>
-      <div class="expect-item">
-        <div class="expect-dot"></div>
-        <div class="expect-text">The entire call takes 15 minutes, start to finish</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- CONFIRMATION SCREEN -->
-  <div class="confirm-screen" id="confirmScreen">
-    <div class="confirm-check">&#10003;</div>
-    <h2>You're <em>booked</em>!</h2>
-    <div class="confirm-details" id="confirmDetails"></div>
-    <div class="confirm-sms">&#9993; You'll receive a confirmation text shortly, plus reminders before the call.</div>
-    <a href="/" class="confirm-back">&larr; Back to VelosLuxe</a>
+      <div class="form-group">
+        <label>Phone Number <span class="required">*</span></label>
+        <input type="tel" name="phone" placeholder="(928) 555-0123" required>
+      </div>
+
+      <div class="form-group">
+        <label>Service Interested In</label>
+        <select name="service">
+          <option value="">Select a service...</option>
+          <option value="botox">Botox</option>
+          <option value="fillers">Dermal Fillers</option>
+          <option value="laser">Laser Hair Removal</option>
+          <option value="hydrafacial">HydraFacial</option>
+          <option value="prp">PRP Therapy</option>
+          <option value="microneedling">Microneedling</option>
+          <option value="chemical-peel">Chemical Peel</option>
+          <option value="body-contouring">Body Contouring</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Preferred Date &amp; Time</label>
+        <input type="text" name="preferred_date" placeholder="e.g., Next Tuesday afternoon">
+      </div>
+
+      <!-- SMS CONSENT SECTION -->
+      <div class="consent-section">
+        <h3>SMS Communication Preferences</h3>
+
+        <!-- Transactional SMS Consent -->
+        <div class="consent-box">
+          <input type="checkbox" id="sms_transactional" name="sms_transactional" value="yes">
+          <div>
+            <label for="sms_transactional" class="consent-text">
+              I consent to receive <strong>transactional SMS messages</strong> from <strong>VelosLuxe</strong> at the phone number provided, including appointment confirmations, reminders, and post-treatment care instructions. Message frequency may vary. Message &amp; data rates may apply. Reply HELP for help or STOP to opt out.
+            </label>
+            <div class="consent-optional">Optional — not required to book your appointment.</div>
+          </div>
+        </div>
+
+        <!-- Marketing SMS Consent -->
+        <div class="consent-box">
+          <input type="checkbox" id="sms_marketing" name="sms_marketing" value="yes">
+          <div>
+            <label for="sms_marketing" class="consent-text">
+              I consent to receive <strong>marketing and promotional SMS messages</strong> from <strong>VelosLuxe</strong> at the phone number provided, including special offers, treatment promotions, and loyalty rewards. Message frequency may vary. Message &amp; data rates may apply. Reply HELP for help or STOP to opt out.
+            </label>
+            <div class="consent-optional">Optional — not required to book your appointment.</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Book My Appointment</button>
+    </form>
+
+    <div class="legal-links">
+      By booking, you agree to our <a href="/terms">Terms of Service</a>. View our <a href="/privacy">Privacy Policy</a>.<br>
+      SMS consent is not a condition of purchase. Your information is never shared with third parties for marketing purposes.
+    </div>
   </div>
 </div>
 
-<script>
-var selectedDate = null;
-var selectedSlot = null;
+<div class="contact-bar">
+  <strong>VelosLuxe</strong> &nbsp;|&nbsp; <a href="mailto:dallas@velosluxe.com">dallas@velosluxe.com</a> &nbsp;|&nbsp; <a href="tel:+19285821712">(928) 582-1712</a> &nbsp;|&nbsp; Mesa, AZ
+</div>
 
-// Parse slot time strings as local time (they come without timezone, e.g. "2026-03-17T09:00:00")
-function parseLocalTime(str) {
-  var parts = str.split('T');
-  var d = parts[0].split('-');
-  var t = parts[1].split(':');
-  return new Date(parseInt(d[0]), parseInt(d[1]) - 1, parseInt(d[2]), parseInt(t[0]), parseInt(t[1]), parseInt(t[2]) || 0);
-}
-
-function formatTime12(str) {
-  var date = parseLocalTime(str);
-  var h = date.getHours();
-  var m = date.getMinutes();
-  var ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return h + ':' + String(m).padStart(2, '0') + ' ' + ampm;
-}
-
-// Generate next 14 weekdays, grouped by month
-function renderDates() {
-  var container = document.getElementById('calendarMonths');
-  var now = new Date();
-  var d = new Date(now);
-  d.setDate(d.getDate() + 1);
-
-  var months = {};
-  var count = 0;
-
-  while (count < 14) {
-    var day = d.getDay();
-    if (day !== 0 && day !== 6) {
-      var monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      if (!months[monthKey]) months[monthKey] = [];
-      months[monthKey].push(new Date(d));
-      count++;
-    }
-    d.setDate(d.getDate() + 1);
-  }
-
-  var html = '';
-  for (var month in months) {
-    html += '<div class="calendar-month">' + month + '</div>';
-    html += '<div class="dates-scroll">';
-    for (var i = 0; i < months[month].length; i++) {
-      var dt = months[month][i];
-      var dateStr = dt.toISOString().split('T')[0];
-      var dayName = dt.toLocaleDateString('en-US', { weekday: 'short' });
-      var monthName = dt.toLocaleDateString('en-US', { month: 'short' });
-      var dateNum = dt.getDate();
-      var isToday = dateStr === now.toISOString().split('T')[0];
-      html += '<div class="date-card' + (isToday ? ' today' : '') + '" data-date="' + dateStr + '" onclick="selectDate(this, \'' + dateStr + '\')">'
-        + '<div class="date-day">' + dayName + '</div>'
-        + '<div class="date-num">' + dateNum + '</div>'
-        + '<div class="date-month">' + monthName + '</div>'
-        + '</div>';
-    }
-    html += '</div>';
-  }
-  container.innerHTML = html;
-}
-
-function selectDate(el, dateStr) {
-  selectedDate = dateStr;
-  selectedSlot = null;
-
-  // Highlight
-  document.querySelectorAll('.date-card').forEach(function(c) { c.classList.remove('selected'); });
-  el.classList.add('selected');
-
-  // Update progress
-  document.getElementById('prog2').classList.add('active');
-  document.getElementById('prog3').classList.remove('active');
-  document.getElementById('stepNum1').classList.add('done');
-  document.getElementById('stepNum1').textContent = '\u2713';
-
-  // Show slots, hide form
-  var slotsSection = document.getElementById('slotsSection');
-  slotsSection.classList.add('visible');
-  document.getElementById('slotsContent').innerHTML = '<div class="slots-loading"><span class="spinner"></span>Loading available times...</div>';
-  document.getElementById('formSection').classList.remove('visible');
-
-  fetch('/api/booking/slots?date=' + dateStr)
-    .then(function(r) { return r.json(); })
-    .then(function(data) { renderSlots(data.slots || []); })
-    .catch(function() {
-      document.getElementById('slotsContent').innerHTML = '<div class="slots-empty">Could not load availability. Please try again.</div>';
-    });
-}
-
-function renderSlots(slots) {
-  var container = document.getElementById('slotsContent');
-
-  if (!slots.length) {
-    container.innerHTML = '<div class="slots-empty">No available slots on this day. Try another date.</div>';
-    return;
-  }
-
-  var html = '<div class="slots-grid">';
-  for (var i = 0; i < slots.length; i++) {
-    var timeStr = formatTime12(slots[i].start);
-    html += '<button class="slot-btn" data-start="' + slots[i].start + '" data-end="' + slots[i].end + '" onclick="selectSlot(this)">' + timeStr + '</button>';
-  }
-  html += '</div>';
-  container.innerHTML = html;
-}
-
-function selectSlot(el) {
-  selectedSlot = { start: el.dataset.start, end: el.dataset.end };
-
-  document.querySelectorAll('.slot-btn').forEach(function(b) { b.classList.remove('selected'); });
-  el.classList.add('selected');
-
-  // Update progress
-  document.getElementById('prog3').classList.add('active');
-  document.getElementById('stepNum2').classList.add('done');
-  document.getElementById('stepNum2').textContent = '\u2713';
-
-  // Build summary
-  var dateObj = parseLocalTime(selectedSlot.start);
-  var dateDisplay = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-  var timeDisplay = formatTime12(selectedSlot.start);
-  document.getElementById('selectedSummary').innerHTML =
-    '<span class="selected-summary-icon">&#128197;</span>' +
-    '<span class="selected-summary-text">' + dateDisplay + ' at ' + timeDisplay + '</span>';
-
-  // Show form
-  document.getElementById('formSection').classList.add('visible');
-  setTimeout(function() {
-    document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
-  validateForm();
-}
-
-function validateForm() {
-  var name = document.getElementById('bookName').value.trim();
-  var phone = document.getElementById('bookPhone').value.trim();
-  document.getElementById('confirmBtn').disabled = !(name && phone && selectedSlot);
-}
-
-document.getElementById('bookName').addEventListener('input', validateForm);
-document.getElementById('bookPhone').addEventListener('input', validateForm);
-
-function submitBooking() {
-  var btn = document.getElementById('confirmBtn');
-  btn.disabled = true;
-  btn.textContent = 'Booking...';
-
-  var name = document.getElementById('bookName').value.trim();
-  var phone = document.getElementById('bookPhone').value.trim();
-  var email = document.getElementById('bookEmail').value.trim();
-
-  fetch('/api/booking', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: name, phone: phone, email: email || null,
-      start: selectedSlot.start, end: selectedSlot.end
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.success) {
-      showConfirmation(name, phone, email);
-    } else {
-      btn.disabled = false;
-      btn.textContent = 'Confirm My Call \u2192';
-      alert('Booking failed: ' + (data.error || 'Please try again.'));
-    }
-  })
-  .catch(function() {
-    btn.disabled = false;
-    btn.textContent = 'Confirm My Call \u2192';
-    alert('Something went wrong. Please try again.');
-  });
-}
-
-function showConfirmation(name, phone, email) {
-  document.getElementById('bookingFlow').style.display = 'none';
-  var screen = document.getElementById('confirmScreen');
-  screen.style.display = 'block';
-
-  var dateObj = parseLocalTime(selectedSlot.start);
-  var dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  var timeStr = formatTime12(selectedSlot.start);
-
-  var html = '';
-  html += '<div class="confirm-detail"><span class="confirm-detail-label">Date</span><span class="confirm-detail-value">' + dateStr + '</span></div>';
-  html += '<div class="confirm-detail"><span class="confirm-detail-label">Time</span><span class="confirm-detail-value">' + timeStr + '</span></div>';
-  html += '<div class="confirm-detail"><span class="confirm-detail-label">Duration</span><span class="confirm-detail-value">15 minutes</span></div>';
-  html += '<div class="confirm-detail"><span class="confirm-detail-label">Name</span><span class="confirm-detail-value">' + name + '</span></div>';
-  html += '<div class="confirm-detail"><span class="confirm-detail-label">Phone</span><span class="confirm-detail-value">' + phone + '</span></div>';
-  if (email) {
-    html += '<div class="confirm-detail"><span class="confirm-detail-label">Email</span><span class="confirm-detail-value">' + email + '</span></div>';
-  }
-  document.getElementById('confirmDetails').innerHTML = html;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-renderDates();
-</script>
+<footer>
+  &copy; 2026 VelosLuxe LLC. All rights reserved.
+  <br style="margin-bottom:8px">
+  <a href="/privacy">Privacy Policy</a>
+  <a href="/terms">Terms of Service</a>
+</footer>
 
 </body>
 </html>
