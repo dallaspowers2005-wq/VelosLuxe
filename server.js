@@ -25,27 +25,8 @@ const spaceship = createClient(
 );
 
 async function pushToSpaceship(lead) {
-  try {
-    const { data, error } = await spaceship.from('leads').insert({
-      business_name: lead.spa_name || 'VelosLuxe Lead',
-      contact_name: lead.name,
-      email: lead.email || null,
-      phone: lead.phone || null,
-      source: 'VelosLuxe',
-      industry: 'Medical Spa',
-      status: 'new',
-      notes: lead.notes || null,
-      metadata: { origin: 'velosluxe', original_source: lead.source || 'demo_form' }
-    }).select().single();
-
-    if (error) {
-      console.error('Spaceship CRM sync error:', error.message);
-    } else {
-      console.log('Lead synced to Spaceship CRM:', data.id);
-    }
-  } catch (err) {
-    console.error('Spaceship CRM sync failed:', err.message);
-  }
+  // Disabled — Spaceship CRM is for outreach pipeline leads only, not onboarding/inbound
+  return;
 }
 
 // Middleware
@@ -2051,6 +2032,10 @@ async function startServer() {
       res.status(500).send(`OAuth error: ${err.message}`);
     }
   });
+
+  // ═══ PITCH PAGES ═══
+  const { setupPitchRoutes } = require('./lib/pitch');
+  setupPitchRoutes(app);
 
   // ═══ BLOG ═══
   const { setupBlogRoutes } = require('./lib/blog');
