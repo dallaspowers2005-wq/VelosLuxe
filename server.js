@@ -51,9 +51,10 @@ async function pushToSpaceship(lead) {
 // Middleware
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? ['https://velosluxe.com', 'https://www.velosluxe.com']
-  : ['http://localhost:3000'];
+  : ['http://localhost:3000', 'http://localhost:3001'];
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ═══ DATABASE SETUP ═══
 const dbDir = path.join(__dirname, 'db');
@@ -270,6 +271,22 @@ async function startServer() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  // ═══ SCHEMA — blog ═══
+  db.run(`
+    CREATE TABLE IF NOT EXISTS blog_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT UNIQUE NOT NULL,
+      title TEXT NOT NULL,
+      meta_description TEXT,
+      content TEXT NOT NULL,
+      category TEXT DEFAULT 'general',
+      tags TEXT DEFAULT '[]',
+      published INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   saveDb();
 
   // DB helpers for modules
@@ -432,7 +449,7 @@ async function startServer() {
 
       if (contact_phone) {
         try {
-          await sendSMS(contact_phone, `Thanks for signing up! We're setting up your ${current_platform} connection — typically ${timeline}. We'll text you when it's ready.`);
+          await sendSMS(contact_phone, `Thanks for signing up with VelosLuxe! To connect ${current_platform}, there's one quick step from your account — check your email or book a setup call and we'll walk you through it live. Typically takes ${timeline}.`);
         } catch (err) {
           console.error('Concierge SMS error:', err.message);
         }
@@ -490,6 +507,23 @@ async function startServer() {
     }
 
     const oauthClientId = process.env[`${platform.toUpperCase()}_CLIENT_ID`];
+    const oauthClientSecret = process.env[`${platform.toUpperCase()}_CLIENT_SECRET`];
+
+    if (!oauthClientId || !oauthClientSecret) {
+      // OAuth not configured for this platform — show a friendly error page
+      return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Setup Required — VelosLuxe</title></head>
+      <body style="font-family:system-ui,-apple-system,sans-serif;background:#12121f;color:#d8d6e8;margin:0;padding:2rem;min-height:100vh;display:flex;align-items:center;justify-content:center">
+        <div style="max-width:440px;width:100%;background:#1e1e34;border:1px solid rgba(255,255,255,.1);border-radius:1.25rem;padding:2rem;text-align:center">
+          <div style="font-size:2.5rem;margin-bottom:1rem">&#128268;</div>
+          <h2 style="color:#f5f4f8;margin:0 0 0.5rem;font-size:1.25rem">OAuth Not Configured Yet</h2>
+          <p style="color:#a09dba;font-size:0.9rem;margin:0 0 1.5rem;line-height:1.6">
+            The one-click ${platformMeta.displayName || platform} connection isn't set up yet on our end. Don't worry — our team will handle this for you!
+          </p>
+          <p style="color:#a09dba;font-size:0.85rem;margin:0">You can close this window. We'll reach out to finish the connection.</p>
+        </div>
+      </body></html>`);
+    }
+
     const redirectUri = `${req.protocol}://${req.get('host')}/api/onboarding/oauth/callback`;
     const state = Buffer.from(JSON.stringify({ platform, submission_id: submissionId })).toString('base64');
 
@@ -2018,6 +2052,12 @@ async function startServer() {
     }
   });
 
+  // ═══ BLOG ═══
+  const { setupBlogRoutes } = require('./lib/blog');
+  setupBlogRoutes(app, getAll, getOne, runQuery, insertAndGetId, saveDb);
+
+  // Blog routes loaded from lib/blog.js above
+  /* OLD INLINE BLOG CODE REMOVED */
   // ═══ SERVE STATIC FILES ═══
   app.use('/internal', express.static(path.join(__dirname, 'internal')));
   app.use('/admin', express.static(path.join(__dirname, 'admin')));
