@@ -481,6 +481,66 @@
     .final-cta p { color: var(--text); margin-bottom: 2.5rem; font-size: 1.05rem; position: relative; }
     .final-cta .hero-ctas { position: relative; }
 
+    /* ═══ SMS CONSENT ═══ */
+    .sms-consent { padding: 4rem 0; border-top: 1px solid var(--border); }
+    .sms-consent .wrap { max-width: 760px; }
+    .sms-consent-label {
+      font-size: .7rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: .5rem;
+    }
+    .sms-consent h2 {
+      font-family: var(--font-serif); font-size: 1.6rem; font-weight: 400;
+      color: var(--text-bright); margin-bottom: .75rem;
+    }
+    .sms-consent > .wrap > p { font-size: .88rem; color: var(--text); margin-bottom: 2rem; max-width: 620px; }
+    .sms-form-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.75rem; margin-bottom: 2.5rem;
+    }
+    .sms-form-card h3 { font-size: .95rem; font-weight: 600; color: var(--text-bright); margin-bottom: 1.25rem; }
+    .sms-form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .sms-form-group { flex: 1; }
+    .sms-form-group label { display: block; font-size: .75rem; font-weight: 500; color: var(--text-bright); margin-bottom: .3rem; }
+    .sms-form-group input {
+      width: 100%; padding: .6rem .85rem; background: rgba(255,255,255,.04);
+      border: 1px solid var(--border); border-radius: 8px; color: var(--text-bright);
+      font-family: var(--font-sans); font-size: .85rem; outline: none;
+    }
+    .sms-form-group input::placeholder { color: rgba(184,181,198,.35); }
+    .sms-form-group input:focus { border-color: var(--gold); }
+    .sms-consent-box {
+      display: flex; align-items: flex-start; gap: .65rem;
+      padding: 1rem; margin: 1.25rem 0; border-radius: 8px;
+      background: rgba(201,164,108,.04); border: 1px solid rgba(201,164,108,.1);
+    }
+    .sms-consent-box input[type="checkbox"] { margin-top: .2rem; width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--gold); }
+    .sms-consent-box label { font-size: .78rem; line-height: 1.6; color: var(--text); }
+    .sms-consent-box label strong { color: var(--text-bright); }
+    .sms-btn {
+      padding: .6rem 1.8rem; background: var(--gold); color: var(--bg);
+      font-family: var(--font-sans); font-size: .8rem; font-weight: 600;
+      letter-spacing: .04em; border: none; border-radius: 100px; cursor: pointer;
+      transition: all .25s cubic-bezier(.16,1,.3,1);
+    }
+    .sms-btn:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,164,108,.3); }
+    .sms-optin h3 { font-size: 1.1rem; font-family: var(--font-serif); font-weight: 400; color: var(--text-bright); margin-bottom: .4rem; }
+    .sms-optin > p { font-size: .82rem; color: var(--text); margin-bottom: 1.25rem; }
+    .sms-optin-list { list-style: none; display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+    .sms-optin-list li { display: flex; align-items: flex-start; gap: .6rem; font-size: .84rem; line-height: 1.6; }
+    .sms-optin-num {
+      display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px;
+      background: rgba(201,164,108,.1); color: var(--gold);
+      font-size: .7rem; font-weight: 700; border-radius: 50%;
+    }
+    .sms-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .sms-info-box h4 { font-size: .8rem; font-weight: 600; color: var(--text-bright); margin-bottom: .25rem; }
+    .sms-info-box p { font-size: .78rem; color: var(--text); line-height: 1.6; }
+    @media (max-width: 600px) {
+      .sms-form-row { flex-direction: column; gap: .75rem; }
+      .sms-info-grid { grid-template-columns: 1fr; }
+    }
+
     /* ═══ FOOTER ═══ */
     footer {
       text-align: center; padding: 3rem 0 2.5rem;
@@ -829,6 +889,64 @@
   </div>
 </section>
 
+<!-- ═══ SMS CONSENT ═══ -->
+<section class="sms-consent" id="sms-consent">
+  <div class="wrap">
+    <div class="sms-consent-label">Compliance</div>
+    <h2>SMS Communication Consent</h2>
+    <p>VelosLuxe sends automated SMS messages on behalf of our medical spa partners for appointment confirmations, reminders, follow-ups, and client reactivation. All messages are sent with prior consent.</p>
+
+    <div class="sms-form-card">
+      <h3>Provide Your Consent</h3>
+      <div class="sms-form-row">
+        <div class="sms-form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="Jane Smith">
+        </div>
+        <div class="sms-form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="(555) 123-4567">
+        </div>
+      </div>
+      <div class="sms-consent-box">
+        <input type="checkbox" id="sms-check">
+        <label for="sms-check">By providing my phone number, I consent to receive automated SMS messages from <strong>[Med Spa Name]</strong> powered by VelosLuxe, including appointment confirmations, reminders, and follow-up messages. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to opt out at any time. Reply <strong>HELP</strong> for help.</label>
+      </div>
+      <button class="sms-btn" type="button">Submit</button>
+    </div>
+
+    <div class="sms-optin">
+      <h3>How Users Opt In</h3>
+      <p>Consent is collected through the following methods before any SMS messages are sent:</p>
+      <ul class="sms-optin-list">
+        <li><span class="sms-optin-num">1</span><span>Clients provide their phone number when booking appointments via the med spa's website or at the front desk, where SMS consent language is clearly displayed.</span></li>
+        <li><span class="sms-optin-num">2</span><span>Clients check a consent checkbox on digital intake forms and online booking forms before submission.</span></li>
+        <li><span class="sms-optin-num">3</span><span>Verbal consent is obtained and recorded during phone calls with the med spa's staff or AI receptionist.</span></li>
+        <li><span class="sms-optin-num">4</span><span>All contacts can reply <strong>STOP</strong> at any time to immediately unsubscribe from all future SMS messages.</span></li>
+      </ul>
+
+      <div class="sms-info-grid">
+        <div class="sms-info-box">
+          <h4>Message Types</h4>
+          <p>Appointment confirmations, reminders (48hr, 24hr, 1hr), post-visit follow-ups, review requests, and reactivation messages for inactive clients.</p>
+        </div>
+        <div class="sms-info-box">
+          <h4>Message Frequency</h4>
+          <p>Varies based on appointment activity. Typically 2–6 messages per appointment cycle. No more than 10 messages per month.</p>
+        </div>
+        <div class="sms-info-box">
+          <h4>Opt-Out</h4>
+          <p>Reply <strong>STOP</strong> to any message to unsubscribe immediately. You will receive a one-time confirmation and no further messages.</p>
+        </div>
+        <div class="sms-info-box">
+          <h4>Help</h4>
+          <p>Reply <strong>HELP</strong> to any message for assistance, or contact us at support@velosluxe.com.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="footer-logo">VELOS<span>LUXE</span></div>
@@ -837,7 +955,6 @@
   <p style="margin-top:.75rem;font-size:12px">
     <a href="/privacy" style="color:#94A3B8;text-decoration:none;margin:0 12px">Privacy Policy</a>
     <a href="/terms" style="color:#94A3B8;text-decoration:none;margin:0 12px">Terms of Service</a>
-    <a href="/sms-consent" style="color:#94A3B8;text-decoration:none;margin:0 12px">SMS Consent</a>
   </p>
 </footer>
 
