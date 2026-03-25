@@ -2052,6 +2052,7 @@ async function startServer() {
   app.get('/book', (req, res) => res.sendFile(path.join(__dirname, 'public', 'book.html')));
   app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
   app.get('/terms', (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
+  app.get('/sms-consent', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sms-consent.html')));
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
