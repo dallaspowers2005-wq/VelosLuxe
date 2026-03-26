@@ -350,10 +350,10 @@ async function startServer() {
   };
 
   // Local availability function
-  function getAvailableSlots(dateStr) {
+  function getAvailableSlots(dateStr, overrideIncrement) {
     const startHour = parseInt(process.env.BOOKING_START_HOUR || '9');
     const endHour = parseInt(process.env.BOOKING_END_HOUR || '17');
-    const slotMinutes = parseInt(process.env.BOOKING_SLOT_DURATION || '30');
+    const slotMinutes = overrideIncrement || parseInt(process.env.BOOKING_SLOT_DURATION || '30');
 
     const slots = [];
     for (let h = startHour; h < endHour; h++) {
@@ -1342,7 +1342,8 @@ async function startServer() {
     const day = requestedDate.getDay();
     if (day === 0 || day === 6) return res.json({ slots: [] });
 
-    const slots = getAvailableSlots(date);
+    const increment = req.query.increment ? parseInt(req.query.increment) : null;
+    const slots = getAvailableSlots(date, increment);
     res.json({ slots });
   });
 

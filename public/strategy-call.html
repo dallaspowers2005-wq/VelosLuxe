@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Book Your Free Strategy Call — VelosLuxe</title>
-  <meta name="description" content="15 minutes. We'll walk through your specific revenue leaks and show you exactly how to plug them.">
+  <meta name="description" content="30-minute strategy call. We'll walk through your specific revenue leaks and show you exactly how to plug them. No sales pressure.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #050508; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.6);
-      --border: rgba(255,255,255,.08); --border-hover: rgba(255,255,255,.15);
-      --text: #b8b5c6; --text-bright: #f2f1f5;
+      --bg: #0a0a12; --bg-card: #151520; --bg-glass: rgba(21,21,32,.6);
+      --border: rgba(255,255,255,.12); --border-hover: rgba(255,255,255,.22);
+      --text: #d0cde0; --text-bright: #f8f7fc; --text-mid: #9e9bb5;
       --gold: #c9a46c; --gold-light: #e2c99b;
       --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
       --font-sans: 'Inter', -apple-system, sans-serif;
@@ -28,7 +28,7 @@
     body::before {
       content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: .025;
+      opacity: .02;
     }
     h1, h2, h3 { color: var(--text-bright); line-height: 1.15; }
 
@@ -44,11 +44,11 @@
     }
     .logo { font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); text-decoration: none; }
     .logo span { color: var(--gold); }
-    .topbar-step { font-size: .72rem; color: var(--text); letter-spacing: .04em; }
+    .topbar-step { font-size: .72rem; color: var(--text-mid); letter-spacing: .04em; }
 
     /* ═══ PROGRESS BAR ═══ */
     .progress-wrap { margin-bottom: 3rem; }
-    .progress-bar { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .progress-bar { height: 3px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
     .progress-fill {
       height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
       border-radius: 4px; transition: width .5s cubic-bezier(.16,1,.3,1);
@@ -65,14 +65,22 @@
 
     /* ═══ STEP LABELS ═══ */
     .step-label {
-      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1rem;
     }
     .step-title {
       font-family: var(--font-serif); font-size: 1.6rem; font-weight: 400;
-      margin-bottom: .5rem;
+      margin-bottom: .5rem; color: var(--text-bright);
     }
-    .step-subtitle { font-size: .88rem; color: var(--text); margin-bottom: 2rem; }
+    .step-subtitle { font-size: .9rem; color: var(--text); margin-bottom: 2rem; line-height: 1.7; }
+
+    /* ═══ VALUE BANNER ═══ */
+    .value-banner {
+      background: rgba(110,207,138,.06); border: 1px solid rgba(110,207,138,.15);
+      border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 2rem;
+      font-size: .85rem; color: var(--sage); line-height: 1.65;
+    }
+    .value-banner strong { color: #8fe0a3; }
 
     /* ═══ PILL OPTIONS ═══ */
     .pill-group { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 2rem; }
@@ -81,17 +89,17 @@
       padding: .75rem 1.4rem; border-radius: 100px;
       background: var(--bg-card); border: 1px solid var(--border);
       cursor: pointer; transition: all .2s;
-      font-size: .85rem; color: var(--text-bright);
+      font-size: .88rem; color: var(--text-bright);
       user-select: none;
     }
-    .pill:hover { border-color: var(--border-hover); background: rgba(15,15,26,.9); }
+    .pill:hover { border-color: var(--border-hover); background: rgba(21,21,32,.9); }
     .pill.selected {
-      border-color: var(--gold); background: rgba(201,164,108,.08);
-      box-shadow: 0 0 20px rgba(201,164,108,.08);
+      border-color: var(--gold); background: rgba(201,164,108,.1);
+      box-shadow: 0 0 20px rgba(201,164,108,.1);
     }
     .pill-dot {
       width: 8px; height: 8px; border-radius: 50%;
-      border: 2px solid var(--border-hover); flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.2); flex-shrink: 0;
       transition: all .2s;
     }
     .pill.selected .pill-dot { border-color: var(--gold); background: var(--gold); }
@@ -100,18 +108,18 @@
     .input-group { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
     .field-label {
-      font-size: .75rem; font-weight: 600; color: var(--text); letter-spacing: .03em;
+      font-size: .78rem; font-weight: 600; color: var(--text); letter-spacing: .03em;
       margin-bottom: .25rem;
     }
     .field-wrap { display: flex; flex-direction: column; }
     .field-input {
       padding: .9rem 1.2rem; border-radius: 12px;
       background: var(--bg-card); border: 1px solid var(--border);
-      color: var(--text-bright); font-family: var(--font-sans); font-size: .88rem;
+      color: var(--text-bright); font-family: var(--font-sans); font-size: .9rem;
       outline: none; transition: border-color .2s;
     }
     .field-input:focus { border-color: var(--gold); }
-    .field-input::placeholder { color: rgba(255,255,255,.2); }
+    .field-input::placeholder { color: rgba(255,255,255,.25); }
 
     /* ═══ CALENDAR ═══ */
     .date-scroll { display: flex; gap: .6rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: 2rem; }
@@ -122,23 +130,23 @@
       text-align: center; cursor: pointer; transition: all .2s;
     }
     .date-card:hover { border-color: var(--border-hover); }
-    .date-card.selected { border-color: var(--gold); background: rgba(201,164,108,.08); }
+    .date-card.selected { border-color: var(--gold); background: rgba(201,164,108,.1); }
     .date-card.no-slots { opacity: .35; cursor: not-allowed; }
-    .date-day { font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
+    .date-day { font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
     .date-num { font-size: 1.4rem; font-weight: 700; color: var(--text-bright); margin: .2rem 0; }
-    .date-month { font-size: .65rem; color: var(--text); }
+    .date-month { font-size: .68rem; color: var(--text); }
     .date-card.selected .date-day,
     .date-card.selected .date-month { color: var(--gold); }
 
-    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-bottom: 2rem; }
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin-bottom: 2rem; }
     .time-slot {
-      padding: .75rem; border-radius: 10px; text-align: center;
+      padding: .7rem .5rem; border-radius: 10px; text-align: center;
       background: var(--bg-card); border: 1px solid var(--border);
       cursor: pointer; transition: all .2s;
       font-size: .85rem; color: var(--text-bright); font-weight: 500;
     }
     .time-slot:hover { border-color: var(--border-hover); }
-    .time-slot.selected { border-color: var(--gold); background: rgba(201,164,108,.08); }
+    .time-slot.selected { border-color: var(--gold); background: rgba(201,164,108,.1); }
     .no-slots-msg { text-align: center; padding: 2rem; color: var(--text); font-size: .9rem; }
 
     /* ═══ BUTTONS ═══ */
@@ -172,13 +180,14 @@
     .thankyou h2 {
       font-family: var(--font-serif); font-size: 2rem; font-weight: 400; margin-bottom: .75rem;
     }
+    .thankyou-sub { color: var(--text); max-width: 440px; margin-bottom: .5rem; font-size: .95rem; line-height: 1.7; }
     .thankyou-detail {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
       padding: 1.5rem 2rem; margin: 1.5rem 0 2rem; text-align: left;
     }
     .thankyou-row {
       display: flex; justify-content: space-between; padding: .6rem 0;
-      border-bottom: 1px solid var(--border); font-size: .88rem;
+      border-bottom: 1px solid var(--border); font-size: .9rem;
     }
     .thankyou-row:last-child { border-bottom: none; }
     .thankyou-label { color: var(--text); }
@@ -192,7 +201,7 @@
     }
     .check-item {
       display: flex; align-items: flex-start; gap: .75rem;
-      padding: .5rem 0; font-size: .88rem; color: var(--text);
+      padding: .5rem 0; font-size: .9rem; color: var(--text);
     }
     .check-icon { color: var(--sage); font-weight: 700; flex-shrink: 0; margin-top: .1rem; }
 
@@ -208,7 +217,7 @@
     /* ═══ RESPONSIVE ═══ */
     @media (max-width: 480px) {
       .input-row { grid-template-columns: 1fr; }
-      .time-grid { grid-template-columns: repeat(2, 1fr); }
+      .time-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -227,8 +236,15 @@
   <!-- ═══ STEP 1: QUALIFYING ═══ -->
   <div class="screen active" id="step1">
     <div class="step-label">About Your Practice</div>
-    <div class="step-title">What services does your med spa offer?</div>
-    <div class="step-subtitle">Select all that apply</div>
+    <div class="step-title">Let's learn about your med spa</div>
+    <div class="step-subtitle">This helps us tailor the call to your exact situation so you walk away with real, actionable insights.</div>
+
+    <div class="value-banner">
+      <strong>This is a free, no-pressure strategy session.</strong> Our experts will analyze your current setup and show you exactly where revenue is slipping through the cracks. Most owners walk away with at least 2-3 ideas they can implement immediately — whether you work with us or not.
+    </div>
+
+    <div class="step-label">What services do you offer?</div>
+    <div class="step-subtitle" style="margin-bottom:1rem">Select all that apply</div>
     <div class="pill-group" id="servicesGroup" data-multi="true">
       <div class="pill" data-value="Botox / Fillers"><span class="pill-dot"></span>Botox / Fillers</div>
       <div class="pill" data-value="Laser Treatments"><span class="pill-dot"></span>Laser Treatments</div>
@@ -240,8 +256,8 @@
       <div class="pill" data-value="Other"><span class="pill-dot"></span>Other</div>
     </div>
 
-    <div class="step-label" style="margin-top:1rem">Monthly Revenue</div>
-    <div class="step-subtitle">Rough estimate is fine</div>
+    <div class="step-label">Monthly Revenue</div>
+    <div class="step-subtitle" style="margin-bottom:1rem">Rough estimate is fine — helps us benchmark</div>
     <div class="pill-group" id="revenueGroup">
       <div class="pill" data-value="Under $20k"><span class="pill-dot"></span>Under $20k</div>
       <div class="pill" data-value="$20k-$50k"><span class="pill-dot"></span>$20k - $50k</div>
@@ -250,8 +266,9 @@
       <div class="pill" data-value="$250k+"><span class="pill-dot"></span>$250k+</div>
     </div>
 
-    <div class="step-label" style="margin-top:1rem">Biggest Challenge Right Now</div>
-    <div class="pill-group" id="challengeGroup">
+    <div class="step-label">What's your biggest challenge right now?</div>
+    <div class="step-subtitle" style="margin-bottom:1rem">Select all that apply</div>
+    <div class="pill-group" id="challengeGroup" data-multi="true">
       <div class="pill" data-value="Not enough new patients"><span class="pill-dot"></span>Not enough new patients</div>
       <div class="pill" data-value="Missed calls / slow follow-up"><span class="pill-dot"></span>Missed calls / slow follow-up</div>
       <div class="pill" data-value="Too many no-shows"><span class="pill-dot"></span>Too many no-shows</div>
@@ -274,11 +291,11 @@
       <div class="input-row">
         <div class="field-wrap">
           <div class="field-label">First Name</div>
-          <input type="text" class="field-input" id="firstName" placeholder="Dallas" autocomplete="given-name">
+          <input type="text" class="field-input" id="firstName" placeholder="Jane" autocomplete="given-name">
         </div>
         <div class="field-wrap">
           <div class="field-label">Last Name</div>
-          <input type="text" class="field-input" id="lastName" placeholder="Powers" autocomplete="family-name">
+          <input type="text" class="field-input" id="lastName" placeholder="Smith" autocomplete="family-name">
         </div>
       </div>
       <div class="field-wrap">
@@ -320,8 +337,8 @@
   <div class="screen" id="step3">
     <button class="btn-back" onclick="goTo(2)">&larr; Back</button>
     <div class="step-label">Schedule</div>
-    <div class="step-title">Pick a day</div>
-    <div class="step-subtitle">15-minute strategy call. All times in your local timezone.</div>
+    <div class="step-title">Pick a day and time</div>
+    <div class="step-subtitle">30-minute strategy call. All times shown in your local timezone.</div>
 
     <div class="date-scroll" id="dateScroll"></div>
 
@@ -338,17 +355,17 @@
   <!-- ═══ STEP 4: THANK YOU ═══ -->
   <div class="screen thankyou" id="step4">
     <div class="thankyou-icon">&#10003;</div>
-    <h2>You're Booked</h2>
-    <p style="color:var(--text); max-width:420px; margin-bottom:0">We'll walk through your specific revenue leaks and show you exactly how to recover them.</p>
+    <h2>You're Booked!</h2>
+    <p class="thankyou-sub">We're looking forward to it. Our team will analyze your situation beforehand so we can make every minute count.</p>
 
     <div class="thankyou-detail" id="bookingDetail"></div>
 
     <div class="thankyou-checklist">
       <h3>Before Your Call</h3>
-      <div class="check-item"><span class="check-icon">&#10003;</span> Check your email for a calendar invite</div>
-      <div class="check-item"><span class="check-icon">&#10003;</span> Think about your biggest frustration with missed calls or follow-up</div>
-      <div class="check-item"><span class="check-icon">&#10003;</span> Have your monthly lead/call volume handy (rough estimate is fine)</div>
-      <div class="check-item"><span class="check-icon">&#10003;</span> We'll do the rest — zero prep required</div>
+      <div class="check-item"><span class="check-icon">&#10003;</span> Check your email for a calendar invite and confirmation</div>
+      <div class="check-item"><span class="check-icon">&#10003;</span> Think about your biggest frustration with lead follow-up or missed calls</div>
+      <div class="check-item"><span class="check-icon">&#10003;</span> Have a rough idea of your monthly lead/call volume (estimate is fine)</div>
+      <div class="check-item"><span class="check-icon">&#10003;</span> That's it — we handle the rest. Come with questions, leave with answers.</div>
     </div>
 
     <a href="/" class="btn-next" style="margin-top:2rem; text-decoration:none">Back to VelosLuxe</a>
@@ -357,7 +374,7 @@
 
 <script>
 // ═══ STATE ═══
-var data = { services: [], revenue: '', challenge: '', firstName: '', lastName: '', email: '', phone: '', spaName: '', decisionMaker: '', source: '', date: '', slot: null };
+var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', decisionMaker: '', source: '', date: '', slot: null };
 var currentStep = 1;
 
 // ═══ PILL SELECTION ═══
@@ -397,7 +414,6 @@ function validateStep() {
   }
 }
 
-// Listen on inputs
 ['firstName', 'lastName', 'email', 'phone', 'spaName'].forEach(function(id) {
   document.getElementById(id).addEventListener('input', validateStep);
 });
@@ -410,7 +426,6 @@ function goTo(step) {
   document.getElementById('stepIndicator').textContent = 'Step ' + step + ' of 4';
   document.getElementById('progressFill').style.width = (step * 25) + '%';
   window.scrollTo(0, 0);
-
   if (step === 3) loadDates();
 }
 
@@ -418,7 +433,7 @@ function goTo(step) {
 document.getElementById('btn1').addEventListener('click', function() {
   data.services = getSelected('servicesGroup');
   data.revenue = getSelected('revenueGroup')[0];
-  data.challenge = getSelected('challengeGroup')[0];
+  data.challenges = getSelected('challengeGroup');
   goTo(2);
 });
 
@@ -442,12 +457,11 @@ function loadDates() {
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var today = new Date();
 
-  // Show next 10 weekdays (skip weekends)
   var count = 0; var d = new Date(today);
-  d.setDate(d.getDate() + 1); // start tomorrow
+  d.setDate(d.getDate() + 1);
   while (count < 10) {
     if (d.getDay() !== 0 && d.getDay() !== 6) {
-      var dateStr = d.toISOString().slice(0, 10);
+      var dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
       var card = document.createElement('div');
       card.className = 'date-card';
       card.dataset.date = dateStr;
@@ -472,7 +486,7 @@ function selectDate(dateStr) {
   document.getElementById('noSlots').style.display = 'none';
   document.getElementById('slotsLoading').style.display = 'flex';
 
-  fetch('/api/booking/slots?date=' + dateStr)
+  fetch('/api/booking/slots?date=' + dateStr + '&increment=15')
     .then(function(r) { return r.json(); })
     .then(function(res) {
       document.getElementById('slotsLoading').style.display = 'none';
@@ -494,7 +508,14 @@ function selectDate(dateStr) {
         btn.addEventListener('click', function() {
           document.querySelectorAll('.time-slot').forEach(function(s) { s.classList.remove('selected'); });
           btn.classList.add('selected');
-          data.slot = { start: slot.start, end: slot.end };
+          // Book a 30-min block starting at this time
+          var startParts = slot.start.split('T');
+          var timeParts = startParts[1].split(':');
+          var h = parseInt(timeParts[0]); var m = parseInt(timeParts[1]);
+          m += 30;
+          if (m >= 60) { h += 1; m -= 60; }
+          var endTime = startParts[0] + 'T' + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':00';
+          data.slot = { start: slot.start, end: endTime };
           validateStep();
         });
         grid.appendChild(btn);
@@ -531,7 +552,7 @@ document.getElementById('btn3').addEventListener('click', function() {
       qualifying: {
         services: data.services,
         revenue: data.revenue,
-        challenge: data.challenge,
+        challenges: data.challenges,
         decision_maker: data.decisionMaker,
         source: data.source
       }
@@ -565,7 +586,7 @@ function showThankYou(name) {
     (data.spaName ? '<div class="thankyou-row"><span class="thankyou-label">Med Spa</span><span class="thankyou-value">' + data.spaName + '</span></div>' : '') +
     '<div class="thankyou-row"><span class="thankyou-label">Date</span><span class="thankyou-value">' + dateFormatted + '</span></div>' +
     '<div class="thankyou-row"><span class="thankyou-label">Time</span><span class="thankyou-value">' + formatTime(data.slot.start) + '</span></div>' +
-    '<div class="thankyou-row"><span class="thankyou-label">Duration</span><span class="thankyou-value">15 minutes</span></div>';
+    '<div class="thankyou-row"><span class="thankyou-label">Duration</span><span class="thankyou-value">30 minutes</span></div>';
 
   goTo(4);
 }
