@@ -315,7 +315,16 @@ async function startServer() {
   `);
 
   // ═══ SCHEMA MIGRATIONS — add columns to existing tables ═══
-  try { db.run('ALTER TABLE bookings ADD COLUMN client_id INTEGER DEFAULT 0'); } catch(e) { /* column exists */ }
+  const migrations = [
+    'ALTER TABLE bookings ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE leads ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE calls ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE sms_log ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE contacts ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE appointments ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE reminders ADD COLUMN client_id INTEGER DEFAULT 0',
+  ];
+  for (const m of migrations) { try { db.run(m); } catch(e) { /* column exists */ } }
 
   saveDb();
 
