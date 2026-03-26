@@ -1,4 +1,4 @@
-/* ═══ VelosLuxe Admin Dashboard ═══ */
+/* ═══ Client Value-Proof Dashboard ═══ */
 
 // Admin key from URL param (?key=xxx) or sessionStorage
 const urlKey = new URLSearchParams(window.location.search).get('key');
@@ -8,96 +8,159 @@ if (urlKey) {
 }
 const ADMIN_KEY = sessionStorage.getItem('adminKey') || '';
 
-async function fetchJSON(url) {
-  const res = await fetch(url, { headers: { 'x-admin-key': ADMIN_KEY } });
+let currentDays = 7; // default time filter
+
+async function fetchJSON(url, opts = {}) {
+  const res = await fetch(url, {
+    ...opts,
+    headers: { 'x-admin-key': ADMIN_KEY, 'Content-Type': 'application/json', ...opts.headers }
+  });
   if (res.status === 401) {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><h1>Unauthorized — add ?key=YOUR_KEY to the URL</h1></div>';
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#ccc;"><h1>Unauthorized — add ?key=YOUR_KEY to the URL</h1></div>';
     throw new Error('Unauthorized');
   }
   return res.json();
 }
 
-// ═══ LOAD STATS ═══
-async function loadStats() {
+// ═══ DASHBOARD STATS ═══
+async function loadDashboard() {
   try {
-    const stats = await fetchJSON('/api/admin/stats');
-    document.getElementById('totalLeads').textContent = stats.totalLeads;
-    document.getElementById('totalCalls').textContent = stats.totalCalls;
-    document.getElementById('leadsToday').textContent = stats.leadsToday;
-    document.getElementById('callsToday').textContent = stats.callsToday;
+    const params = currentDays > 0 ? `?days=${currentDays}` : '';
+    const stats = await fetchJSON(`/api/admin/dashboard${params}`);
+
+    document.getElementById('clientName').textContent = stats.clientName || 'Dashboard';
+    document.title = (stats.clientName || 'Dashboard') + ' — Dashboard';
+
+    document.getElementById('totalCalls').textContent = stats.calls || 0;
+    document.getElementById('callsSub').textContent = stats.callsThisMonth ? `${stats.callsThisMonth} this month` : '';
+
+    document.getElementById('totalLeads').textContent = stats.leads || 0;
+    document.getElementById('leadsSub').textContent = stats.leadsThisMonth ? `${stats.leadsThisMonth} this month` : '';
+
+    document.getElementById('totalSms').textContent = stats.smsSent || 0;
+    document.getElementById('smsSub').textContent = stats.smsThisMonth ? `${stats.smsThisMonth} this month` : '';
+
+    document.getElementById('totalReviews').textContent = stats.reviewRequests || 0;
+    document.getElementById('reviewsSub').textContent = '';
+
+    document.getElementById('totalAppointments').textContent = stats.appointments || 0;
+    document.getElementById('appointmentsSub').textContent = '';
+
+    // Activity feed
+    const feed = document.getElementById('activityFeed');
+    if (stats.recentActivity && stats.recentActivity.length > 0) {
+      feed.innerHTML = stats.recentActivity.map(a => `
+        <div class="activity-item">
+          <span class="activity-icon">${activityIcon(a.type)}</span>
+          <div class="activity-content">
+            <span class="activity-text">${esc(a.description)}</span>
+            <span class="activity-time">${formatDate(a.created_at)}</span>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      feed.innerHTML = '<div class="empty">No recent activity</div>';
+    }
   } catch (e) {
-    console.error('Failed to load stats:', e);
+    console.error('Failed to load dashboard:', e);
   }
 }
 
-// ═══ LOAD LEADS ═══
-async function loadLeads() {
-  try {
-    const leads = await fetchJSON('/api/admin/leads?limit=100');
-    const tbody = document.getElementById('leadsBody');
-    const count = document.getElementById('leadsCount');
-    count.textContent = leads.length + ' records';
+function activityIcon(type) {
+  const icons = { call: 'phone', lead: 'person', sms: 'chat', review: 'star', appointment: 'calendar' };
+  return icons[type] || 'info';
+}
 
-    if (leads.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty">No leads yet. Submit the demo form to capture your first lead.</td></tr>';
+// ═══ SMS LOG ═══
+async function loadSmsLog() {
+  try {
+    const logs = await fetchJSON('/api/admin/sms-log?limit=50');
+    const tbody = document.getElementById('smsBody');
+    document.getElementById('smsCount').textContent = logs.length + ' messages';
+
+    if (logs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">No SMS sent yet</td></tr>';
       return;
     }
 
-    tbody.innerHTML = leads.map(l => `
+    tbody.innerHTML = logs.map(s => `
       <tr>
-        <td>${esc(l.name)}</td>
-        <td>${esc(l.email || '—')}</td>
-        <td>${esc(l.spa_name || '—')}</td>
-        <td><span class="status-badge requested">${esc(l.source)}</span></td>
-        <td>${formatDate(l.created_at)}</td>
-        <td><button class="delete-btn" onclick="deleteLead(${l.id})">Delete</button></td>
+        <td>${esc(s.phone)}</td>
+        <td><span class="status-badge ${esc(s.sms_type || '')}">${esc(s.sms_type || 'general')}</span></td>
+        <td class="msg-cell">${esc(truncate(s.message, 60))}</td>
+        <td><span class="status-badge ${esc(s.status)}">${esc(s.status)}</span></td>
+        <td>${formatDate(s.created_at)}</td>
       </tr>
     `).join('');
   } catch (e) {
-    console.error('Failed to load leads:', e);
+    console.error('Failed to load SMS log:', e);
   }
 }
 
-// ═══ LOAD CALLS ═══
-async function loadCalls() {
+// ═══ CONTACTS ═══
+async function loadContacts() {
   try {
-    const calls = await fetchJSON('/api/admin/calls?limit=100');
-    const tbody = document.getElementById('callsBody');
-    const count = document.getElementById('callsCount');
-    count.textContent = calls.length + ' records';
+    const contacts = await fetchJSON('/api/admin/contacts?limit=100');
+    const tbody = document.getElementById('contactsBody');
+    document.getElementById('contactsCount').textContent = contacts.length + ' contacts';
 
-    if (calls.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty">No calls yet. Use the call form or test call below.</td></tr>';
+    if (contacts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">No contacts yet</td></tr>';
       return;
     }
 
-    tbody.innerHTML = calls.map(c => `
+    tbody.innerHTML = contacts.map(c => `
       <tr>
-        <td>${esc(c.name)}</td>
+        <td>${esc(c.name || '—')}</td>
         <td>${esc(c.phone)}</td>
-        <td>${esc(c.source)}</td>
-        <td><span class="status-badge ${esc(c.status)}">${esc(c.status)}</span></td>
-        <td>${formatDate(c.created_at)}</td>
+        <td><span class="status-badge">${esc(c.source || '—')}</span></td>
+        <td>${formatDate(c.last_appointment_at)}</td>
+        <td>${formatDate(c.last_sms_at)}</td>
       </tr>
     `).join('');
   } catch (e) {
-    console.error('Failed to load calls:', e);
+    console.error('Failed to load contacts:', e);
   }
 }
 
-// ═══ DELETE LEAD ═══
-async function deleteLead(id) {
-  if (!confirm('Delete this lead?')) return;
+// ═══ SETTINGS ═══
+async function loadSettings() {
   try {
-    await fetch(`/api/admin/leads/${id}`, { method: 'DELETE', headers: { 'x-admin-key': ADMIN_KEY } });
-    loadLeads();
-    loadStats();
+    const data = await fetchJSON('/api/admin/dashboard');
+    document.getElementById('settingsReviewLink').value = data.settings?.google_review_link || '';
+    document.getElementById('settingsReviewDelay').value = data.settings?.review_delay_minutes || 60;
+    document.getElementById('settingsFollowupDays').value = data.settings?.followup_inactive_days || 60;
+    document.getElementById('settingsFollowupEnabled').value = data.settings?.followup_enabled ? '1' : '0';
   } catch (e) {
-    console.error('Failed to delete lead:', e);
+    console.error('Failed to load settings:', e);
   }
 }
 
-// ═══ PHONE AUTO-FORMAT ═══
+async function saveSettings() {
+  const status = document.getElementById('settingsStatus');
+  try {
+    const body = {
+      google_review_link: document.getElementById('settingsReviewLink').value.trim() || null,
+      review_delay_minutes: parseInt(document.getElementById('settingsReviewDelay').value) || 60,
+      followup_inactive_days: parseInt(document.getElementById('settingsFollowupDays').value) || 60,
+      followup_enabled: parseInt(document.getElementById('settingsFollowupEnabled').value)
+    };
+
+    await fetchJSON('/api/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    });
+
+    status.textContent = 'Saved!';
+    status.className = 'form-status success';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  } catch (e) {
+    status.textContent = 'Failed to save';
+    status.className = 'form-status error';
+  }
+}
+
+// ═══ TEST CALL ═══
 function formatPhoneInput(input) {
   let digits = input.value.replace(/\D/g, '');
   if (digits.length > 10 && digits[0] === '1') digits = digits.slice(1);
@@ -121,7 +184,6 @@ document.querySelectorAll('input[type="tel"]').forEach(input => {
   input.addEventListener('input', () => formatPhoneInput(input));
 });
 
-// ═══ TEST CALL ═══
 async function triggerTestCall() {
   const name = document.getElementById('testName').value.trim() || 'Test User';
   const rawPhone = document.getElementById('testPhone').value.trim();
@@ -146,24 +208,20 @@ async function triggerTestCall() {
   status.textContent = '';
 
   try {
-    const res = await fetch('/api/admin/test-call', {
+    const res = await fetchJSON('/api/admin/test-call', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
       body: JSON.stringify({ name, phone })
     });
-    const data = await res.json();
 
-    if (data.success) {
+    if (res.success) {
       status.textContent = 'Call initiated! Phone should ring shortly.';
       status.className = 'test-status success';
-      loadCalls();
-      loadStats();
     } else {
-      status.textContent = data.error || 'Call failed.';
+      status.textContent = res.error || 'Call failed.';
       status.className = 'test-status error';
     }
   } catch (e) {
-    status.textContent = 'Network error. Is the server running?';
+    status.textContent = 'Network error.';
     status.className = 'test-status error';
   }
 
@@ -173,49 +231,27 @@ async function triggerTestCall() {
   }, 3000);
 }
 
-// ═══ LOAD VAPI CALL LOG ═══
-async function loadVapiCalls() {
-  try {
-    const calls = await fetchJSON('/api/admin/vapi-calls?limit=50');
-    const tbody = document.getElementById('vapiCallsBody');
-    const count = document.getElementById('vapiCallsCount');
-    count.textContent = calls.length + ' calls';
-
-    if (calls.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty">No voice agent calls yet.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = calls.map(c => `
-      <tr>
-        <td>${esc(c.phone || '—')}</td>
-        <td>${esc(c.name || '—')}</td>
-        <td><span class="status-badge ${esc(c.type)}">${esc(c.type)}</span></td>
-        <td><span class="status-badge ${esc(c.status)}">${esc(c.status)}</span></td>
-        <td>${c.duration ? c.duration + 's' : '—'}</td>
-        <td>${formatDate(c.startedAt)}</td>
-      </tr>
-    `).join('');
-  } catch (e) {
-    console.error('Failed to load Vapi calls:', e);
-  }
-}
-
-// ═══ LOAD AI CONFIG ═══
-async function loadConfig() {
-  try {
-    const config = await fetchJSON('/api/vapi-token');
-    document.getElementById('assistantId').textContent = config.assistantId || '—';
-  } catch (e) {
-    document.getElementById('assistantId').textContent = 'Error loading';
-  }
-}
+// ═══ TIME FILTER ═══
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDays = parseInt(btn.dataset.days);
+    loadDashboard();
+  });
+});
 
 // ═══ UTILITIES ═══
 function esc(str) {
+  if (!str) return '';
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function truncate(str, len) {
+  if (!str) return '';
+  return str.length > len ? str.slice(0, len) + '...' : str;
 }
 
 function formatDate(iso) {
@@ -227,14 +263,11 @@ function formatDate(iso) {
 
 // ═══ INIT ═══
 function refreshAll() {
-  loadStats();
-  loadLeads();
-  loadCalls();
-  loadVapiCalls();
+  loadDashboard();
+  loadSmsLog();
+  loadContacts();
 }
 
 refreshAll();
-loadConfig();
-
-// Auto-refresh every 30 seconds
+loadSettings();
 setInterval(refreshAll, 30000);

@@ -18,6 +18,31 @@ const { getAdapter, listPlatforms } = require('./lib/integrations');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Team notification via Slack webhook (SMS-free fallback)
+async function notifyTeam(message) {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.log('No SLACK_WEBHOOK_URL — skipping team notification:', message);
+    return false;
+  }
+  try {
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: message })
+    });
+    if (res.ok) {
+      console.log('Slack notification sent:', message.substring(0, 80));
+      return true;
+    }
+    console.error('Slack webhook error:', res.status);
+    return false;
+  } catch (err) {
+    console.error('Slack notification failed:', err.message);
+    return false;
+  }
+}
+
 // Spaceship CRM Supabase client (VelosLuxe's own internal CRM)
 const spaceship = createClient(
   process.env.SPACESHIP_SUPABASE_URL,
@@ -402,7 +427,7 @@ async function startServer() {
        parseInt(num_locations) || 1, referral_source || null, notes || null]
     );
 
-    // Notify team via SMS
+    // Notify team via SMS + Discord
     const notifyPhone = process.env.TEAM_NOTIFY_PHONE;
     if (notifyPhone) {
       try {
@@ -411,6 +436,7 @@ async function startServer() {
         console.error('Onboarding notification SMS error:', err.message);
       }
     }
+    notifyTeam(`🚀 **New Onboarding:** ${spa_name} — ${contact_name} (${contact_email || contact_phone || 'no contact'}). Check the dashboard.`);
 
     // Also push to Spaceship CRM
     pushToSpaceship({ name: contact_name, email: contact_email, phone: contact_phone, spa_name, source: 'onboarding_form' });
@@ -748,7 +774,7 @@ async function startServer() {
       [apiKeyData, sub.id]
     );
 
-    // Notify team
+    // Notify team via SMS + Discord
     const notifyPhone = process.env.TEAM_NOTIFY_PHONE;
     if (notifyPhone) {
       try {
@@ -757,6 +783,7 @@ async function startServer() {
         console.error('API key notification SMS error:', err.message);
       }
     }
+    notifyTeam(`🔑 **API Key Received:** ${sub.spa_name} — check the onboarding queue.`);
 
     res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connected — VelosLuxe</title></head>
     <body style="font-family:system-ui,-apple-system,sans-serif;background:#f8faff;margin:0;padding:2rem;min-height:100vh;display:flex;align-items:center;justify-content:center">
@@ -781,6 +808,7 @@ async function startServer() {
         console.error('Help request SMS error:', err.message);
       }
     }
+    notifyTeam(`🆘 **Help Requested:** ${sub.spa_name} needs help connecting ${sub.current_platform}. Contact: ${sub.contact_name} (${sub.contact_phone || sub.contact_email || 'no contact'})`);
 
     res.json({ success: true });
   });
@@ -879,7 +907,7 @@ async function startServer() {
       }
     }
 
-    // Notify team
+    // Notify team via SMS + Discord
     const notifyPhone = process.env.TEAM_NOTIFY_PHONE;
     if (notifyPhone) {
       try {
@@ -888,6 +916,7 @@ async function startServer() {
         console.error('Activation team notification error:', err.message);
       }
     }
+    notifyTeam(`✅ **Client Activated:** ${sub.spa_name} — ${sub.current_platform} integration is live!`);
 
     res.json({ success: true, integration_id: integrationId });
   });

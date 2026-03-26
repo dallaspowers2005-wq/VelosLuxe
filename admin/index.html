@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VelosLuxe — Admin Dashboard</title>
+  <title>Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,104 +15,137 @@
 <div class="topbar">
   <a href="/" class="logo">VELOS<span>LUXE</span></a>
   <div class="topbar-right">
-    <span class="topbar-label">Admin Dashboard</span>
-    <a href="/" class="topbar-link">View Site</a>
+    <span class="topbar-label" id="clientName">Dashboard</span>
   </div>
 </div>
 
 <main class="dashboard">
 
-  <!-- ═══ STATS ROW ═══ -->
+  <!-- ═══ TIME FILTER ═══ -->
+  <div class="time-filter">
+    <button class="filter-btn active" data-days="7">Last 7 Days</button>
+    <button class="filter-btn" data-days="30">Last 30 Days</button>
+    <button class="filter-btn" data-days="0">All Time</button>
+  </div>
+
+  <!-- ═══ HERO STAT CARDS ═══ -->
   <section class="stats-row">
     <div class="stat-card">
-      <div class="stat-label">Total Leads</div>
-      <div class="stat-value" id="totalLeads">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Total Calls</div>
+      <div class="stat-label">Calls Answered</div>
       <div class="stat-value" id="totalCalls">—</div>
+      <div class="stat-sub" id="callsSub"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Leads Today</div>
-      <div class="stat-value" id="leadsToday">—</div>
+      <div class="stat-label">Leads Captured</div>
+      <div class="stat-value" id="totalLeads">—</div>
+      <div class="stat-sub" id="leadsSub"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Calls Today</div>
-      <div class="stat-value" id="callsToday">—</div>
+      <div class="stat-label">SMS Follow-Ups</div>
+      <div class="stat-value" id="totalSms">—</div>
+      <div class="stat-sub" id="smsSub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Review Requests</div>
+      <div class="stat-value" id="totalReviews">—</div>
+      <div class="stat-sub" id="reviewsSub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Appointments</div>
+      <div class="stat-value" id="totalAppointments">—</div>
+      <div class="stat-sub" id="appointmentsSub"></div>
     </div>
   </section>
 
-  <!-- ═══ LEADS TABLE ═══ -->
+  <!-- ═══ ACTIVITY FEED ═══ -->
   <section class="panel">
     <div class="panel-header">
-      <h2>Leads</h2>
-      <span class="panel-count" id="leadsCount"></span>
+      <h2>Recent Activity</h2>
     </div>
-    <div class="table-wrap">
-      <table id="leadsTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Spa</th>
-            <th>Source</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="leadsBody">
-          <tr><td colspan="6" class="empty">Loading...</td></tr>
-        </tbody>
-      </table>
+    <div class="activity-feed" id="activityFeed">
+      <div class="empty">Loading...</div>
     </div>
   </section>
 
-  <!-- ═══ CALLS TABLE ═══ -->
+  <!-- ═══ SMS LOG ═══ -->
   <section class="panel">
     <div class="panel-header">
-      <h2>Calls</h2>
-      <span class="panel-count" id="callsCount"></span>
+      <h2>SMS History</h2>
+      <span class="panel-count" id="smsCount"></span>
     </div>
     <div class="table-wrap">
-      <table id="callsTable">
+      <table>
         <thead>
           <tr>
-            <th>Name</th>
             <th>Phone</th>
-            <th>Source</th>
+            <th>Type</th>
+            <th>Message</th>
             <th>Status</th>
             <th>Date</th>
           </tr>
         </thead>
-        <tbody id="callsBody">
+        <tbody id="smsBody">
           <tr><td colspan="5" class="empty">Loading...</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <!-- ═══ VAPI CALL LOG ═══ -->
+  <!-- ═══ CONTACTS ═══ -->
   <section class="panel">
     <div class="panel-header">
-      <h2>Voice Agent Call Log</h2>
-      <span class="panel-count" id="vapiCallsCount"></span>
+      <h2>Contacts</h2>
+      <span class="panel-count" id="contactsCount"></span>
     </div>
     <div class="table-wrap">
-      <table id="vapiCallsTable">
+      <table>
         <thead>
           <tr>
-            <th>Phone</th>
             <th>Name</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Duration</th>
-            <th>Date</th>
+            <th>Phone</th>
+            <th>Source</th>
+            <th>Last Appointment</th>
+            <th>Last SMS</th>
           </tr>
         </thead>
-        <tbody id="vapiCallsBody">
-          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        <tbody id="contactsBody">
+          <tr><td colspan="5" class="empty">Loading...</td></tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Settings</h2>
+    </div>
+    <div class="settings-form">
+      <div class="form-grid">
+        <div class="field">
+          <label>Google Review Link</label>
+          <input type="url" id="settingsReviewLink" placeholder="https://g.page/r/...">
+        </div>
+        <div class="field">
+          <label>Review Delay (minutes after appointment)</label>
+          <input type="number" id="settingsReviewDelay" min="15" max="1440">
+        </div>
+        <div class="field">
+          <label>Inactive Follow-up (days)</label>
+          <input type="number" id="settingsFollowupDays" min="7" max="365">
+        </div>
+        <div class="field">
+          <label>Follow-up Enabled</label>
+          <select id="settingsFollowupEnabled">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="action-btn" onclick="saveSettings()">Save Settings</button>
+        <span class="form-status" id="settingsStatus"></span>
+      </div>
     </div>
   </section>
 
@@ -137,27 +170,10 @@
     </div>
   </section>
 
-  <!-- ═══ AI CONFIG ═══ -->
-  <section class="panel">
-    <div class="panel-header">
-      <h2>AI Receptionist Config</h2>
-    </div>
-    <div class="config-grid">
-      <div class="config-item">
-        <div class="config-label">Assistant ID</div>
-        <div class="config-value mono" id="assistantId">Loading...</div>
-      </div>
-      <div class="config-item">
-        <div class="config-label">Status</div>
-        <div class="config-value"><span class="status-badge active">Active</span></div>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer>
-  <p>VelosLuxe Admin &mdash; Auto-refreshes every 30 seconds</p>
+  <p>Powered by VelosLuxe &mdash; Auto-refreshes every 30 seconds</p>
 </footer>
 
 <script src="admin.js"></script>

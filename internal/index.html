@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VelosLuxe — Internal Setup Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="internal.css">
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <a href="/" class="logo">VELOS<span>LUXE</span></a>
+  <div class="topbar-right">
+    <span class="topbar-label">Internal Setup Tool</span>
+  </div>
+</div>
+
+<main class="dashboard">
+
+  <!-- ═══ OVERVIEW STATS ═══ -->
+  <section class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Active Clients</div>
+      <div class="stat-value" id="activeClients">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Leads (All)</div>
+      <div class="stat-value" id="totalLeadsAll">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Calls (All)</div>
+      <div class="stat-value" id="totalCallsAll">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">SMS Sent (All)</div>
+      <div class="stat-value" id="totalSmsAll">—</div>
+    </div>
+  </section>
+
+  <!-- ═══ PROVISION NEW CLIENT ═══ -->
+  <section class="panel" id="provisionPanel">
+    <div class="panel-header">
+      <h2>Provision New Client</h2>
+      <button class="toggle-btn" onclick="togglePanel('provisionForm')">Expand</button>
+    </div>
+    <div class="panel-body collapsed" id="provisionForm">
+      <form onsubmit="provisionClient(event)">
+        <div class="form-grid">
+          <div class="field">
+            <label>Spa Name *</label>
+            <input type="text" id="spaName" placeholder="Glow Med Spa" required>
+          </div>
+          <div class="field">
+            <label>AI Assistant Name</label>
+            <input type="text" id="assistantName" placeholder="Sophia" value="Sophia">
+          </div>
+          <div class="field">
+            <label>Contact Name</label>
+            <input type="text" id="contactName" placeholder="Jane Smith">
+          </div>
+          <div class="field">
+            <label>Contact Email</label>
+            <input type="email" id="contactEmail" placeholder="jane@glowmedspa.com">
+          </div>
+          <div class="field">
+            <label>Contact Phone</label>
+            <input type="tel" id="contactPhone" placeholder="(555) 123-4567">
+          </div>
+          <div class="field full">
+            <label>Services Offered</label>
+            <textarea id="services" rows="2" placeholder="Botox, Fillers, Laser Hair Removal, Chemical Peels, Microneedling"></textarea>
+          </div>
+          <div class="field">
+            <label>Business Hours</label>
+            <input type="text" id="hours" placeholder="Mon-Fri 9am-6pm, Sat 10am-4pm">
+          </div>
+          <div class="field full">
+            <label>Platform Integration</label>
+            <select id="platformSelect" onchange="onPlatformChange()">
+              <option value="">— Select Platform —</option>
+            </select>
+          </div>
+          <div id="oauthNotice" style="display:none" class="field full">
+            <p style="color:#aaa;font-size:0.85rem;">This platform uses OAuth. After provisioning, use the "Connect" button in the client's integration settings.</p>
+          </div>
+          <div id="credentialFields"></div>
+          <div id="configFields"></div>
+          <div class="field">
+            <label>CRM Webhook URL (legacy fallback)</label>
+            <input type="url" id="crmWebhook" placeholder="https://hooks.zapier.com/...">
+          </div>
+          <div class="field">
+            <label>Booking Webhook URL (legacy fallback)</label>
+            <input type="url" id="bookingWebhook" placeholder="https://hooks.zapier.com/...">
+          </div>
+          <div class="field">
+            <label>Google Review Link</label>
+            <input type="url" id="googleReviewLink" placeholder="https://g.page/r/...">
+          </div>
+          <div class="field">
+            <label>Review Delay (minutes)</label>
+            <input type="number" id="reviewDelay" value="60" min="15" max="1440">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="action-btn" id="provisionBtn">Provision Client</button>
+          <span class="form-status" id="provisionStatus"></span>
+        </div>
+      </form>
+
+      <!-- Provision Result -->
+      <div class="provision-result" id="provisionResult" style="display:none">
+        <h3>Client Provisioned Successfully</h3>
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-label">Dashboard URL</span>
+            <code id="resultDashUrl"></code>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Admin Key</span>
+            <code id="resultAdminKey"></code>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Phone Number</span>
+            <code id="resultPhone"></code>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Appointment Webhook</span>
+            <code id="resultApptWebhook"></code>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Vapi Webhook</span>
+            <code id="resultVapiWebhook"></code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CLIENT LIST ═══ -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>All Clients</h2>
+      <span class="panel-count" id="clientsCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientsBody">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ EDIT CLIENT MODAL ═══ -->
+  <div class="modal-overlay" id="editModal" style="display:none" onclick="if(event.target===this)closeEditModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="editModalTitle">Edit Client</h2>
+        <button class="close-btn" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form onsubmit="saveClient(event)">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="field">
+            <label>Spa Name</label>
+            <input type="text" id="editName">
+          </div>
+          <div class="field">
+            <label>Contact Name</label>
+            <input type="text" id="editContactName">
+          </div>
+          <div class="field">
+            <label>Contact Email</label>
+            <input type="email" id="editContactEmail">
+          </div>
+          <div class="field">
+            <label>Contact Phone</label>
+            <input type="tel" id="editContactPhone">
+          </div>
+          <div class="field">
+            <label>AI Assistant Name</label>
+            <input type="text" id="editAssistantName">
+          </div>
+          <div class="field">
+            <label>CRM Webhook URL (legacy)</label>
+            <input type="url" id="editCrmWebhook">
+          </div>
+          <div class="field">
+            <label>Booking Webhook URL (legacy)</label>
+            <input type="url" id="editBookingWebhook">
+          </div>
+          <div class="field">
+            <label>Google Review Link</label>
+            <input type="url" id="editGoogleReview">
+          </div>
+          <div class="field">
+            <label>Review Delay (min)</label>
+            <input type="number" id="editReviewDelay">
+          </div>
+          <div class="field">
+            <label>Followup Inactive Days</label>
+            <input type="number" id="editFollowupDays">
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="editStatus">
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Followup Enabled</label>
+            <select id="editFollowupEnabled">
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="action-btn">Save Changes</button>
+          <span class="form-status" id="editSaveStatus"></span>
+        </div>
+      </form>
+
+      <!-- Integrations Section -->
+      <div style="border-top:1px solid #333;margin-top:1.5rem;padding-top:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 style="margin:0;">Integrations</h3>
+          <button class="small-btn" onclick="showAddIntegration()">+ Add Integration</button>
+        </div>
+        <div id="editIntegrationsList"></div>
+
+        <!-- Add Integration Sub-form -->
+        <div id="addIntegrationForm" style="display:none;background:#1a1a1a;padding:1rem;border-radius:8px;margin-top:1rem;">
+          <div class="form-grid">
+            <div class="field">
+              <label>Platform</label>
+              <select id="editPlatformSelect" onchange="onEditPlatformChange()">
+                <option value="">— Select —</option>
+              </select>
+            </div>
+            <div id="editNewCredFields"></div>
+            <div id="editNewConfigFields"></div>
+          </div>
+          <div class="form-actions" style="margin-top:0.5rem;">
+            <button class="small-btn" onclick="addIntegrationForClient()">Test & Add</button>
+            <button class="small-btn" onclick="document.getElementById('addIntegrationForm').style.display='none'">Cancel</button>
+            <span class="form-status" id="addIntStatus"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>VelosLuxe Internal &mdash; Auto-refreshes every 30 seconds</p>
+</footer>
+
+<script src="internal.js"></script>
+</body>
+</html>
