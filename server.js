@@ -1372,6 +1372,39 @@ async function startServer() {
   });
 
   // ═══════════════════════════════════════════════════════
+  //  STRATEGY CALL BOOKING (prospect-facing)
+  // ═══════════════════════════════════════════════════════
+
+  app.post('/api/strategy-call', async (req, res) => {
+    const { name, email, phone, spa_name, start, end, qualifying } = req.body;
+    if (!name || !phone || !start || !end) {
+      return res.status(400).json({ error: 'Name, phone, start, and end are required' });
+    }
+
+    try {
+      const bookingId = dbHelpers.insertBooking({
+        name, email, phone,
+        start_time: start,
+        end_time: end
+      });
+
+      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end };
+      await reminders.sendConfirmation(booking);
+      reminders.scheduleReminders(booking);
+
+      const qualStr = qualifying ? `\nServices: ${qualifying.services?.join(', ') || 'N/A'}\nRevenue: ${qualifying.revenue || 'N/A'}\nChallenge: ${qualifying.challenge || 'N/A'}\nDecision Maker: ${qualifying.decision_maker || 'N/A'}\nSource: ${qualifying.source || 'N/A'}` : '';
+      const timeStr = new Date(start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+      notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${qualStr}`);
+
+      res.json({ success: true, bookingId });
+    } catch (err) {
+      console.error('Strategy call booking error:', err.message);
+      res.status(500).json({ error: 'Booking failed' });
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════
   //  CLIENT ADMIN ROUTES (scoped by tenant middleware)
   // ═══════════════════════════════════════════════════════
 
@@ -2082,6 +2115,7 @@ async function startServer() {
   app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
   app.get('/terms', (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
   app.get('/sms-consent', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sms-consent.html')));
+  app.get('/strategy-call', (req, res) => res.sendFile(path.join(__dirname, 'public', 'strategy-call.html')));
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
