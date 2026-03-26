@@ -293,6 +293,27 @@ async function startServer() {
     )
   `);
 
+  // ═══ SCHEMA — strategy calls ═══
+  db.run(`
+    CREATE TABLE IF NOT EXISTS strategy_calls (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_id INTEGER,
+      name TEXT NOT NULL,
+      email TEXT,
+      phone TEXT,
+      spa_name TEXT,
+      start_time TEXT,
+      end_time TEXT,
+      services TEXT,
+      revenue TEXT,
+      challenges TEXT,
+      source TEXT,
+      qualifying_json TEXT,
+      status TEXT DEFAULT 'booked',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   // ═══ SCHEMA MIGRATIONS — add columns to existing tables ═══
   try { db.run('ALTER TABLE bookings ADD COLUMN client_id INTEGER DEFAULT 0'); } catch(e) { /* column exists */ }
 
@@ -1386,11 +1407,32 @@ async function startServer() {
     }
 
     try {
+      // Save to strategy_calls table with qualifying data
+      const scId = insertAndGetId(
+        'INSERT INTO strategy_calls (name, email, phone, spa_name, start_time, end_time, services, revenue, challenges, source, qualifying_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, email || null, phone, spa_name || null, start, end,
+         qualifying?.services?.join(', ') || null,
+         qualifying?.revenue || null,
+         qualifying?.challenges?.join(', ') || null,
+         qualifying?.source || null,
+         JSON.stringify(qualifying || {})]
+      );
+
+      // Also create a lead for tracking
+      runQuery(
+        'INSERT INTO leads (client_id, name, email, spa_name, source) VALUES (0, ?, ?, ?, ?)',
+        [name, email || null, spa_name || null, 'strategy_call']
+      );
+
+      // Book the time slot
       const bookingId = dbHelpers.insertBooking({
         name, email, phone,
         start_time: start,
         end_time: end
       });
+
+      // Update strategy_call with booking_id
+      runQuery('UPDATE strategy_calls SET booking_id = ? WHERE id = ?', [bookingId, scId]);
 
       const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end };
       await reminders.sendConfirmation(booking);
@@ -1401,11 +1443,17 @@ async function startServer() {
 
       notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${qualStr}`);
 
-      res.json({ success: true, bookingId });
+      res.json({ success: true, bookingId, strategyCallId: scId });
     } catch (err) {
       console.error('Strategy call booking error:', err.message);
       res.status(500).json({ error: 'Booking failed' });
     }
+  });
+
+  // List strategy calls (for internal dashboard)
+  app.get('/api/internal/strategy-calls', (req, res) => {
+    const calls = getAll('SELECT * FROM strategy_calls ORDER BY created_at DESC');
+    res.json(calls);
   });
 
   // ═══════════════════════════════════════════════════════
