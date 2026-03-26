@@ -10,9 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a12; --bg-card: #151520; --bg-glass: rgba(21,21,32,.6);
-      --border: rgba(255,255,255,.12); --border-hover: rgba(255,255,255,.22);
-      --text: #d0cde0; --text-bright: #f8f7fc; --text-mid: #9e9bb5;
+      --bg: #0e0e18; --bg-card: #1a1a2e; --bg-glass: rgba(26,26,46,.6);
+      --border: rgba(255,255,255,.15); --border-hover: rgba(255,255,255,.28);
+      --text: #dddae8; --text-bright: #ffffff; --text-mid: #b5b2c8;
       --gold: #c9a46c; --gold-light: #e2c99b;
       --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
       --font-sans: 'Inter', -apple-system, sans-serif;
@@ -119,7 +119,7 @@
       outline: none; transition: border-color .2s;
     }
     .field-input:focus { border-color: var(--gold); }
-    .field-input::placeholder { color: rgba(255,255,255,.25); }
+    .field-input::placeholder { color: rgba(255,255,255,.35); }
 
     /* ═══ CALENDAR ═══ */
     .date-scroll { display: flex; gap: .6rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: 2rem; }
@@ -312,14 +312,7 @@
       </div>
     </div>
 
-    <div class="step-label" style="margin-top:.5rem">Are you the decision maker?</div>
-    <div class="pill-group" id="decisionGroup" style="margin-bottom:2rem">
-      <div class="pill" data-value="Yes"><span class="pill-dot"></span>Yes</div>
-      <div class="pill" data-value="No, but I influence the decision"><span class="pill-dot"></span>No, but I influence it</div>
-      <div class="pill" data-value="No"><span class="pill-dot"></span>No</div>
-    </div>
-
-    <div class="step-label">How did you hear about us?</div>
+    <div class="step-label" style="margin-top:.5rem">How did you hear about us?</div>
     <div class="pill-group" id="sourceGroup" style="margin-bottom:2rem">
       <div class="pill" data-value="Google"><span class="pill-dot"></span>Google</div>
       <div class="pill" data-value="Facebook"><span class="pill-dot"></span>Facebook</div>
@@ -407,7 +400,7 @@ function validateStep() {
     var fn = document.getElementById('firstName').value.trim();
     var em = document.getElementById('email').value.trim();
     var ph = document.getElementById('phone').value.trim();
-    var ok = fn && em && ph && getSelected('decisionGroup').length > 0;
+    var ok = fn && em && ph;
     document.getElementById('btn2').disabled = !ok;
   } else if (currentStep === 3) {
     document.getElementById('btn3').disabled = !data.slot;
@@ -444,7 +437,6 @@ document.getElementById('btn2').addEventListener('click', function() {
   data.email = document.getElementById('email').value.trim();
   data.phone = document.getElementById('phone').value.trim();
   data.spaName = document.getElementById('spaName').value.trim();
-  data.decisionMaker = getSelected('decisionGroup')[0];
   data.source = (getSelected('sourceGroup')[0]) || '';
   goTo(3);
 });
@@ -553,7 +545,6 @@ document.getElementById('btn3').addEventListener('click', function() {
         services: data.services,
         revenue: data.revenue,
         challenges: data.challenges,
-        decision_maker: data.decisionMaker,
         source: data.source
       }
     })

@@ -293,6 +293,9 @@ async function startServer() {
     )
   `);
 
+  // ═══ SCHEMA MIGRATIONS — add columns to existing tables ═══
+  try { db.run('ALTER TABLE bookings ADD COLUMN client_id INTEGER DEFAULT 0'); } catch(e) { /* column exists */ }
+
   saveDb();
 
   // DB helpers for modules
@@ -1393,7 +1396,7 @@ async function startServer() {
       await reminders.sendConfirmation(booking);
       reminders.scheduleReminders(booking);
 
-      const qualStr = qualifying ? `\nServices: ${qualifying.services?.join(', ') || 'N/A'}\nRevenue: ${qualifying.revenue || 'N/A'}\nChallenge: ${qualifying.challenge || 'N/A'}\nDecision Maker: ${qualifying.decision_maker || 'N/A'}\nSource: ${qualifying.source || 'N/A'}` : '';
+      const qualStr = qualifying ? `\nServices: ${qualifying.services?.join(', ') || 'N/A'}\nRevenue: ${qualifying.revenue || 'N/A'}\nChallenges: ${qualifying.challenges?.join(', ') || 'N/A'}\nSource: ${qualifying.source || 'N/A'}` : '';
       const timeStr = new Date(start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
       notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${qualStr}`);
