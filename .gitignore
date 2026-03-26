@@ -2,4 +2,6 @@ node_modules/
 .env
 db/
 .claude/
-dashboard/
+dashboard/node_modules/
+dashboard/.next/
+dashboard/.env.local
