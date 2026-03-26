@@ -4,20 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMS Communication Consent | VelosLuxe</title>
-<meta name="description" content="VelosLuxe SMS communication consent and opt-in information for medical spa clients.">
+<meta name="description" content="VelosLuxe SMS communication consent, opt-in information, and messaging policy for medical spa clients.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #050508;
-    --bg-card: #0f0f1a;
-    --border: rgba(255,255,255,.08);
-    --border-hover: rgba(255,255,255,.15);
-    --text: #b8b5c6;
-    --text-bright: #f2f1f5;
+    --bg: #ffffff;
+    --bg-card: #f9fafb;
+    --border: #e5e7eb;
+    --border-accent: rgba(201,164,108,.25);
+    --text: #4b5563;
+    --text-dark: #111827;
     --gold: #c9a46c;
     --gold-light: #e2c99b;
+    --gold-bg: rgba(201,164,108,.06);
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-serif: 'Playfair Display', Georgia, serif;
   }
@@ -37,8 +38,8 @@
   }
 
   a { color: var(--gold); text-decoration: none; transition: color .2s; }
-  a:hover { color: var(--gold-light); }
-  h1, h2, h3 { color: var(--text-bright); line-height: 1.2; }
+  a:hover { color: #b08a4e; text-decoration: underline; }
+  h1, h2, h3 { color: var(--text-dark); line-height: 1.3; }
 
   /* Topbar */
   .topbar {
@@ -47,13 +48,14 @@
     justify-content: space-between;
     padding: 1.25rem 2.5rem;
     border-bottom: 1px solid var(--border);
+    background: var(--bg);
   }
   .logo {
     font-family: var(--font-sans);
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: .18em;
-    color: var(--text-bright);
+    color: var(--text-dark);
     text-decoration: none;
   }
   .logo span { color: var(--gold); }
@@ -63,14 +65,15 @@
     font-weight: 500;
     letter-spacing: .02em;
     margin-left: 2rem;
+    text-decoration: none;
   }
-  .topbar-nav a:hover { color: var(--text-bright); }
+  .topbar-nav a:hover { color: var(--text-dark); }
 
   /* Content */
   .content {
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 3.5rem 1.5rem 4rem;
+    padding: 3rem 1.5rem 4rem;
     flex: 1;
   }
   .page-label {
@@ -85,175 +88,143 @@
     font-family: var(--font-serif);
     font-size: 2rem;
     font-weight: 500;
-    margin-bottom: 1rem;
+    margin-bottom: .75rem;
   }
   .intro {
     font-size: .95rem;
     color: var(--text);
     margin-bottom: 2.5rem;
-    max-width: 580px;
+    max-width: 620px;
   }
 
-  /* Form Card */
-  .form-card {
+  /* Section cards */
+  .section-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 3rem;
-  }
-  .form-card h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
     margin-bottom: 1.5rem;
   }
-  .form-group {
-    margin-bottom: 1.25rem;
+  .section-card h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
   }
-  .form-group label {
-    display: block;
-    font-size: .8rem;
-    font-weight: 500;
-    color: var(--text-bright);
-    margin-bottom: .4rem;
-    letter-spacing: .02em;
+  .section-card h3 {
+    font-size: .95rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+    margin-top: 1.25rem;
   }
-  .form-group input[type="text"],
-  .form-group input[type="tel"] {
-    width: 100%;
-    padding: .7rem 1rem;
-    background: rgba(255,255,255,.04);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-bright);
-    font-family: var(--font-sans);
+  .section-card h3:first-child { margin-top: 0; }
+  .section-card p, .section-card li {
     font-size: .9rem;
-    outline: none;
-    transition: border-color .2s;
+    line-height: 1.7;
+    color: var(--text);
   }
-  .form-group input:focus {
-    border-color: var(--gold);
+  .section-card ul {
+    list-style: none;
+    padding: 0;
   }
-  .form-group input::placeholder {
-    color: rgba(184,181,198,.4);
+  .section-card ul li {
+    padding: .5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  .section-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .85rem;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
   }
 
-  /* Checkbox */
-  .consent-check {
+  /* Highlight box */
+  .highlight-box {
+    background: var(--gold-bg);
+    border: 1px solid var(--border-accent);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+  }
+  .highlight-box p {
+    font-size: .88rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  /* Info grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: .5rem;
+  }
+  .info-item h3 {
+    font-size: .88rem;
+    margin-bottom: .3rem;
+    margin-top: 0;
+  }
+  .info-item p {
+    font-size: .85rem;
+  }
+
+  /* Consent example */
+  .consent-example {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+  .consent-example .example-label {
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .75rem;
+  }
+  .consent-example .checkbox-row {
     display: flex;
     align-items: flex-start;
     gap: .75rem;
-    margin: 1.5rem 0;
-    padding: 1.25rem;
-    background: rgba(201,164,108,.04);
-    border: 1px solid rgba(201,164,108,.12);
-    border-radius: 8px;
   }
-  .consent-check input[type="checkbox"] {
+  .consent-example .checkbox-row input[type="checkbox"] {
     margin-top: .25rem;
     width: 18px;
     height: 18px;
     flex-shrink: 0;
     accent-color: var(--gold);
-    cursor: pointer;
+    pointer-events: none;
   }
-  .consent-check label {
-    font-size: .82rem;
+  .consent-example .checkbox-row label {
+    font-size: .84rem;
     line-height: 1.6;
     color: var(--text);
-    cursor: pointer;
   }
-  .consent-check label strong {
-    color: var(--text-bright);
-  }
-
-  /* Submit */
-  .btn-submit {
-    display: inline-block;
-    padding: .7rem 2rem;
-    background: var(--gold);
-    color: var(--bg);
-    font-family: var(--font-sans);
-    font-size: .85rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-    border: none;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: all .25s cubic-bezier(.16,1,.3,1);
-  }
-  .btn-submit:hover {
-    background: var(--gold-light);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(201,164,108,.3);
-  }
-
-  /* Opt-in Info */
-  .opt-in-section {
-    margin-bottom: 3rem;
-  }
-  .opt-in-section h2 {
-    font-family: var(--font-serif);
-    font-size: 1.4rem;
-    font-weight: 500;
-    margin-bottom: .5rem;
-  }
-  .opt-in-section .subtitle {
-    font-size: .88rem;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-  }
-  .opt-in-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .opt-in-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: .75rem;
-    font-size: .9rem;
-    line-height: 1.6;
-  }
-  .opt-in-list .num {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    background: rgba(201,164,108,.1);
-    color: var(--gold);
-    font-size: .75rem;
-    font-weight: 700;
-    border-radius: 50%;
-    margin-top: 2px;
+  .consent-example .checkbox-row label strong {
+    color: var(--text-dark);
   }
 
   /* Divider */
   .divider {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 2.5rem 0;
+    margin: 2rem 0;
   }
 
-  /* Additional Info */
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+  /* Contact section */
+  .contact-info {
+    margin-top: .5rem;
   }
-  .info-box h3 {
-    font-size: .85rem;
-    font-weight: 600;
-    margin-bottom: .35rem;
-  }
-  .info-box p {
-    font-size: .82rem;
-    color: var(--text);
-    line-height: 1.6;
+  .contact-info p {
+    font-size: .88rem;
+    margin-bottom: .3rem;
   }
 
   /* Footer */
@@ -265,10 +236,11 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1rem;
+    background: var(--bg-card);
   }
   .footer-left {
     font-size: .78rem;
-    color: rgba(184,181,198,.5);
+    color: #9ca3af;
   }
   .footer-links {
     display: flex;
@@ -277,18 +249,19 @@
   .footer-links a {
     font-size: .78rem;
     color: var(--text);
+    text-decoration: none;
     transition: color .2s;
   }
   .footer-links a:hover {
-    color: var(--text-bright);
+    color: var(--text-dark);
   }
 
   @media (max-width: 600px) {
     .topbar { padding: 1rem 1.25rem; }
     .topbar-nav a { margin-left: 1rem; font-size: .75rem; }
-    .content { padding: 2.5rem 1.25rem 3rem; }
+    .content { padding: 2rem 1.25rem 3rem; }
     h1 { font-size: 1.6rem; }
-    .form-card { padding: 1.5rem; }
+    .section-card { padding: 1.25rem 1.5rem; }
     .info-grid { grid-template-columns: 1fr; }
     footer { padding: 1.5rem 1.25rem; flex-direction: column; text-align: center; }
   }
@@ -300,83 +273,116 @@
   <nav class="topbar">
     <a href="https://velosluxe.com" class="logo">VELOS<span>LUXE</span></a>
     <div class="topbar-nav">
-      <a href="/privacy.html">Privacy</a>
-      <a href="/terms.html">Terms</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
     </div>
   </nav>
 
   <!-- Content -->
   <main class="content">
-    <div class="page-label">Compliance</div>
+    <div class="page-label">SMS Compliance</div>
     <h1>SMS Communication Consent</h1>
     <p class="intro">
-      VelosLuxe provides AI-powered communication services on behalf of our medical spa partners. When you interact with one of our partner med spas, you may receive automated SMS messages for appointment confirmations, reminders, follow-ups, and client reactivation campaigns.
+      VelosLuxe provides AI-powered communication services for medical spas and aesthetic clinics. This page explains how we collect consent before sending SMS messages, what messages you may receive, and how to opt out at any time.
     </p>
 
-    <!-- Consent Form -->
-    <div class="form-card">
-      <h2>Provide Your Consent</h2>
-      <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="Jane Smith">
+    <!-- How Consent Is Collected -->
+    <div class="section-card">
+      <h2>How We Collect Consent</h2>
+      <p>VelosLuxe only sends SMS messages to individuals who have explicitly opted in. Consent is collected through the following methods before any messages are sent:</p>
+      <ul>
+        <li><strong>Online booking forms</strong> — When clients book an appointment through a VelosLuxe-powered med spa website, they check an explicit SMS consent checkbox before submitting. This checkbox is unchecked by default and must be actively selected by the client.</li>
+        <li><strong>Digital intake forms</strong> — New clients complete intake forms that include a separate, optional SMS consent checkbox with clear disclosure language.</li>
+        <li><strong>In-person consent</strong> — When clients provide their phone number at the front desk, SMS consent language is displayed and verbal consent is recorded.</li>
+        <li><strong>Phone calls</strong> — During calls with the med spa's staff or AI receptionist, verbal consent is obtained and recorded before any SMS messages are sent.</li>
+      </ul>
+
+      <div class="consent-example">
+        <div class="example-label">Example Opt-In Checkbox (shown on booking forms)</div>
+        <div class="checkbox-row">
+          <input type="checkbox" disabled>
+          <label>
+            I agree to receive automated SMS messages from <strong>VelosLuxe</strong> on behalf of this medical spa, including appointment confirmations, reminders, and follow-up messages. Message frequency varies (typically 2–6 messages per appointment cycle, max 10 per month). Message and data rates may apply. Consent is not a condition of purchase or service. Reply <strong>STOP</strong> to opt out at any time. Reply <strong>HELP</strong> for help. View our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.
+          </label>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" placeholder="(555) 123-4567">
+
+      <div class="highlight-box">
+        <p>SMS consent is always voluntary. Opting in to text messages is never required to book an appointment, receive services, or make a purchase.</p>
       </div>
-      <div class="consent-check">
-        <input type="checkbox" id="consent">
-        <label for="consent">
-          By providing my phone number, I consent to receive automated SMS messages from <strong>[Med Spa Name]</strong> powered by VelosLuxe, including appointment confirmations, reminders, and follow-up messages. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to opt out at any time. Reply <strong>HELP</strong> for help.
-        </label>
-      </div>
-      <button class="btn-submit" type="button">Submit</button>
     </div>
 
-    <!-- Opt-in Methods -->
-    <section class="opt-in-section">
-      <h2>How Users Opt In</h2>
-      <p class="subtitle">Consent is collected through the following methods before any SMS messages are sent:</p>
-      <ul class="opt-in-list">
-        <li>
-          <span class="num">1</span>
-          <span>Clients provide their phone number when booking appointments via the med spa's website or at the front desk, where SMS consent language is clearly displayed.</span>
-        </li>
-        <li>
-          <span class="num">2</span>
-          <span>Clients check a consent checkbox on digital intake forms and online booking forms before submission.</span>
-        </li>
-        <li>
-          <span class="num">3</span>
-          <span>Verbal consent is obtained and recorded during phone calls with the med spa's staff or AI receptionist.</span>
-        </li>
-        <li>
-          <span class="num">4</span>
-          <span>All contacts can reply <strong>STOP</strong> at any time to immediately unsubscribe from all future SMS messages.</span>
-        </li>
+    <!-- What Messages We Send -->
+    <div class="section-card">
+      <h2>Types of Messages</h2>
+      <p>VelosLuxe sends the following types of SMS messages on behalf of our partner medical spas:</p>
+      <ul>
+        <li><strong>Appointment confirmations</strong> — Sent immediately after booking to confirm date, time, and location.</li>
+        <li><strong>Appointment reminders</strong> — Sent at 48 hours, 24 hours, and 1 hour before your scheduled appointment.</li>
+        <li><strong>Post-visit follow-ups</strong> — Sent after your appointment to check on your experience and provide aftercare information.</li>
+        <li><strong>Review requests</strong> — A single message inviting you to share feedback about your visit.</li>
+        <li><strong>Reactivation messages</strong> — If you haven't visited in 60+ days, a message inviting you to rebook (sent no more than once per month).</li>
       </ul>
-    </section>
+    </div>
+
+    <!-- Message Frequency and Rates -->
+    <div class="section-card">
+      <h2>Message Frequency &amp; Rates</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <h3>Frequency</h3>
+          <p>Message frequency varies based on appointment activity. Typically 2–6 messages per appointment cycle. No more than 10 messages per month.</p>
+        </div>
+        <div class="info-item">
+          <h3>Rates</h3>
+          <p><strong>Message and data rates may apply.</strong> Contact your wireless carrier for details about your text messaging plan.</p>
+        </div>
+        <div class="info-item">
+          <h3>Opt Out</h3>
+          <p>Reply <strong>STOP</strong> to any message to immediately unsubscribe. You will receive a one-time confirmation and no further messages will be sent.</p>
+        </div>
+        <div class="info-item">
+          <h3>Help</h3>
+          <p>Reply <strong>HELP</strong> to any message for assistance. You can also contact us directly using the information below.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Privacy -->
+    <div class="section-card">
+      <h2>Your Privacy &amp; Data Protection</h2>
+      <div class="highlight-box">
+        <p>We do not share, sell, rent, lease, or otherwise provide your opt-in consent, phone number, or any mobile information to third parties or affiliates for marketing or promotional purposes. Your SMS opt-in data is used solely to deliver the messages described on this page.</p>
+      </div>
+      <p>Your phone number and consent records are stored securely and used only for the purpose of delivering the appointment-related messages described above. For complete details on how we collect, use, and protect your information, please review our <a href="/privacy">Privacy Policy</a>.</p>
+    </div>
+
+    <!-- Supported Carriers -->
+    <div class="section-card">
+      <h2>Supported Carriers</h2>
+      <p>Our SMS services are compatible with all major U.S. wireless carriers, including AT&amp;T, T-Mobile, Verizon, Sprint, and most regional carriers. Carriers are not liable for delayed or undelivered messages.</p>
+    </div>
 
     <hr class="divider">
 
-    <!-- Additional Info -->
-    <div class="info-grid">
-      <div class="info-box">
-        <h3>Message Types</h3>
-        <p>Appointment confirmations, appointment reminders (48hr, 24hr, 1hr), post-visit follow-ups, review requests, and reactivation messages for inactive clients.</p>
+    <!-- Contact Information -->
+    <div class="section-card">
+      <h2>Contact Us</h2>
+      <p>If you have questions about our SMS practices, need help opting out, or want to update your preferences, contact us:</p>
+      <div class="contact-info">
+        <p><strong>VelosLuxe</strong></p>
+        <p>Email: <a href="mailto:dallas@velosluxe.com">dallas@velosluxe.com</a></p>
+        <p>Phone: <a href="tel:+19285821712">(928) 582-1712</a></p>
+        <p>Website: <a href="https://velosluxe.com">velosluxe.com</a></p>
       </div>
-      <div class="info-box">
-        <h3>Message Frequency</h3>
-        <p>Message frequency varies based on appointment activity. Typically 2–6 messages per appointment cycle. No more than 10 messages per month.</p>
-      </div>
-      <div class="info-box">
-        <h3>Opt-Out</h3>
-        <p>Reply <strong>STOP</strong> to any message to unsubscribe immediately. You will receive a one-time confirmation and no further messages.</p>
-      </div>
-      <div class="info-box">
-        <h3>Help</h3>
-        <p>Reply <strong>HELP</strong> to any message for assistance, or contact us at <a href="mailto:support@velosluxe.com">support@velosluxe.com</a>.</p>
-      </div>
+    </div>
+
+    <!-- Legal Links -->
+    <div style="margin-top: 1.5rem; font-size: .85rem;">
+      <p>
+        <a href="/privacy">Privacy Policy</a> &nbsp;&middot;&nbsp;
+        <a href="/terms">Terms of Service</a>
+      </p>
     </div>
   </main>
 
@@ -385,8 +391,8 @@
     <div class="footer-left">&copy; 2026 VelosLuxe. All rights reserved.</div>
     <div class="footer-links">
       <a href="https://velosluxe.com">Home</a>
-      <a href="/privacy.html">Privacy Policy</a>
-      <a href="/terms.html">Terms of Service</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
     </div>
   </footer>
 
