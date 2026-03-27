@@ -418,13 +418,21 @@ async function startServer() {
       return !busyPeriods.some(busy => slot.start < busy.end && slot.end > busy.start);
     });
 
+    // Filter out slots less than 4 hours from now
     const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
+    const tz = process.env.BOOKING_TIMEZONE || 'America/New_York';
+    const nowInTz = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const minBookTime = new Date(nowInTz.getTime() + 4 * 3600000);
+    const minTimeStr = `${String(minBookTime.getHours()).padStart(2, '0')}:${String(minBookTime.getMinutes()).padStart(2, '0')}`;
+    const todayStr = nowInTz.toISOString().slice(0, 10);
+    const tomorrowStr = new Date(nowInTz.getTime() + 86400000).toISOString().slice(0, 10);
+
     if (dateStr === todayStr) {
-      const tz = process.env.BOOKING_TIMEZONE || 'America/New_York';
-      const nowInTz = new Date(now.toLocaleString('en-US', { timeZone: tz }));
-      const nowTime = `${String(nowInTz.getHours()).padStart(2, '0')}:${String(nowInTz.getMinutes()).padStart(2, '0')}`;
-      return available.filter(slot => slot.start.slice(11, 16) > nowTime);
+      return available.filter(slot => slot.start.slice(11, 16) > minTimeStr);
+    }
+    if (dateStr === tomorrowStr && nowInTz.getHours() >= 17) {
+      // If it's after 5pm, also apply 4hr buffer to tomorrow's early slots
+      return available.filter(slot => slot.start.slice(11, 16) > minTimeStr);
     }
 
     return available;
