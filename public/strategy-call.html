@@ -307,24 +307,24 @@
       <div class="input-row">
         <div class="field-wrap">
           <div class="field-label">First Name</div>
-          <input type="text" class="field-input" id="firstName" placeholder="Jane" autocomplete="given-name" value="Dallas">
+          <input type="text" class="field-input" id="firstName" placeholder="Jane" autocomplete="given-name">
         </div>
         <div class="field-wrap">
           <div class="field-label">Last Name</div>
-          <input type="text" class="field-input" id="lastName" placeholder="Smith" autocomplete="family-name" value="Powers">
+          <input type="text" class="field-input" id="lastName" placeholder="Smith" autocomplete="family-name">
         </div>
       </div>
       <div class="field-wrap">
         <div class="field-label">Email</div>
-        <input type="email" class="field-input" id="email" placeholder="you@medspa.com" autocomplete="email" value="Dallaspowers2005@gmail.com">
+        <input type="email" class="field-input" id="email" placeholder="you@medspa.com" autocomplete="email">
       </div>
       <div class="field-wrap">
         <div class="field-label">Phone</div>
-        <input type="tel" class="field-input" id="phone" placeholder="(555) 123-4567" autocomplete="tel" value="(602) 309-8856">
+        <input type="tel" class="field-input" id="phone" placeholder="(555) 123-4567" autocomplete="tel">
       </div>
       <div class="field-wrap">
         <div class="field-label">Med Spa Name</div>
-        <input type="text" class="field-input" id="spaName" placeholder="Glow Aesthetics" value="Test Med Spa">
+        <input type="text" class="field-input" id="spaName" placeholder="Glow Aesthetics">
       </div>
     </div>
 
@@ -489,7 +489,7 @@ function loadDates() {
   var count = 0; var d = new Date(today);
   d.setDate(d.getDate() + 1);
   while (count < 4) {
-    if (d.getDay() !== 0 && d.getDay() !== 6) {
+    if (d.getDay() !== 0) { // skip Sunday only
       var dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
       var card = document.createElement('div');
       card.className = 'date-card';

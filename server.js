@@ -1417,7 +1417,7 @@ async function startServer() {
     if (requestedDate > maxDate) return res.json({ slots: [] });
 
     const day = requestedDate.getDay();
-    if (day === 0 || day === 6) return res.json({ slots: [] });
+    if (day === 0) return res.json({ slots: [] }); // Sunday only
 
     const increment = req.query.increment ? parseInt(req.query.increment) : null;
     const slots = getAvailableSlots(date, increment);
