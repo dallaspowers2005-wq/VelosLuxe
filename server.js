@@ -9,6 +9,7 @@ const initSqlJs = require('sql.js');
 const { createClient } = require('@supabase/supabase-js');
 const { sendSMS, sendFollowUpSMS } = require('./lib/sms');
 const reminders = require('./lib/reminders');
+const emailService = require('./lib/email');
 const { resolveClient, requireInternal } = require('./lib/tenant');
 const { pushToCRM } = require('./lib/crm');
 const vapiHelper = require('./lib/vapi');
@@ -427,6 +428,7 @@ async function startServer() {
 
   // Initialize modules with DB access
   reminders.init(dbHelpers);
+  emailService.init();
   jobs.init({ getAll, runQuery, getOne });
 
   // Create tenant middleware with our getOne function
@@ -1451,6 +1453,18 @@ async function startServer() {
       const timeStr = new Date(start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
       notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${qualStr}`);
+
+      // Send confirmation email + schedule email reminders
+      if (email) {
+        emailService.sendBookingConfirmation(booking, qualifying);
+        // Schedule 24h and 1h email reminders
+        const callTime = new Date(start).getTime();
+        const now = Date.now();
+        const ms24h = callTime - 24 * 3600000;
+        const ms1h = callTime - 3600000;
+        if (ms24h > now) setTimeout(() => emailService.sendReminder24h(booking), ms24h - now);
+        if (ms1h > now) setTimeout(() => emailService.sendReminder1h(booking), ms1h - now);
+      }
 
       res.json({ success: true, bookingId, strategyCallId: scId });
     } catch (err) {
