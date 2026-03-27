@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free Med Spa Growth Score — VelosLuxe</title>
   <meta name="description" content="2-minute assessment. See exactly where your med spa is leaking revenue and how to fix it.">
+  <!-- Facebook Pixel -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '2162961391124647');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=2162961391124647&ev=PageView&noscript=1"/></noscript>
+  <!-- End Facebook Pixel -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -690,6 +706,11 @@ function selectOption(idx) {
 }
 
 function showResults() {
+  // Submit gate form data to server for lead capture + tracking
+  var gateName = document.getElementById('gateName') ? document.getElementById('gateName').value.trim() : '';
+  var gateEmail = document.getElementById('gateEmail') ? document.getElementById('gateEmail').value.trim() : '';
+  var gatePhone = document.getElementById('gatePhone') ? document.getElementById('gatePhone').value.trim() : '';
+
   // Calculate score
   var totalScore = 0;
   var maxScore = 0;
@@ -724,6 +745,28 @@ function showResults() {
 
   var totalLossMonthly = missedCallRevenue + slowResponseRevenue + rebookRevenue;
   totalLossMonthly = Math.max(totalLossMonthly, 8400);
+
+  // Send lead data to server + fire pixel event
+  if (gateName && gateEmail) {
+    fetch('/api/quiz-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: gateName,
+        email: gateEmail,
+        phone: gatePhone || null,
+        score: score,
+        revenue_loss: totalLossMonthly
+      })
+    }).catch(function() {});
+  }
+  if (typeof fbq === 'function') {
+    fbq('track', 'CompleteRegistration', {
+      content_name: 'growth_score_quiz',
+      value: totalLossMonthly,
+      currency: 'USD'
+    });
+  }
 
   // Determine tier
   var tier, tierName, tierClass, mirror, fixTitle, fixDesc;

@@ -16,6 +16,7 @@ const { pushToCRM } = require('./lib/crm');
 const vapiHelper = require('./lib/vapi');
 const jobs = require('./lib/jobs');
 const { getAdapter, listPlatforms } = require('./lib/integrations');
+const { trackConversion } = require('./lib/tracking');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -529,6 +530,36 @@ async function startServer() {
     );
 
     pushToSpaceship({ name, email, spa_name, source });
+
+    trackConversion('Lead', { name, email, spa_name, source: source || 'demo_form' }, {
+      sourceUrl: req.headers.referer || 'https://velosluxe.com',
+      userAgent: req.headers['user-agent'],
+      ip: req.ip
+    });
+
+    res.json({ success: true, id });
+  });
+
+  // Quiz lead capture — fires when user submits the gate form on quiz results
+  app.post('/api/quiz-lead', (req, res) => {
+    const { name, email, phone, score, revenue_loss } = req.body;
+    if (!name || !email) return res.status(400).json({ error: 'Name and email required' });
+
+    const id = insertAndGetId(
+      'INSERT INTO leads (client_id, name, email, spa_name, source) VALUES (?, ?, ?, ?, ?)',
+      [0, name, email, null, 'quiz']
+    );
+
+    trackConversion('CompleteRegistration', {
+      name, email, phone,
+      source: 'quiz',
+      value: revenue_loss || null
+    }, {
+      sourceUrl: req.headers.referer || 'https://velosluxe.com/quiz',
+      userAgent: req.headers['user-agent'],
+      ip: req.ip
+    });
+
     res.json({ success: true, id });
   });
 
@@ -987,6 +1018,13 @@ async function startServer() {
       if (vapiRes.ok) {
         runQuery('UPDATE calls SET status = ?, vapi_call_id = ? WHERE id = ?',
           ['initiated', vapiData.id || null, callId]);
+
+        trackConversion('Lead', { name, phone, source: 'demo_call' }, {
+          sourceUrl: req.headers.referer || 'https://velosluxe.com',
+          userAgent: req.headers['user-agent'],
+          ip: req.ip
+        });
+
         res.json({ success: true, callId, vapiCallId: vapiData.id });
       } else {
         runQuery('UPDATE calls SET status = ? WHERE id = ?', ['failed', callId]);
@@ -1463,6 +1501,16 @@ async function startServer() {
       const timeStr = new Date(start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
       notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${zoomLink ? '\n🔗 ' + zoomLink : ''}${qualStr}`);
+
+      trackConversion('Schedule', {
+        name, email, phone, spa_name,
+        source: 'strategy_call',
+        value: qualifying?.revenue || null
+      }, {
+        sourceUrl: req.headers.referer || 'https://velosluxe.com/strategy-call',
+        userAgent: req.headers['user-agent'],
+        ip: req.ip
+      });
 
       // Send confirmation email + schedule email reminders
       if (email) {

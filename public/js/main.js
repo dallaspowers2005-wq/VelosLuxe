@@ -101,6 +101,7 @@ function submitBooking() {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
+      if (typeof fbq === 'function') fbq('track', 'Lead', { content_name: 'demo_call' });
       status.textContent = "Sophia is calling you now! Pick up your phone.";
       status.style.color = 'var(--sage, #4ade80)';
       btn.textContent = 'Call Initiated!';
