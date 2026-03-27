@@ -10,6 +10,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { sendSMS, sendFollowUpSMS } = require('./lib/sms');
 const reminders = require('./lib/reminders');
 const emailService = require('./lib/email');
+const zoom = require('./lib/zoom');
 const { resolveClient, requireInternal } = require('./lib/tenant');
 const { pushToCRM } = require('./lib/crm');
 const vapiHelper = require('./lib/vapi');
@@ -324,6 +325,7 @@ async function startServer() {
     'ALTER TABLE contacts ADD COLUMN client_id INTEGER DEFAULT 0',
     'ALTER TABLE appointments ADD COLUMN client_id INTEGER DEFAULT 0',
     'ALTER TABLE reminders ADD COLUMN client_id INTEGER DEFAULT 0',
+    'ALTER TABLE strategy_calls ADD COLUMN zoom_link TEXT',
   ];
   for (const m of migrations) { try { db.run(m); } catch(e) { /* column exists */ } }
 
@@ -429,6 +431,7 @@ async function startServer() {
   // Initialize modules with DB access
   reminders.init(dbHelpers);
   emailService.init();
+  zoom.init();
   jobs.init({ getAll, runQuery, getOne });
 
   // Create tenant middleware with our getOne function
@@ -1445,25 +1448,33 @@ async function startServer() {
       // Update strategy_call with booking_id
       runQuery('UPDATE strategy_calls SET booking_id = ? WHERE id = ?', [bookingId, scId]);
 
-      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end };
+      // Create Zoom meeting
+      const zoomMeeting = await zoom.createMeeting({ name, spa_name, start_time: start, end_time: end });
+      const zoomLink = zoomMeeting?.join_url || null;
+      if (zoomLink) {
+        runQuery('UPDATE strategy_calls SET zoom_link = ? WHERE id = ?', [zoomLink, scId]);
+      }
+
+      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end, zoom_link: zoomLink };
       await reminders.sendConfirmation(booking);
       reminders.scheduleReminders(booking);
 
       const qualStr = qualifying ? `\nServices: ${qualifying.services?.join(', ') || 'N/A'}\nRevenue: ${qualifying.revenue || 'N/A'}\nChallenges: ${qualifying.challenges?.join(', ') || 'N/A'}\nSource: ${qualifying.source || 'N/A'}` : '';
       const timeStr = new Date(start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
-      notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${qualStr}`);
+      notifyTeam(`📞 **New Strategy Call Booked!**\n${name}${spa_name ? ' — ' + spa_name : ''}\n📧 ${email || 'no email'} | 📱 ${phone}\n🕐 ${timeStr}${zoomLink ? '\n🔗 ' + zoomLink : ''}${qualStr}`);
 
       // Send confirmation email + schedule email reminders
       if (email) {
         emailService.sendBookingConfirmation(booking, qualifying);
-        // Schedule 24h and 1h email reminders
         const callTime = new Date(start).getTime();
         const now = Date.now();
         const ms24h = callTime - 24 * 3600000;
         const ms1h = callTime - 3600000;
+        const ms10m = callTime - 600000;
         if (ms24h > now) setTimeout(() => emailService.sendReminder24h(booking), ms24h - now);
         if (ms1h > now) setTimeout(() => emailService.sendReminder1h(booking), ms1h - now);
+        if (ms10m > now) setTimeout(() => emailService.sendReminder10m(booking), ms10m - now);
       }
 
       res.json({ success: true, bookingId, strategyCallId: scId });
