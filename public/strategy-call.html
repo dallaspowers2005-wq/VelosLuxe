@@ -347,7 +347,7 @@
     <button class="btn-back" onclick="goTo(2)">&larr; Back</button>
     <div class="step-label">Schedule</div>
     <div class="step-title">Pick a day and time</div>
-    <div class="step-subtitle">30-minute strategy call. All times shown in your local timezone.</div>
+    <div class="step-subtitle">30-minute strategy call. All times shown in <strong id="userTzLabel">your local time</strong>.</div>
 
     <div class="date-scroll" id="dateScroll"></div>
 
@@ -385,6 +385,24 @@
 // ═══ STATE ═══
 var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', decisionMaker: '', source: '', date: '', slot: null };
 var currentStep = 1;
+var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+var SERVER_TZ = 'America/Phoenix';
+
+// Detect friendly timezone name
+var tzShort = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop();
+
+// Convert server MST time string to user's local time for display
+function serverTimeToLocal(isoStr) {
+  // isoStr is like "2026-03-28T09:00:00" in MST
+  // Create a date in MST, then format in user's timezone
+  var d = new Date(isoStr + '-07:00'); // MST is UTC-7
+  return d;
+}
+
+function formatTimeLocal(isoStr) {
+  var d = serverTimeToLocal(isoStr);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: userTz });
+}
 
 // ═══ PILL SELECTION ═══
 document.querySelectorAll('.pill-group').forEach(function(group) {
@@ -435,7 +453,10 @@ function goTo(step) {
   document.getElementById('stepIndicator').textContent = 'Step ' + step + ' of 4';
   document.getElementById('progressFill').style.width = (step * 25) + '%';
   window.scrollTo(0, 0);
-  if (step === 3) loadDates();
+  if (step === 3) {
+    document.getElementById('userTzLabel').textContent = tzShort + ' (' + userTz.replace(/_/g, ' ') + ')';
+    loadDates();
+  }
 }
 
 // ═══ STEP 1 → 2 ═══
@@ -512,7 +533,7 @@ function selectDate(dateStr) {
         btn.className = 'time-slot';
         btn.dataset.start = slot.start;
         btn.dataset.end = slot.end;
-        btn.textContent = formatTime(slot.start);
+        btn.textContent = formatTimeLocal(slot.start);
         btn.addEventListener('click', function() {
           document.querySelectorAll('.time-slot').forEach(function(s) { s.classList.remove('selected'); });
           btn.classList.add('selected');
@@ -557,6 +578,7 @@ document.getElementById('btn3').addEventListener('click', function() {
       spa_name: data.spaName,
       start: data.slot.start,
       end: data.slot.end,
+      timezone: userTz,
       qualifying: {
         services: data.services,
         revenue: data.revenue,
@@ -593,7 +615,7 @@ function showThankYou(name) {
     '<div class="thankyou-row"><span class="thankyou-label">Name</span><span class="thankyou-value">' + name + '</span></div>' +
     (data.spaName ? '<div class="thankyou-row"><span class="thankyou-label">Med Spa</span><span class="thankyou-value">' + data.spaName + '</span></div>' : '') +
     '<div class="thankyou-row"><span class="thankyou-label">Date</span><span class="thankyou-value">' + dateFormatted + '</span></div>' +
-    '<div class="thankyou-row"><span class="thankyou-label">Time</span><span class="thankyou-value">' + formatTime(data.slot.start) + '</span></div>' +
+    '<div class="thankyou-row"><span class="thankyou-label">Time</span><span class="thankyou-value">' + formatTimeLocal(data.slot.start) + ' ' + tzShort + '</span></div>' +
     '<div class="thankyou-row"><span class="thankyou-label">Duration</span><span class="thankyou-value">30 minutes</span></div>';
 
   goTo(4);

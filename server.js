@@ -327,6 +327,7 @@ async function startServer() {
     'ALTER TABLE appointments ADD COLUMN client_id INTEGER DEFAULT 0',
     'ALTER TABLE reminders ADD COLUMN client_id INTEGER DEFAULT 0',
     'ALTER TABLE strategy_calls ADD COLUMN zoom_link TEXT',
+    'ALTER TABLE strategy_calls ADD COLUMN timezone TEXT',
   ];
   for (const m of migrations) { try { db.run(m); } catch(e) { /* column exists */ } }
 
@@ -1453,7 +1454,7 @@ async function startServer() {
   // ═══════════════════════════════════════════════════════
 
   app.post('/api/strategy-call', async (req, res) => {
-    const { name, email, phone, spa_name, start, end, qualifying } = req.body;
+    const { name, email, phone, spa_name, start, end, timezone, qualifying } = req.body;
     if (!name || !phone || !start || !end) {
       return res.status(400).json({ error: 'Name, phone, start, and end are required' });
     }
@@ -1490,10 +1491,11 @@ async function startServer() {
       const zoomMeeting = await zoom.createMeeting({ name, spa_name, start_time: start, end_time: end });
       const zoomLink = zoomMeeting?.join_url || null;
       if (zoomLink) {
-        runQuery('UPDATE strategy_calls SET zoom_link = ? WHERE id = ?', [zoomLink, scId]);
+        runQuery('UPDATE strategy_calls SET zoom_link = ?, timezone = ? WHERE id = ?', [zoomLink, timezone || 'America/Phoenix', scId]);
       }
 
-      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end, zoom_link: zoomLink };
+      const prospectTz = timezone || 'America/Phoenix';
+      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end, zoom_link: zoomLink, timezone: prospectTz };
       await reminders.sendConfirmation(booking);
       reminders.scheduleReminders(booking);
 
