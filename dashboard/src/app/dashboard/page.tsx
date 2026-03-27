@@ -51,8 +51,21 @@ export default function OverviewPage() {
     });
   }, []);
 
-  const upcoming = strategyCalls.filter(sc => sc.status === "booked" && new Date(sc.start_time) > new Date());
-  const past = strategyCalls.filter(sc => sc.status !== "booked" || new Date(sc.start_time) <= new Date());
+  const upcoming = strategyCalls.filter(sc => sc.status === "booked");
+  const past = strategyCalls.filter(sc => sc.status !== "booked");
+
+  async function handleAction(id: number, action: string) {
+    const key = sessionStorage.getItem("internalKey") || "";
+    const res = await fetch(`/api/internal/strategy-calls/${id}/action`, {
+      method: "POST",
+      headers: { "x-internal-key": key, "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setStrategyCalls(prev => prev.map(sc => sc.id === id ? { ...sc, status: data.status } : sc));
+    }
+  }
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -228,6 +241,27 @@ export default function OverviewPage() {
                 {sc.source && (
                   <p className="text-xs text-slate-300 mt-2">Source: {sc.source}</p>
                 )}
+
+                <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
+                  <button
+                    onClick={() => handleAction(sc.id, "completed")}
+                    className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+                  >
+                    Mark Completed
+                  </button>
+                  <button
+                    onClick={() => handleAction(sc.id, "no_show")}
+                    className="px-4 py-2 text-xs font-semibold rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                  >
+                    No-Show
+                  </button>
+                  <button
+                    onClick={() => handleAction(sc.id, "cancelled")}
+                    className="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             ))}
           </div>

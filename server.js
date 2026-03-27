@@ -1479,6 +1479,31 @@ async function startServer() {
     res.json(calls);
   });
 
+  // Update strategy call status + trigger emails
+  app.post('/api/internal/strategy-calls/:id/action', async (req, res) => {
+    const { id } = req.params;
+    const { action } = req.body;
+    const sc = getOne('SELECT * FROM strategy_calls WHERE id = ?', [parseInt(id)]);
+    if (!sc) return res.status(404).json({ error: 'Not found' });
+
+    if (action === 'no_show') {
+      runQuery('UPDATE strategy_calls SET status = ? WHERE id = ?', ['no_show', parseInt(id)]);
+      if (sc.email) await emailService.sendNoShowFollowup(sc);
+      notifyTeam(`❌ No-show: ${sc.name}${sc.spa_name ? ' — ' + sc.spa_name : ''}. Reschedule email sent.`);
+      res.json({ success: true, status: 'no_show' });
+    } else if (action === 'completed') {
+      runQuery('UPDATE strategy_calls SET status = ? WHERE id = ?', ['completed', parseInt(id)]);
+      if (sc.email) await emailService.sendPostCallFollowup(sc, sc.spa_name);
+      notifyTeam(`✅ Call completed: ${sc.name}${sc.spa_name ? ' — ' + sc.spa_name : ''}. Follow-up email sent.`);
+      res.json({ success: true, status: 'completed' });
+    } else if (action === 'cancelled') {
+      runQuery('UPDATE strategy_calls SET status = ? WHERE id = ?', ['cancelled', parseInt(id)]);
+      res.json({ success: true, status: 'cancelled' });
+    } else {
+      res.status(400).json({ error: 'Invalid action. Use: no_show, completed, cancelled' });
+    }
+  });
+
   // ═══════════════════════════════════════════════════════
   //  CLIENT ADMIN ROUTES (scoped by tenant middleware)
   // ═══════════════════════════════════════════════════════

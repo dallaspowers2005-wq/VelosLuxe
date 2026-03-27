@@ -451,7 +451,7 @@ function loadDates() {
 
   var count = 0; var d = new Date(today);
   d.setDate(d.getDate() + 1);
-  while (count < 10) {
+  while (count < 4) {
     if (d.getDay() !== 0 && d.getDay() !== 6) {
       var dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
       var card = document.createElement('div');
