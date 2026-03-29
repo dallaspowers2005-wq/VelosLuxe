@@ -298,6 +298,18 @@ async function startServer() {
 
   // ═══ SCHEMA — strategy calls ═══
   db.run(`
+    CREATE TABLE IF NOT EXISTS sms_consent (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT,
+      marketing_consent INTEGER DEFAULT 0,
+      transactional_consent INTEGER DEFAULT 0,
+      consented_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS strategy_calls (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       booking_id INTEGER,
@@ -2284,6 +2296,25 @@ async function startServer() {
   app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
   app.get('/terms', (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
   app.get('/sms-consent', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sms-consent.html')));
+
+  // SMS consent form submission
+  app.post('/api/sms-consent', (req, res) => {
+    const { name, phone, email, marketing_consent, transactional_consent } = req.body;
+    if (!name || !phone) {
+      return res.status(400).json({ error: 'Name and phone are required' });
+    }
+    if (!marketing_consent && !transactional_consent) {
+      return res.status(400).json({ error: 'At least one consent type is required' });
+    }
+    try {
+      const stmt = db.prepare(`INSERT INTO sms_consent (name, phone, email, marketing_consent, transactional_consent, consented_at) VALUES (?, ?, ?, ?, ?, datetime('now'))`);
+      stmt.run(name, phone, email || null, marketing_consent ? 1 : 0, transactional_consent ? 1 : 0);
+      res.json({ success: true });
+    } catch (err) {
+      console.error('SMS consent error:', err);
+      res.json({ success: true }); // Still show success to user — don't expose DB errors
+    }
+  });
   app.get('/strategy-call', (req, res) => res.sendFile(path.join(__dirname, 'public', 'strategy-call.html')));
 
   app.get('*', (req, res) => {

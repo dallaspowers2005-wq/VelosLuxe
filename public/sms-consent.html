@@ -256,6 +256,121 @@
     color: var(--text-dark);
   }
 
+  /* Consent form */
+  .consent-form-wrapper {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.75rem;
+    margin: 1.25rem 0;
+  }
+  .consent-form .form-group {
+    margin-bottom: 1.25rem;
+  }
+  .consent-form .form-label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: .4rem;
+  }
+  .consent-form .form-label .required {
+    color: #ef4444;
+  }
+  .consent-form input[type="text"],
+  .consent-form input[type="tel"],
+  .consent-form input[type="email"] {
+    width: 100%;
+    padding: .7rem 1rem;
+    font-size: .9rem;
+    font-family: var(--font-sans);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-dark);
+    transition: border-color .2s;
+  }
+  .consent-form input[type="text"]:focus,
+  .consent-form input[type="tel"]:focus,
+  .consent-form input[type="email"]:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,164,108,.15);
+  }
+  .consent-checkboxes {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .consent-checkboxes .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+  }
+  .consent-checkboxes .checkbox-row input[type="checkbox"] {
+    margin-top: .25rem;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .consent-checkboxes .checkbox-row label {
+    font-size: .84rem;
+    line-height: 1.6;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .consent-checkboxes .checkbox-row label strong {
+    color: var(--text-dark);
+  }
+  .consent-submit {
+    display: block;
+    width: 100%;
+    padding: .85rem;
+    font-size: .95rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    color: #fff;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .consent-submit:hover {
+    background: #b08a4e;
+  }
+  .consent-submit:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+  .consent-success {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+  }
+  .consent-success p {
+    font-size: .9rem;
+    color: #166534;
+    font-weight: 500;
+  }
+  .consent-error {
+    margin-top: .75rem;
+    padding: .75rem 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+  }
+  .consent-error p {
+    font-size: .85rem;
+    color: #991b1b;
+    font-weight: 500;
+  }
+
   @media (max-width: 600px) {
     .topbar { padding: 1rem 1.25rem; }
     .topbar-nav a { margin-left: 1rem; font-size: .75rem; }
@@ -297,24 +412,45 @@
         <li><strong>Phone calls</strong> — During calls with the med spa's staff or AI receptionist, verbal consent is obtained and recorded before any SMS messages are sent.</li>
       </ul>
 
-      <div class="consent-example">
-        <div class="example-label">Marketing SMS Consent</div>
-        <div class="checkbox-row">
-          <input type="checkbox" disabled>
-          <label>
-            I consent to receive marketing text messages from <strong>VelosLuxe</strong> at the phone number provided. Frequency may vary. Message &amp; data rates may apply. Text <strong>HELP</strong> for assistance, reply <strong>STOP</strong> to opt out.
-          </label>
-        </div>
-      </div>
+      <div class="consent-form-wrapper">
+        <form id="sms-consent-form" class="consent-form">
+          <div class="form-group">
+            <label for="consent-name" class="form-label">Full Name <span class="required">*</span></label>
+            <input type="text" id="consent-name" name="name" required placeholder="Your full name">
+          </div>
+          <div class="form-group">
+            <label for="consent-phone" class="form-label">Phone Number <span class="required">*</span></label>
+            <input type="tel" id="consent-phone" name="phone" required placeholder="(555) 555-5555">
+          </div>
+          <div class="form-group">
+            <label for="consent-email" class="form-label">Email Address</label>
+            <input type="email" id="consent-email" name="email" placeholder="you@example.com">
+          </div>
 
-      <div class="consent-example">
-        <div class="example-label">Non-Marketing / Transactional SMS Consent</div>
-        <div class="checkbox-row">
-          <input type="checkbox" disabled>
-          <label>
-            I consent to receive non-marketing text messages from <strong>VelosLuxe</strong> about my order updates, appointment reminders, and service notifications. Frequency may vary. Message &amp; data rates may apply. Text <strong>HELP</strong> for assistance, reply <strong>STOP</strong> to opt out.
-          </label>
-        </div>
+          <div class="consent-checkboxes">
+            <div class="checkbox-row">
+              <input type="checkbox" id="marketing-consent" name="marketing_consent">
+              <label for="marketing-consent">
+                I consent to receive marketing text messages from <strong>VelosLuxe</strong> at the phone number provided. Frequency may vary. Message &amp; data rates may apply. Text <strong>HELP</strong> for assistance, reply <strong>STOP</strong> to opt out.
+              </label>
+            </div>
+
+            <div class="checkbox-row">
+              <input type="checkbox" id="transactional-consent" name="transactional_consent">
+              <label for="transactional-consent">
+                I consent to receive non-marketing text messages from <strong>VelosLuxe</strong> about my order updates, appointment reminders, and service notifications. Frequency may vary. Message &amp; data rates may apply. Text <strong>HELP</strong> for assistance, reply <strong>STOP</strong> to opt out.
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="consent-submit" id="consent-submit-btn">Submit Consent</button>
+          <div id="consent-success" class="consent-success" style="display:none;">
+            <p>Your SMS consent has been recorded. Thank you!</p>
+          </div>
+          <div id="consent-error" class="consent-error" style="display:none;">
+            <p>Please check at least one consent box above.</p>
+          </div>
+        </form>
       </div>
 
       <div class="highlight-box">
@@ -406,5 +542,54 @@
     </div>
   </footer>
 
+  <script>
+    document.getElementById('sms-consent-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const errorEl = document.getElementById('consent-error');
+      const successEl = document.getElementById('consent-success');
+      const btn = document.getElementById('consent-submit-btn');
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      const marketing = document.getElementById('marketing-consent').checked;
+      const transactional = document.getElementById('transactional-consent').checked;
+
+      if (!marketing && !transactional) {
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch('/api/sms-consent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('consent-name').value.trim(),
+            phone: document.getElementById('consent-phone').value.trim(),
+            email: document.getElementById('consent-email').value.trim(),
+            marketing_consent: marketing,
+            transactional_consent: transactional
+          })
+        });
+
+        if (res.ok) {
+          successEl.style.display = 'block';
+          this.reset();
+        } else {
+          errorEl.querySelector('p').textContent = 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+        }
+      } catch (err) {
+        errorEl.querySelector('p').textContent = 'Something went wrong. Please try again.';
+        errorEl.style.display = 'block';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Submit Consent';
+    });
+  </script>
 </body>
 </html>
