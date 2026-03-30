@@ -2276,6 +2276,10 @@ async function startServer() {
     }
   });
 
+  // ═══ CONTRACTS ═══
+  const { setupContractRoutes } = require('./lib/contracts');
+  setupContractRoutes(app, getAll, getOne, runQuery, insertAndGetId, saveDb, notifyTeam);
+
   // ═══ PITCH PAGES ═══
   const { setupPitchRoutes } = require('./lib/pitch');
   setupPitchRoutes(app);
@@ -2316,6 +2320,8 @@ async function startServer() {
     }
   });
   app.get('/strategy-call', (req, res) => res.sendFile(path.join(__dirname, 'public', 'strategy-call.html')));
+  app.get('/meeting', (req, res) => res.sendFile(path.join(__dirname, 'public', 'meeting.html')));
+  app.get('/demo-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-dashboard.html')));
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VelosLuxe — Client Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050508; --bg-raised: #0a0a12; --bg-card: #0f0f1a; --bg-glass: rgba(15,15,26,.65);
+      --border: rgba(255,255,255,.07); --border-hover: rgba(255,255,255,.12);
+      --text: #b8b5c6; --text-bright: #f2f1f5; --text-dim: rgba(255,255,255,.3);
+      --gold: #c9a46c; --gold-light: #e2c99b; --gold-dim: rgba(201,164,108,.15);
+      --sage: #6ecf8a; --sage-dim: rgba(110,207,138,.12);
+      --rose: #e87777; --rose-dim: rgba(232,119,119,.12);
+      --violet: #8b7bc8; --violet-dim: rgba(139,123,200,.12);
+      --blue: #5b9cf5; --blue-dim: rgba(91,156,245,.12);
+      --font: 'Inter', -apple-system, sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
+      --serif: 'Playfair Display', Georgia, serif;
+      --ease: cubic-bezier(.16,1,.3,1);
+      --radius: 14px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity: .02; }
+
+    /* Demo banner */
+    .demo-banner { background: linear-gradient(135deg, var(--gold), #d4b07a); color: var(--bg); text-align: center; padding: 7px; font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* Layout */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { width: 220px; background: var(--bg-raised); border-right: 1px solid var(--border); flex-shrink: 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sb-logo { font-family: var(--serif); font-size: 17px; letter-spacing: 2px; color: var(--text-bright); padding: 1.25rem 1.25rem 1rem; }
+    .sb-logo span { color: var(--gold); }
+    .sb-section { padding: .5rem 0; }
+    .sb-label { font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-dim); padding: .4rem 1.25rem; }
+    .sb-link { display: flex; align-items: center; gap: .65rem; padding: .45rem 1.25rem; color: var(--text); font-size: .8rem; cursor: default; transition: all .15s; position: relative; }
+    .sb-link:hover { background: rgba(255,255,255,.02); color: var(--text-bright); }
+    .sb-link.active { color: var(--gold); background: var(--gold-dim); }
+    .sb-link.active::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; background: var(--gold); border-radius: 0 2px 2px 0; }
+    .sb-icon { width: 16px; text-align: center; font-size: .85rem; opacity: .8; }
+    .sb-badge { margin-left: auto; font-size: .6rem; font-family: var(--mono); background: var(--sage-dim); color: var(--sage); padding: 1px 6px; border-radius: 100px; font-weight: 600; }
+    .sb-spacer { flex: 1; }
+    .sb-bottom { border-top: 1px solid var(--border); padding: .75rem 1.25rem; }
+    .sb-user { display: flex; align-items: center; gap: .65rem; }
+    .sb-avatar { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--gold), var(--violet)); display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; color: #fff; }
+    .sb-uname { font-size: .78rem; color: var(--text-bright); font-weight: 500; }
+    .sb-urole { font-size: .65rem; color: var(--text-dim); }
+
+    /* Main */
+    .main { flex: 1; padding: 1.75rem 2rem; overflow-y: auto; max-height: 100vh; }
+
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .header-left h1 { font-family: var(--serif); font-size: 1.4rem; color: var(--text-bright); font-weight: 400; }
+    .header-left p { font-size: .78rem; color: var(--text-dim); margin-top: 2px; }
+    .header-right { display: flex; align-items: center; gap: .75rem; }
+    .live-badge { display: flex; align-items: center; gap: .35rem; background: var(--sage-dim); border: 1px solid rgba(110,207,138,.15); border-radius: 100px; padding: .3rem .75rem; font-size: .68rem; color: var(--sage); font-weight: 500; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .period-toggle { display: flex; background: rgba(255,255,255,.04); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+    .period-btn { padding: .3rem .65rem; font-size: .68rem; color: var(--text-dim); cursor: default; border: none; background: none; font-family: var(--font); }
+    .period-btn.active { background: var(--gold-dim); color: var(--gold); }
+
+    /* Hero stats row */
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-bottom: 1.25rem; }
+    .hero-card { background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1rem; position: relative; overflow: hidden; transition: border-color .3s; }
+    .hero-card:hover { border-color: var(--border-hover); }
+    .hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    .hero-card.gold::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .hero-card.sage::before { background: linear-gradient(90deg, transparent, var(--sage), transparent); }
+    .hero-card.blue::before { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+    .hero-card.rose::before { background: linear-gradient(90deg, transparent, var(--rose), transparent); }
+    .hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; }
+    .hero-label { font-size: .68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+    .hero-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .8rem; }
+    .hero-icon.gold { background: var(--gold-dim); }
+    .hero-icon.sage { background: var(--sage-dim); }
+    .hero-icon.blue { background: var(--blue-dim); }
+    .hero-icon.rose { background: var(--rose-dim); }
+    .hero-value { font-family: var(--mono); font-weight: 700; font-size: 1.65rem; color: var(--text-bright); line-height: 1; }
+    .hero-sub { font-size: .7rem; color: var(--text); margin-top: .4rem; display: flex; align-items: center; gap: .35rem; }
+    .hero-change { font-size: .65rem; font-weight: 600; font-family: var(--mono); display: inline-flex; align-items: center; gap: 2px; padding: 1px 5px; border-radius: 4px; }
+    .hero-change.up { background: var(--sage-dim); color: var(--sage); }
+    .hero-change.alert { background: var(--gold-dim); color: var(--gold); }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .grid-full { margin-bottom: 1rem; }
+
+    /* Card */
+    .card { background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; position: relative; overflow: hidden; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .card-title { font-size: .82rem; font-weight: 600; color: var(--text-bright); }
+    .card-tag { font-size: .6rem; padding: 2px 8px; border-radius: 100px; background: rgba(255,255,255,.04); color: var(--text-dim); border: 1px solid var(--border); }
+    .card-tag.gold { background: var(--gold-dim); color: var(--gold); border-color: rgba(201,164,108,.15); }
+
+    /* Revenue chart (CSS bars) */
+    .rev-chart { display: flex; align-items: flex-end; gap: 4px; height: 140px; padding-top: 8px; }
+    .rev-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
+    .rev-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 1.2s var(--ease); position: relative; }
+    .rev-bar.gold { background: linear-gradient(180deg, var(--gold-light), var(--gold)); }
+    .rev-bar.ghost { background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.08); border-bottom: none; }
+    .rev-bar-val { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: .55rem; font-family: var(--mono); color: var(--text-dim); white-space: nowrap; }
+    .rev-bar-lbl { font-size: .55rem; color: var(--text-dim); }
+
+    /* Donut chart (CSS) */
+    .donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
+    .donut { width: 120px; height: 120px; border-radius: 50%; position: relative; flex-shrink: 0; }
+    .donut-center { position: absolute; inset: 25px; border-radius: 50%; background: var(--bg-card); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .donut-center-val { font-family: var(--mono); font-weight: 700; font-size: 1.1rem; color: var(--text-bright); }
+    .donut-center-lbl { font-size: .6rem; color: var(--text-dim); }
+    .donut-legend { display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+    .legend-item { display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: var(--text); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .legend-val { margin-left: auto; font-family: var(--mono); font-weight: 600; color: var(--text-bright); font-size: .72rem; }
+
+    /* Performance rings */
+    .perf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .perf-item { text-align: center; }
+    .perf-ring { position: relative; width: 80px; height: 80px; margin: 0 auto .5rem; }
+    .perf-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .perf-ring circle { fill: none; stroke-width: 5; }
+    .ring-bg { stroke: rgba(255,255,255,.04); }
+    .ring-fill { stroke-linecap: round; transition: stroke-dashoffset 1.8s var(--ease); }
+    .perf-val { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 1rem; color: var(--text-bright); }
+    .perf-label { font-size: .7rem; color: var(--text); }
+    .perf-bench { font-size: .6rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* Activity feed */
+    .feed { display: flex; flex-direction: column; }
+    .feed-item { display: flex; align-items: flex-start; gap: .65rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: .75rem; flex-shrink: 0; }
+    .feed-icon.call { background: var(--sage-dim); color: var(--sage); }
+    .feed-icon.lead { background: var(--gold-dim); color: var(--gold); }
+    .feed-icon.book { background: var(--blue-dim); color: var(--blue); }
+    .feed-icon.review { background: var(--violet-dim); color: var(--violet); }
+    .feed-icon.save { background: var(--rose-dim); color: var(--rose); }
+    .feed-icon.react { background: rgba(201,164,108,.08); color: var(--gold-light); }
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-text { font-size: .78rem; color: var(--text); line-height: 1.45; }
+    .feed-text strong { color: var(--text-bright); font-weight: 500; }
+    .feed-text .val { font-family: var(--mono); color: var(--gold-light); font-weight: 500; }
+    .feed-meta { font-size: .65rem; color: var(--text-dim); margin-top: 1px; }
+
+    /* Upcoming table */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); text-align: left; padding: .4rem 0; border-bottom: 1px solid var(--border); font-weight: 500; }
+    .tbl td { padding: .55rem 0; border-bottom: 1px solid var(--border); font-size: .78rem; color: var(--text); }
+    .tbl td:first-child { color: var(--text-bright); font-weight: 500; }
+    .tbl-status { display: inline-flex; align-items: center; gap: 3px; font-size: .65rem; padding: 2px 7px; border-radius: 100px; font-weight: 500; }
+    .tbl-status.confirmed { background: var(--sage-dim); color: var(--sage); }
+    .tbl-status.pending { background: var(--gold-dim); color: var(--gold); }
+    .tbl-status.reminded { background: var(--blue-dim); color: var(--blue); }
+
+    /* Benchmark comparison bars */
+    .bench-list { display: flex; flex-direction: column; gap: .85rem; }
+    .bench-item-label { display: flex; justify-content: space-between; font-size: .75rem; margin-bottom: .3rem; }
+    .bench-item-label span:first-child { color: var(--text); }
+    .bench-item-label span:last-child { font-family: var(--mono); font-weight: 600; color: var(--text-bright); font-size: .72rem; }
+    .bench-bar-track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.04); position: relative; overflow: visible; }
+    .bench-bar-fill { height: 100%; border-radius: 3px; transition: width 1.5s var(--ease); position: relative; }
+    .bench-bar-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+    .bench-bar-fill.sage { background: linear-gradient(90deg, #4da868, var(--sage)); }
+    .bench-bar-fill.blue { background: linear-gradient(90deg, #4080d0, var(--blue)); }
+    .bench-marker { position: absolute; top: -4px; width: 2px; height: 14px; background: var(--rose); border-radius: 1px; }
+    .bench-marker-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: .55rem; color: var(--rose); white-space: nowrap; font-family: var(--mono); }
+
+    /* Insight cards */
+    .insight { display: flex; align-items: flex-start; gap: .75rem; padding: .85rem; background: rgba(201,164,108,.04); border: 1px solid rgba(201,164,108,.1); border-radius: 10px; margin-bottom: .6rem; }
+    .insight:last-child { margin-bottom: 0; }
+    .insight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .insight-text { font-size: .78rem; color: var(--text); line-height: 1.5; }
+    .insight-text strong { color: var(--gold-light); }
+    .insight.green { background: rgba(110,207,138,.04); border-color: rgba(110,207,138,.1); }
+    .insight.green strong { color: var(--sage); }
+
+    /* Money saved callout */
+    .money-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+    .money-card { text-align: center; padding: .85rem .5rem; background: rgba(255,255,255,.02); border-radius: 10px; border: 1px solid var(--border); }
+    .money-card-icon { font-size: 1.2rem; margin-bottom: .35rem; }
+    .money-card-val { font-family: var(--mono); font-weight: 700; font-size: 1.15rem; color: var(--text-bright); }
+    .money-card-label { font-size: .65rem; color: var(--text-dim); margin-top: .2rem; line-height: 1.3; }
+    .money-card.gold .money-card-val { color: var(--gold-light); }
+    .money-card.sage .money-card-val { color: var(--sage); }
+    .money-card.blue .money-card-val { color: var(--blue); }
+    .money-card.violet .money-card-val { color: var(--violet); }
+
+    /* Responsive */
+    @media (max-width: 1000px) { .sidebar { display: none; } .hero-stats { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .hero-stats { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } .main { padding: 1rem; } .money-row { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">Demo &mdash; This is what your VelosLuxe dashboard will look like</div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sb-logo">VELOS<span>LUXE</span></div>
+      <div class="sb-section">
+        <div class="sb-label">Overview</div>
+        <div class="sb-link active"><span class="sb-icon">&#9632;</span> Dashboard</div>
+        <div class="sb-link"><span class="sb-icon">&#128200;</span> Revenue <span class="sb-badge">+$12.4K</span></div>
+        <div class="sb-link"><span class="sb-icon">&#128222;</span> Calls &amp; Leads</div>
+        <div class="sb-link"><span class="sb-icon">&#128197;</span> Appointments</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">AI Automation</div>
+        <div class="sb-link"><span class="sb-icon">&#129302;</span> Sophia AI <span class="sb-badge" style="background:var(--sage-dim);color:var(--sage);">Live</span></div>
+        <div class="sb-link"><span class="sb-icon">&#128276;</span> Reminders</div>
+        <div class="sb-link"><span class="sb-icon">&#11088;</span> Reviews</div>
+        <div class="sb-link"><span class="sb-icon">&#128260;</span> Reactivation</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Reports</div>
+        <div class="sb-link"><span class="sb-icon">&#128202;</span> Monthly Report</div>
+        <div class="sb-link"><span class="sb-icon">&#127919;</span> Benchmarks</div>
+      </div>
+      <div class="sb-spacer"></div>
+      <div class="sb-bottom">
+        <div class="sb-link"><span class="sb-icon">&#9881;</span> Settings</div>
+        <div class="sb-link"><span class="sb-icon">&#128172;</span> Support</div>
+        <div class="sb-user">
+          <div class="sb-avatar">GS</div>
+          <div>
+            <div class="sb-uname">Glow Med Spa</div>
+            <div class="sb-urole">Professional Plan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-left">
+          <h1>Good morning, Sarah</h1>
+          <p>Here's how your practice is performing</p>
+        </div>
+        <div class="header-right">
+          <div class="live-badge"><div class="live-dot"></div> Sophia Online</div>
+          <div class="period-toggle">
+            <div class="period-btn">Today</div>
+            <div class="period-btn active">This Month</div>
+            <div class="period-btn">90 Days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero stats -->
+      <div class="hero-stats">
+        <div class="hero-card gold">
+          <div class="hero-top">
+            <span class="hero-label">Revenue Recovered</span>
+            <div class="hero-icon gold">&#128176;</div>
+          </div>
+          <div class="hero-value" id="statRev">$0</div>
+          <div class="hero-sub">
+            <span class="hero-change up">&#9650; 391% ROI</span>
+            from leads that would have been lost
+          </div>
+        </div>
+        <div class="hero-card sage">
+          <div class="hero-top">
+            <span class="hero-label">After-Hours Calls Saved</span>
+            <div class="hero-icon sage">&#127769;</div>
+          </div>
+          <div class="hero-value" id="statAfterHours">0</div>
+          <div class="hero-sub">
+            <span class="hero-change up">&#9650; $8,050</span>
+            revenue from calls you'd have missed
+          </div>
+        </div>
+        <div class="hero-card blue">
+          <div class="hero-top">
+            <span class="hero-label">Appointments Booked</span>
+            <div class="hero-icon blue">&#128197;</div>
+          </div>
+          <div class="hero-value" id="statAppts">0</div>
+          <div class="hero-sub">
+            <span class="hero-change up">&#9650; 32%</span>
+            lead-to-booking conversion
+          </div>
+        </div>
+        <div class="hero-card rose">
+          <div class="hero-top">
+            <span class="hero-label">No-Shows Prevented</span>
+            <div class="hero-icon rose">&#128276;</div>
+          </div>
+          <div class="hero-value" id="statNoShows">0</div>
+          <div class="hero-sub">
+            <span class="hero-change alert">= $5,110 saved</span>
+            via automated reminders
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights -->
+      <div class="grid-full">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">&#128161; AI Insights</span>
+            <span class="card-tag gold">Sophia</span>
+          </div>
+          <div class="insight">
+            <span class="insight-icon">&#127769;</span>
+            <span class="insight-text"><strong>23 calls were answered after business hours this month.</strong> Without Sophia, these would have gone to voicemail. Based on your avg booking value of $285, that's approximately <strong>$8,050 in revenue saved.</strong></span>
+          </div>
+          <div class="insight green">
+            <span class="insight-icon">&#128260;</span>
+            <span class="insight-text"><strong>7 inactive patients rebooked this month</strong> through automated reactivation. Average re-engagement happens at 73 days inactive. These patients have a <strong>60-80% higher lifetime value</strong> than new patients.</span>
+          </div>
+          <div class="insight">
+            <span class="insight-icon">&#128200;</span>
+            <span class="insight-text">Your <strong>response time is under 45 seconds</strong> &mdash; the industry average is 42 hours. Med spas that respond in the first minute see a <strong>391% higher conversion rate.</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue chart + Service breakdown -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Revenue Recovered</span>
+            <span class="card-tag">Weekly</span>
+          </div>
+          <div class="rev-chart" id="revChart">
+            <div class="rev-bar-wrap"><div class="rev-bar gold" style="height:0" data-h="35%"><div class="rev-bar-val">$1.8K</div></div><div class="rev-bar-lbl">W1</div></div>
+            <div class="rev-bar-wrap"><div class="rev-bar gold" style="height:0" data-h="52%"><div class="rev-bar-val">$2.6K</div></div><div class="rev-bar-lbl">W2</div></div>
+            <div class="rev-bar-wrap"><div class="rev-bar gold" style="height:0" data-h="68%"><div class="rev-bar-val">$3.4K</div></div><div class="rev-bar-lbl">W3</div></div>
+            <div class="rev-bar-wrap"><div class="rev-bar gold" style="height:0" data-h="92%"><div class="rev-bar-val">$4.6K</div></div><div class="rev-bar-lbl">W4</div></div>
+            <div class="rev-bar-wrap"><div class="rev-bar ghost" style="height:0" data-h="100%"><div class="rev-bar-val" style="color:var(--text-dim);">proj.</div></div><div class="rev-bar-lbl" style="color:var(--gold);">W5</div></div>
+          </div>
+          <div style="margin-top:.75rem;font-size:.7rem;color:var(--text-dim);text-align:center;">Trending up &mdash; week-over-week growth as Sophia optimizes</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Top Services Booked via AI</span>
+            <span class="card-tag">This Month</span>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut" style="background: conic-gradient(var(--gold) 0deg 126deg, var(--sage) 126deg 216deg, var(--blue) 216deg 277deg, var(--violet) 277deg 324deg, rgba(255,255,255,.08) 324deg 360deg);">
+              <div class="donut-center">
+                <div class="donut-center-val">31</div>
+                <div class="donut-center-lbl">booked</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> Botox / Dysport <span class="legend-val">35%</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--sage);"></div> Dermal Fillers <span class="legend-val">25%</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div> Laser / IPL <span class="legend-val">17%</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--violet);"></div> Morpheus8 / RF <span class="legend-val">13%</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.08);"></div> Other <span class="legend-val">10%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance vs benchmarks + Where your revenue comes from -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Your Performance vs. Industry</span>
+            <span class="card-tag gold">Outperforming</span>
+          </div>
+          <div class="bench-list" id="benchmarks">
+            <div>
+              <div class="bench-item-label"><span>Lead Response Time</span><span>&lt;45 sec</span></div>
+              <div class="bench-bar-track">
+                <div class="bench-bar-fill sage" style="width:0" data-w="95%"></div>
+                <div class="bench-marker" style="left:3%"><div class="bench-marker-label">Avg: 42 hrs</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="bench-item-label"><span>Call Answer Rate</span><span>98%</span></div>
+              <div class="bench-bar-track">
+                <div class="bench-bar-fill sage" style="width:0" data-w="98%"></div>
+                <div class="bench-marker" style="left:62%"><div class="bench-marker-label">Avg: 62%</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="bench-item-label"><span>Appointment Show Rate</span><span>85%</span></div>
+              <div class="bench-bar-track">
+                <div class="bench-bar-fill blue" style="width:0" data-w="85%"></div>
+                <div class="bench-marker" style="left:70%"><div class="bench-marker-label">Avg: 70%</div></div>
+              </div>
+            </div>
+            <div>
+              <div class="bench-item-label"><span>Lead-to-Booking Rate</span><span>32%</span></div>
+              <div class="bench-bar-track">
+                <div class="bench-bar-fill gold" style="width:0" data-w="70%"></div>
+                <div class="bench-marker" style="left:45%"><div class="bench-marker-label">Avg: 20%</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Revenue Breakdown</span>
+            <span class="card-tag">This Month</span>
+          </div>
+          <div class="money-row">
+            <div class="money-card sage">
+              <div class="money-card-icon">&#127769;</div>
+              <div class="money-card-val" id="moneyAfter">$0</div>
+              <div class="money-card-label">After-hours<br>calls saved</div>
+            </div>
+            <div class="money-card blue">
+              <div class="money-card-icon">&#128276;</div>
+              <div class="money-card-val" id="moneyNoshow">$0</div>
+              <div class="money-card-label">No-shows<br>prevented</div>
+            </div>
+            <div class="money-card violet">
+              <div class="money-card-icon">&#128260;</div>
+              <div class="money-card-val" id="moneyReact">$0</div>
+              <div class="money-card-label">Reactivated<br>patients</div>
+            </div>
+            <div class="money-card gold">
+              <div class="money-card-icon">&#9889;</div>
+              <div class="money-card-val" id="moneySpeed">$0</div>
+              <div class="money-card-label">Speed-to-lead<br>conversions</div>
+            </div>
+          </div>
+          <div style="margin-top:.85rem;padding:.6rem;background:rgba(201,164,108,.05);border-radius:8px;text-align:center;">
+            <span style="font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;">Total Revenue Impact</span>
+            <div style="font-family:var(--mono);font-weight:700;font-size:1.4rem;color:var(--gold-light);" id="moneyTotal">$0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity feed + Upcoming appointments -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Live Activity</span>
+            <span class="card-tag gold">Real-time</span>
+          </div>
+          <div class="feed">
+            <div class="feed-item">
+              <div class="feed-icon call">&#128222;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>Sophia answered call</strong> from (480) 555-8291 &mdash; booked Botox consultation for Thursday at 2pm</div>
+                <div class="feed-meta">2 min ago &bull; Duration: 1m 42s</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon lead">&#9889;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>New lead captured</strong> &mdash; Jennifer M. via Instagram DM. Responded in <span class="val">12 seconds</span></div>
+                <div class="feed-meta">18 min ago</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon save">&#128276;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>No-show prevented</strong> &mdash; Lisa P. confirmed after 24hr reminder. CoolSculpting session worth <span class="val">$750</span></div>
+                <div class="feed-meta">1 hr ago</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon review">&#11088;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>New 5-star review</strong> &mdash; "Sophia was so helpful scheduling my appointment!" &mdash; Maria L.</div>
+                <div class="feed-meta">3 hrs ago &bull; Google Reviews</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon call">&#127769;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>After-hours call answered</strong> at 9:47 PM &mdash; lip filler consult booked for Monday. This call would have gone to voicemail.</div>
+                <div class="feed-meta">Last night</div>
+              </div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon react">&#128260;</div>
+              <div class="feed-body">
+                <div class="feed-text"><strong>Patient reactivated</strong> &mdash; Amanda S. (inactive 73 days) booked Morpheus8 after automated re-engagement</div>
+                <div class="feed-meta">Yesterday &bull; Est. value: <span class="val">$1,200</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Upcoming Appointments</span>
+            <span class="card-tag">Next 7 Days</span>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Patient</th><th>Service</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Sarah M.</td><td>Botox</td><td>Today, 2:00 PM</td><td><span class="tbl-status reminded">Reminded</span></td></tr>
+              <tr><td>Rachel K.</td><td>CoolSculpting</td><td>Today, 4:30 PM</td><td><span class="tbl-status confirmed">Confirmed</span></td></tr>
+              <tr><td>Jennifer M.</td><td>Lip Filler</td><td>Mon, 10:00 AM</td><td><span class="tbl-status confirmed">Confirmed</span></td></tr>
+              <tr><td>Lisa P.</td><td>Morpheus8</td><td>Mon, 1:00 PM</td><td><span class="tbl-status pending">Pending</span></td></tr>
+              <tr><td>Amanda S.</td><td>Morpheus8</td><td>Tue, 11:00 AM</td><td><span class="tbl-status confirmed">Confirmed</span></td></tr>
+              <tr><td>Nicole R.</td><td>Hydrafacial</td><td>Wed, 3:00 PM</td><td><span class="tbl-status pending">Pending</span></td></tr>
+              <tr><td>Brittany C.</td><td>IV Therapy</td><td>Thu, 9:30 AM</td><td><span class="tbl-status confirmed">Confirmed</span></td></tr>
+              <tr><td>Maria L.</td><td>Follow-up</td><td>Fri, 2:00 PM</td><td><span class="tbl-status confirmed">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:.85rem;padding:.5rem;background:rgba(255,255,255,.02);border-radius:8px;display:flex;justify-content:space-between;font-size:.7rem;">
+            <span style="color:var(--text-dim);">8 appointments this week</span>
+            <span style="color:var(--sage);font-weight:500;">6 confirmed &bull; 2 pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sophia performance -->
+      <div class="grid-full">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Sophia AI Performance</span>
+            <span class="card-tag gold">This Month</span>
+          </div>
+          <div class="perf-grid">
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--gold);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="2"></circle></svg>
+                <div class="perf-val">98%</div>
+              </div>
+              <div class="perf-label">Calls Answered</div>
+              <div class="perf-bench">Industry avg: 62%</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--sage);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="8"></circle></svg>
+                <div class="perf-val">92%</div>
+              </div>
+              <div class="perf-label">Patient Satisfaction</div>
+              <div class="perf-bench">Based on call sentiment</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--blue);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="7"></circle></svg>
+                <div class="perf-val">93%</div>
+              </div>
+              <div class="perf-label">Booking Accuracy</div>
+              <div class="perf-bench">Correct time + service</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--violet);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="15"></circle></svg>
+                <div class="perf-val">85%</div>
+              </div>
+              <div class="perf-label">Show Rate</div>
+              <div class="perf-bench">Industry avg: 70%</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--gold-light);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="55"></circle></svg>
+                <div class="perf-val">0.8s</div>
+              </div>
+              <div class="perf-label">Avg Pickup Time</div>
+              <div class="perf-bench">Before: 3-4 rings</div>
+            </div>
+            <div class="perf-item">
+              <div class="perf-ring">
+                <svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="15.9"></circle><circle class="ring-fill" style="stroke:var(--sage);" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100" data-target="3"></circle></svg>
+                <div class="perf-val">4.8</div>
+              </div>
+              <div class="perf-label">Google Rating</div>
+              <div class="perf-bench">+0.3 since launch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function animateNum(el, target, prefix, suffix, duration) {
+      prefix = prefix || ''; suffix = suffix || ''; duration = duration || 2000;
+      var start = 0, startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts - startTime) / duration, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + Math.round(start + (target - start) * e).toLocaleString() + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    setTimeout(function() {
+      animateNum(document.getElementById('statRev'), 12400, '$');
+      animateNum(document.getElementById('statAfterHours'), 23);
+      animateNum(document.getElementById('statAppts'), 31);
+      animateNum(document.getElementById('statNoShows'), 18);
+      animateNum(document.getElementById('moneyAfter'), 8050, '$');
+      animateNum(document.getElementById('moneyNoshow'), 5110, '$');
+      animateNum(document.getElementById('moneyReact'), 2800, '$');
+      animateNum(document.getElementById('moneySpeed'), 4490, '$');
+      animateNum(document.getElementById('moneyTotal'), 12400, '$');
+    }, 400);
+
+    setTimeout(function() {
+      document.querySelectorAll('.rev-bar[data-h]').forEach(function(b) { b.style.height = b.getAttribute('data-h'); });
+      document.querySelectorAll('.bench-bar-fill[data-w]').forEach(function(b) { b.style.width = b.getAttribute('data-w'); });
+      document.querySelectorAll('.ring-fill[data-target]').forEach(function(r) { r.style.strokeDashoffset = r.getAttribute('data-target'); });
+    }, 600);
+  </script>
+</body>
+</html>
