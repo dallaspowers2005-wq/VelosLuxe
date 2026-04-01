@@ -557,6 +557,54 @@
     .final-cta p { color: var(--text); margin-bottom: 2.5rem; font-size: 1.05rem; position: relative; }
     .final-cta .hero-ctas { position: relative; }
 
+    /* ═══ EXIT INTENT POPUP ═══ */
+    .exit-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(5,5,8,.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      align-items: center; justify-content: center;
+    }
+    .exit-overlay.show { display: flex; }
+    .exit-popup {
+      background: var(--bg-card); border: 1px solid var(--border-hover); border-radius: 24px;
+      padding: 3rem 2.5rem; max-width: 480px; width: 90%; text-align: center;
+      position: relative; animation: popIn .3s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 20px 80px rgba(0,0,0,.6);
+    }
+    @keyframes popIn { from { opacity: 0; transform: scale(.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .exit-close {
+      position: absolute; top: 1rem; right: 1.25rem; cursor: pointer;
+      color: var(--text); font-size: 1.2rem; background: none; border: none;
+      width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .exit-close:hover { background: rgba(255,255,255,.08); }
+    .exit-popup h3 {
+      font-family: var(--font-serif); font-size: 1.5rem; font-weight: 400; margin-bottom: .75rem;
+    }
+    .exit-popup h3 em { color: var(--gold); font-style: italic; }
+    .exit-popup p { font-size: .9rem; color: var(--text); line-height: 1.7; margin-bottom: 1.5rem; }
+    .exit-popup .stat-row {
+      display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;
+    }
+    .exit-popup .stat-item {
+      padding: .75rem 1rem; border-radius: 12px;
+      background: rgba(201,164,108,.06); border: 1px solid rgba(201,164,108,.12);
+    }
+    .exit-popup .stat-num { font-family: var(--font-serif); font-size: 1.4rem; color: var(--gold); }
+    .exit-popup .stat-label { font-size: .68rem; color: var(--text); text-transform: uppercase; letter-spacing: .06em; }
+    .exit-btns { display: flex; flex-direction: column; gap: .75rem; }
+    .exit-yes {
+      padding: .9rem 2rem; border-radius: 100px; border: none; cursor: pointer;
+      background: var(--gold); color: var(--bg); font-weight: 600; font-size: .9rem;
+      transition: all .25s; text-decoration: none; display: block;
+    }
+    .exit-yes:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .exit-no {
+      background: none; border: none; cursor: pointer; color: var(--text);
+      font-size: .78rem; padding: .5rem; transition: color .2s;
+    }
+    .exit-no:hover { color: var(--text-bright); }
+
     /* ═══ HAMBURGER MENU ═══ */
     .hamburger {
       display: none; cursor: pointer; flex-direction: column; gap: 5px;
@@ -648,7 +696,7 @@
     <a href="#pilot">Pilot Program</a>
     <a href="#faq">FAQ</a>
   </nav>
-  <a href="/quiz.html" class="topbar-cta">Free Growth Score</a>
+  <a href="/quiz.html" class="topbar-cta">Get My Growth Score</a>
   <div class="hamburger" id="hamburger" onclick="document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileMenu').classList.toggle('open')">
     <span></span><span></span><span></span>
   </div>
@@ -661,7 +709,7 @@
   <a href="#demo" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">Try Sophia</a>
   <a href="#pilot" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">Pilot Program</a>
   <a href="#faq" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">FAQ</a>
-  <a href="/quiz.html" class="btn-primary">Free Growth Score &rarr;</a>
+  <a href="/quiz.html" class="btn-primary">Get My Growth Score &rarr;</a>
 </div>
 
 <!-- ═══ HERO ═══ -->
@@ -674,10 +722,11 @@
   </div>
   <div class="wrap">
     <div class="hero-content">
+      <div class="hero-badge rv"><span class="dot"></span> Only onboarding 3 new med spas this month</div>
       <h1 class="rv rv-d1">Your Med Spa Is Losing $148,800/yr<br>to <em>Missed Calls Alone</em></h1>
       <p class="hero-sub rv rv-d2">VelosLuxe gives you an AI receptionist that answers every call, responds to every lead in under 60 seconds, and books appointments automatically — 24/7/365.</p>
       <div class="hero-ctas rv rv-d3">
-        <a href="/quiz.html" class="btn-primary">Take the Free Growth Quiz &rarr;</a>
+        <a href="/quiz.html" class="btn-primary">Get My Free Growth Score &rarr;</a>
         <a href="#demo" class="btn-ghost">Hear Our AI Live</a>
       </div>
     </div>
@@ -844,7 +893,7 @@
     <div class="split-header">
       <div class="section-label rv">Risk-Free Trial</div>
       <h2 class="section-title rv rv-d1">See the results before you <em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">commit</em></h2>
-      <p class="section-sub rv rv-d2">14 days. Real results. No contract. If we don't perform, you walk.</p>
+      <p class="section-sub rv rv-d2">14 days. Real results. No contract. If we don't perform, you walk.<br><strong style="color:var(--gold)">Only 3 pilot spots available this month.</strong></p>
     </div>
     <div class="pilot-card rv">
       <div class="pilot-badge"><span style="width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pulse 2s ease-in-out infinite"></span> Limited Availability</div>
@@ -1048,7 +1097,57 @@
       if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   });
+
+  /* Exit intent popup */
+  (function() {
+    var shown = false;
+    document.addEventListener('mouseout', function(e) {
+      if (shown) return;
+      if (e.clientY < 5 && e.relatedTarget == null) {
+        shown = true;
+        document.getElementById('exitOverlay').classList.add('show');
+        sessionStorage.setItem('exitShown', '1');
+      }
+    });
+    if (sessionStorage.getItem('exitShown')) shown = true;
+    document.getElementById('exitClose').addEventListener('click', function() {
+      document.getElementById('exitOverlay').classList.remove('show');
+    });
+    document.getElementById('exitOverlay').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('show');
+    });
+    document.getElementById('exitNo').addEventListener('click', function() {
+      document.getElementById('exitOverlay').classList.remove('show');
+    });
+  })();
 </script>
+
+<!-- ═══ EXIT INTENT POPUP ═══ -->
+<div class="exit-overlay" id="exitOverlay">
+  <div class="exit-popup">
+    <button class="exit-close" id="exitClose">&times;</button>
+    <h3>Wait — are you sure you want to keep <em>losing patients?</em></h3>
+    <p>Med spas using VelosLuxe recover an average of $148,800/yr in lost revenue. Take 2 minutes to see what you're leaving on the table.</p>
+    <div class="stat-row">
+      <div class="stat-item">
+        <div class="stat-num">$148K</div>
+        <div class="stat-label">Avg revenue recovered/yr</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">60%</div>
+        <div class="stat-label">Fewer no-shows</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Calls answered</div>
+      </div>
+    </div>
+    <div class="exit-btns">
+      <a href="/quiz.html" class="exit-yes">Yes, show me my Growth Score &rarr;</a>
+      <button class="exit-no" id="exitNo">No thanks, I'm fine losing revenue</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
