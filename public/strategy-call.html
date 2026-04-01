@@ -397,6 +397,14 @@ var totalSteps = isPilot ? 3 : 4;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var SERVER_TZ = 'America/Phoenix';
 
+// ═══ PREVIEW MODE: jump straight to thank you ═══
+var previewThankyou = new URLSearchParams(window.location.search).get('preview') === 'thankyou';
+if (previewThankyou) {
+  data.slot = { start: '2026-04-02T10:00:00', end: '2026-04-02T10:30:00' };
+  data.firstName = 'Test'; data.lastName = 'User'; data.spaName = 'Test Med Spa';
+  setTimeout(function() { showThankYou('Test User'); }, 100);
+}
+
 // ═══ PILOT MODE: skip step 1, remap steps ═══
 if (isPilot) {
   document.getElementById('step1').style.display = 'none';

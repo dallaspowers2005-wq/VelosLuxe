@@ -657,6 +657,22 @@ var currentQ = 0;
 var answers = {};
 var totalQuestions = questions.length;
 
+// ═══ PREVIEW MODE: jump to results with fake data ═══
+if (new URLSearchParams(window.location.search).get('preview') === 'results') {
+  // Simulate mid-range answers
+  answers = {
+    years: { score: 10, index: 2 },
+    rooms: { score: 10, index: 1 },
+    rebook: { score: 5, index: 1 },
+    response: { score: 5, index: 2 },
+    missed: { score: 4, index: 2 },
+    conversion: { score: 6, index: 2 },
+    avgTicket: { score: 10, index: 2, value: 550 },
+    goal: { score: 10, index: 0 }
+  };
+  setTimeout(function() { showResults(); }, 100);
+}
+
 function startQuiz() {
   document.getElementById('coverScreen').classList.remove('active');
   document.getElementById('questionScreen').classList.add('active');
