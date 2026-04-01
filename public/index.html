@@ -351,6 +351,66 @@
       z-index: 2;
     }
 
+    /* ═══ PILOT PROGRAM ═══ */
+    .pilot-section {
+      padding: 8rem 0; position: relative;
+    }
+    .pilot-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(110,207,138,.05), transparent);
+      pointer-events: none;
+    }
+    .pilot-card {
+      max-width: 800px; margin: 3rem auto 0;
+      background: linear-gradient(135deg, rgba(110,207,138,.06), rgba(201,164,108,.04));
+      border: 1px solid rgba(110,207,138,.2);
+      border-radius: 24px; padding: 3.5rem;
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 60px rgba(110,207,138,.06);
+    }
+    .pilot-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sage); padding: .4rem 1rem; border-radius: 100px;
+      background: rgba(110,207,138,.1); border: 1px solid rgba(110,207,138,.2);
+      margin-bottom: 1.5rem;
+    }
+    .pilot-card h3 {
+      font-family: var(--font-serif); font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 400; margin-bottom: .75rem;
+    }
+    .pilot-card h3 em { font-style: italic; color: var(--gold); }
+    .pilot-subtitle {
+      font-size: 1.05rem; color: var(--text); line-height: 1.7; margin-bottom: 2rem; max-width: 600px;
+    }
+    .pilot-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;
+    }
+    .pilot-item {
+      display: flex; align-items: flex-start; gap: .75rem;
+    }
+    .pilot-item .check {
+      flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(110,207,138,.15); color: var(--sage);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; margin-top: 2px;
+    }
+    .pilot-item span { font-size: .9rem; color: var(--text); line-height: 1.5; }
+    .pilot-item strong { color: var(--text-bright); }
+    .pilot-price {
+      display: flex; align-items: baseline; gap: .75rem; margin-bottom: .5rem;
+    }
+    .pilot-price-big {
+      font-family: var(--font-serif); font-size: 3rem; font-weight: 400; color: var(--gold);
+    }
+    .pilot-price-note { font-size: .88rem; color: var(--text); }
+    .pilot-credit { font-size: .82rem; color: var(--sage); margin-bottom: 2rem; font-weight: 500; }
+    .pilot-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+    @media (max-width: 600px) {
+      .pilot-card { padding: 2rem 1.5rem; }
+      .pilot-grid { grid-template-columns: 1fr; }
+    }
+
     /* ═══ DEMO SOPHIA — DARK INSET ═══ */
     .demo-section {
       padding: 8rem 0; position: relative;
@@ -555,6 +615,7 @@
     <a href="#what">What We Do</a>
     <a href="#how">How It Works</a>
     <a href="#demo">Try Sophia</a>
+    <a href="#pilot">Pilot Program</a>
     <a href="#faq">FAQ</a>
   </nav>
   <a href="/quiz.html" class="topbar-cta">Free Growth Score</a>
@@ -570,7 +631,7 @@
   </div>
   <div class="wrap">
     <div class="hero-content">
-      <h1 class="rv rv-d1">Your Med Spa Is Losing $12,400/mo<br>to <em>Missed Calls Alone</em></h1>
+      <h1 class="rv rv-d1">Your Med Spa Is Losing $148,800/yr<br>to <em>Missed Calls Alone</em></h1>
       <p class="hero-sub rv rv-d2">VelosLuxe gives you an AI receptionist that answers every call, responds to every lead in under 60 seconds, and books appointments automatically — 24/7/365.</p>
       <div class="hero-ctas rv rv-d3">
         <a href="/quiz.html" class="btn-primary">Take the Free Growth Quiz &rarr;</a>
@@ -614,8 +675,8 @@
       </div>
       <div class="bento-card bento-dark rv rv-d2">
         <div class="bento-label bento-label-sage">Revenue Recovered</div>
-        <div class="bento-big" style="color: var(--sage)">$12,400</div>
-        <div class="bento-desc">Average monthly revenue recovered per med spa — when you factor in patient lifetime value, every recovered lead is worth thousands.</div>
+        <div class="bento-big" style="color: var(--sage)">$148,800</div>
+        <div class="bento-desc">Average annual revenue recovered per med spa ($12,400/mo) — when you factor in patient lifetime value, every recovered lead is worth thousands.</div>
       </div>
       <div class="bento-card bento-glass rv rv-d3">
         <div class="bento-label bento-label-violet">Conversion Increase</div>
@@ -734,6 +795,49 @@
   </div>
 </section>
 
+<!-- ═══ PILOT PROGRAM ═══ -->
+<section class="pilot-section" id="pilot">
+  <div class="wrap">
+    <div class="split-header">
+      <div class="section-label rv">Risk-Free Trial</div>
+      <h2 class="section-title rv rv-d1">See the results before you <em style="font-family:var(--font-serif);color:var(--gold);font-style:italic">commit</em></h2>
+      <p class="section-sub rv rv-d2">14 days. Real results. No contract. If we don't perform, you walk.</p>
+    </div>
+    <div class="pilot-card rv">
+      <div class="pilot-badge"><span style="width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pulse 2s ease-in-out infinite"></span> Limited Availability</div>
+      <h3>14-Day <em>Pilot Program</em></h3>
+      <p class="pilot-subtitle">We set up your AI receptionist, turn it on for two weeks, and let the numbers speak for themselves. You keep every appointment we book — even if you don't continue.</p>
+      <div class="pilot-grid">
+        <div class="pilot-item">
+          <span class="check">&#10003;</span>
+          <span><strong>Sophia answering 100% of calls</strong> — 24/7 for 14 days</span>
+        </div>
+        <div class="pilot-item">
+          <span class="check">&#10003;</span>
+          <span><strong>Instant lead response</strong> — every form, DM, and missed call</span>
+        </div>
+        <div class="pilot-item">
+          <span class="check">&#10003;</span>
+          <span><strong>Appointment booking</strong> directly into your calendar</span>
+        </div>
+        <div class="pilot-item">
+          <span class="check">&#10003;</span>
+          <span><strong>End-of-pilot report</strong> — calls answered, appointments booked, revenue recovered</span>
+        </div>
+      </div>
+      <div class="pilot-price">
+        <span class="pilot-price-big">$500</span>
+        <span class="pilot-price-note">one-time setup &middot; no contract &middot; no commitment</span>
+      </div>
+      <div class="pilot-credit">&#10003; $500 credits toward your first month if you continue — your pilot is essentially free</div>
+      <div class="pilot-ctas">
+        <a href="/quiz.html" class="btn-primary">Start My 14-Day Pilot &rarr;</a>
+        <a href="tel:+17403018119" class="btn-ghost">Or Call to Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ TRY SOPHIA — DEMO ═══ -->
 <section class="demo-section" id="demo">
   <div class="wrap">
@@ -782,8 +886,8 @@
     </div>
     <div class="results-grid">
       <div class="result-card rv">
-        <div class="result-number result-number-gold">$12,400</div>
-        <div class="result-label">Average monthly revenue recovered when you account for patient lifetime value</div>
+        <div class="result-number result-number-gold">$148,800</div>
+        <div class="result-label">Average annual revenue recovered per med spa — that's $12,400/mo back in your pocket</div>
       </div>
       <div class="result-card rv rv-d1">
         <div class="result-number result-number-sage">60%</div>
@@ -801,9 +905,9 @@
 <section class="final-cta" id="cta">
   <div class="wrap">
     <h2 class="rv">Every hour without VelosLuxe,<br>your leads go to the <em>spa down the street</em></h2>
-    <p class="rv rv-d1">Take our free 2-minute assessment and see exactly how much revenue your practice is leaving on the table.</p>
+    <p class="rv rv-d1">Start with our 14-day pilot — $500, no contract, real results. If we don't book you more appointments, you walk.</p>
     <div class="hero-ctas rv rv-d2">
-      <a href="/quiz.html" class="btn-primary" style="font-size:.92rem;padding:1rem 2.8rem">Get My Free Growth Score &rarr;</a>
+      <a href="#pilot" class="btn-primary" style="font-size:.92rem;padding:1rem 2.8rem">Start My 14-Day Pilot &rarr;</a>
       <a href="tel:+17403018119" class="btn-ghost">Or Call (740) 301-8119</a>
     </div>
   </div>
@@ -834,12 +938,16 @@
         <div class="faq-a"><p>Yes. We sign a BAA with every client, use HIPAA-eligible messaging tools, and never store PHI in unsecured systems.</p></div>
       </div>
       <div class="faq-item rv">
+        <div class="faq-q"><h3>What's the pilot program?</h3><span class="faq-icon">+</span></div>
+        <div class="faq-a"><p>$500 gets you 14 days of our full AI receptionist — Sophia answering every call, instant lead response, and appointment booking. At the end, we show you exactly how many calls we answered, leads we captured, and appointments we booked. If you continue, the $500 credits toward your first month. If not, you walk — and keep every appointment we booked.</p></div>
+      </div>
+      <div class="faq-item rv">
         <div class="faq-q"><h3>How is this different from GoHighLevel or hiring a VA?</h3><span class="faq-icon">+</span></div>
         <div class="faq-a"><p>GHL is a DIY toolbox — you still build everything. A VA misses calls, needs training, and costs $3-5K/month. VelosLuxe is fully done-for-you, responds in seconds not minutes, and works 24/7 at a fraction of the cost.</p></div>
       </div>
       <div class="faq-item rv">
         <div class="faq-q"><h3>What results can I expect?</h3><span class="faq-icon">+</span></div>
-        <div class="faq-a"><p>Most practices see measurable improvement within the first week. When you factor in patient lifetime value, the system typically recovers $8,000-$15,000/month in revenue that was previously lost to missed calls, slow follow-up, and patients who never rebook.</p></div>
+        <div class="faq-a"><p>Most practices see measurable improvement within the first week. The system typically recovers $8,000–$15,000/month ($96K–$180K/year) in revenue previously lost to missed calls, slow follow-up, and patients who never rebook.</p></div>
       </div>
     </div>
   </div>
