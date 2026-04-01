@@ -202,12 +202,12 @@
       padding: 1.5rem 2rem; margin: 1.5rem 0 2rem; text-align: left;
     }
     .thankyou-row {
-      display: flex; justify-content: space-between; padding: .6rem 0;
-      border-bottom: 1px solid var(--border); font-size: .9rem;
+      display: flex; justify-content: space-between; align-items: center; padding: .75rem 0;
+      border-bottom: 1px solid var(--border); font-size: .9rem; gap: 1rem;
     }
     .thankyou-row:last-child { border-bottom: none; }
-    .thankyou-label { color: var(--text); }
-    .thankyou-value { color: var(--text-bright); font-weight: 600; }
+    .thankyou-label { color: var(--text); flex-shrink: 0; min-width: 80px; }
+    .thankyou-value { color: var(--text-bright); font-weight: 600; text-align: right; }
     .thankyou-checklist {
       text-align: left; max-width: 420px; margin: 0 auto;
     }
@@ -326,6 +326,10 @@
         <div class="field-label">Med Spa Name</div>
         <input type="text" class="field-input" id="spaName" placeholder="Glow Aesthetics">
       </div>
+      <div class="field-wrap">
+        <div class="field-label">Website <span style="color:var(--text);font-weight:400;font-size:.78rem">(optional — no worries if you don't have one)</span></div>
+        <input type="url" class="field-input" id="website" placeholder="https://yourmedspa.com">
+      </div>
     </div>
 
     <div class="step-label" style="margin-top:.5rem">How did you hear about us?</div>
@@ -390,7 +394,7 @@
 
 <script>
 // ═══ STATE ═══
-var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', decisionMaker: '', source: '', date: '', slot: null };
+var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', website: '', decisionMaker: '', source: '', date: '', slot: null };
 var isPilot = new URLSearchParams(window.location.search).get('pilot') === '1';
 var currentStep = 1;
 var totalSteps = isPilot ? 3 : 4;
@@ -513,6 +517,7 @@ document.getElementById('btn2').addEventListener('click', function() {
   data.email = document.getElementById('email').value.trim();
   data.phone = document.getElementById('phone').value.trim();
   data.spaName = document.getElementById('spaName').value.trim();
+  data.website = document.getElementById('website').value.trim();
   data.source = (getSelected('sourceGroup')[0]) || '';
   goTo(3);
 });
@@ -615,6 +620,7 @@ document.getElementById('btn3').addEventListener('click', function() {
       email: data.email,
       phone: data.phone,
       spa_name: data.spaName,
+      website: data.website || null,
       start: data.slot.start,
       end: data.slot.end,
       timezone: userTz,
