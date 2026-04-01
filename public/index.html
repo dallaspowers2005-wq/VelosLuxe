@@ -557,6 +557,36 @@
     .final-cta p { color: var(--text); margin-bottom: 2.5rem; font-size: 1.05rem; position: relative; }
     .final-cta .hero-ctas { position: relative; }
 
+    /* ═══ HAMBURGER MENU ═══ */
+    .hamburger {
+      display: none; cursor: pointer; flex-direction: column; gap: 5px;
+      padding: 4px; z-index: 200;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px; background: var(--text-bright);
+      border-radius: 2px; transition: all .3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .mobile-menu {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(5,5,8,.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      z-index: 150; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--text-bright); font-size: 1.2rem; font-weight: 500;
+      letter-spacing: .02em; transition: color .2s; text-decoration: none;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu .btn-primary {
+      margin-top: 1rem; font-size: .95rem; padding: .9rem 2.5rem;
+    }
+    @media (max-width: 600px) {
+      .hamburger { display: flex; }
+    }
+
     /* ═══ FOOTER ═══ */
     footer {
       text-align: center; padding: 3rem 0 2.5rem;
@@ -619,6 +649,19 @@
     <a href="#faq">FAQ</a>
   </nav>
   <a href="/quiz.html" class="topbar-cta">Free Growth Score</a>
+  <div class="hamburger" id="hamburger" onclick="document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileMenu').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">Home</a>
+  <a href="#what" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">What We Do</a>
+  <a href="#how" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">How It Works</a>
+  <a href="#demo" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">Try Sophia</a>
+  <a href="#pilot" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">Pilot Program</a>
+  <a href="#faq" onclick="document.getElementById('mobileMenu').classList.remove('open');document.getElementById('hamburger').classList.remove('open')">FAQ</a>
+  <a href="/quiz.html" class="btn-primary">Free Growth Score &rarr;</a>
 </div>
 
 <!-- ═══ HERO ═══ -->

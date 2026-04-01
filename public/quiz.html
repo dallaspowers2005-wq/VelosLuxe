@@ -61,7 +61,33 @@
     }
     .logo { font-size: .9rem; font-weight: 700; letter-spacing: .18em; color: var(--text-bright); text-decoration: none; }
     .logo span { color: var(--gold); }
+    .topbar-left { display: flex; align-items: center; gap: 1rem; position: relative; }
     .quiz-topbar-step { font-size: .72rem; color: var(--text); letter-spacing: .04em; }
+    .menu-toggle {
+      cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 4px;
+    }
+    .menu-toggle span {
+      display: block; width: 18px; height: 1.5px; background: var(--text); border-radius: 2px;
+      transition: all .3s ease;
+    }
+    .menu-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    .menu-toggle.open span:nth-child(2) { opacity: 0; }
+    .menu-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+    .dropdown-menu {
+      display: none; position: absolute; top: 100%; left: 0; margin-top: .75rem;
+      background: var(--bg-card); border: 1px solid rgba(255,255,255,.15); border-radius: 12px;
+      padding: .5rem 0; min-width: 200px; z-index: 200;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+      animation: dropIn .2s ease;
+    }
+    .dropdown-menu.open { display: block; }
+    @keyframes dropIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .dropdown-menu a {
+      display: block; padding: .7rem 1.25rem; color: var(--text); font-size: .85rem;
+      text-decoration: none; transition: all .15s;
+    }
+    .dropdown-menu a:hover { background: rgba(255,255,255,.05); color: var(--text-bright); }
+    .dropdown-menu .dropdown-divider { height: 1px; background: rgba(255,255,255,.08); margin: .35rem 0; }
 
     /* ═══ PROGRESS BAR ═══ */
     .progress-wrap { margin-bottom: 3rem; }
@@ -417,7 +443,22 @@
 
   <!-- TOPBAR -->
   <div class="quiz-topbar">
-    <a href="/" class="logo">VELOS<span>LUXE</span></a>
+    <div class="topbar-left">
+      <div class="menu-toggle" id="menuToggle" onclick="this.classList.toggle('open');document.getElementById('dropdownMenu').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </div>
+      <a href="/" class="logo">VELOS<span>LUXE</span></a>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <a href="/">Home</a>
+        <a href="/#what">What We Do</a>
+        <a href="/#how">How It Works</a>
+        <a href="/#demo">Try Sophia</a>
+        <a href="/#pilot">Pilot Program</a>
+        <div class="dropdown-divider"></div>
+        <a href="/strategy-call">Book a Strategy Call</a>
+        <a href="/#faq">FAQ</a>
+      </div>
+    </div>
     <div class="quiz-topbar-step" id="stepLabel"></div>
   </div>
 
@@ -872,6 +913,16 @@ function animateNumber(elId, start, end, duration, prefix, suffix) {
   }
   requestAnimationFrame(step);
 }
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('dropdownMenu');
+  var toggle = document.getElementById('menuToggle');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+    menu.classList.remove('open');
+    toggle.classList.remove('open');
+  }
+});
 </script>
 
 </body>
