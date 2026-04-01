@@ -443,8 +443,8 @@ async function startServer() {
       return available.filter(slot => slot.start.slice(11, 16) > minTimeStr);
     }
     if (dateStr === tomorrowStr && nowInTz.getHours() >= 17) {
-      // If it's after 5pm, also apply 4hr buffer to tomorrow's early slots
-      return available.filter(slot => slot.start.slice(11, 16) > minTimeStr);
+      // If it's after 5pm, block tomorrow's slots before 9am only (no 4hr carryover)
+      return available;
     }
 
     return available;

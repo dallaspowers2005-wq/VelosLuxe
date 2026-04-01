@@ -573,11 +573,16 @@
       <div class="integrations-note">Don't see yours? We build custom integrations at no extra cost.</div>
     </div>
 
-    <div class="results-cta">
+    <div class="results-cta" id="resultsCta">
       <h3>You Don't Have to <em>Keep Losing</em> This Money</h3>
       <p>15 minutes. We'll walk through your specific leaks and show you exactly how to plug them — using the tools you already have. Nothing to switch. Nothing to set up. Just revenue you're currently losing, recovered.</p>
       <a href="/strategy-call" class="btn-book">Claim My Free Strategy Call &rarr;</a>
       <div class="no-pitch">No sales pitch. No contracts. Free forever if you don't see the value.</div>
+    </div>
+    <div class="results-cta" id="resultsBooked" style="display:none">
+      <h3>Great — we'll cover all of this on your <em>strategy call</em></h3>
+      <p>We'll have your Growth Score ready and will walk through exactly where these revenue leaks are and how to plug them. See you soon!</p>
+      <a href="/" class="btn-book">Back to VelosLuxe</a>
     </div>
   </div>
 
@@ -825,6 +830,12 @@ function showResults() {
 
   document.getElementById('fixTitle').textContent = fixTitle;
   document.getElementById('fixDesc').textContent = fixDesc;
+
+  // Swap CTA if already booked
+  if (new URLSearchParams(window.location.search).get('booked') === '1') {
+    document.getElementById('resultsCta').style.display = 'none';
+    document.getElementById('resultsBooked').style.display = 'block';
+  }
 
   // Scroll to top of results
   window.scrollTo({ top: 0, behavior: 'smooth' });
