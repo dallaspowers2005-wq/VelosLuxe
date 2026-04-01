@@ -392,7 +392,7 @@
     <button class="btn-back" onclick="goTo(2)">&larr; Back</button>
     <div class="step-label">Schedule</div>
     <div class="step-title">Pick a day and time</div>
-    <div class="step-subtitle">30-minute strategy call. All times shown in <strong id="userTzLabel">your local time</strong>.</div>
+    <div class="step-subtitle">30-minute strategy call. All times in <strong id="userTzLabel">your time</strong>.</div>
 
     <div class="date-scroll" id="dateScroll"></div>
 
@@ -594,7 +594,7 @@ function goTo(step) {
   }
   window.scrollTo(0, 0);
   if (step === 3) {
-    document.getElementById('userTzLabel').textContent = tzShort + ' (' + userTz.replace(/_/g, ' ') + ')';
+    document.getElementById('userTzLabel').textContent = 'your time (' + tzShort + ')';
     loadDates();
   }
 }
