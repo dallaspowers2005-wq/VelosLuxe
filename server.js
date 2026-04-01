@@ -11,6 +11,7 @@ const { sendSMS, sendFollowUpSMS } = require('./lib/sms');
 const reminders = require('./lib/reminders');
 const emailService = require('./lib/email');
 const zoom = require('./lib/zoom');
+const sendblue = require('./lib/sendblue');
 const { resolveClient, requireInternal } = require('./lib/tenant');
 const { pushToCRM } = require('./lib/crm');
 const vapiHelper = require('./lib/vapi');
@@ -340,6 +341,8 @@ async function startServer() {
     'ALTER TABLE reminders ADD COLUMN client_id INTEGER DEFAULT 0',
     'ALTER TABLE strategy_calls ADD COLUMN zoom_link TEXT',
     'ALTER TABLE strategy_calls ADD COLUMN timezone TEXT',
+    'ALTER TABLE strategy_calls ADD COLUMN website TEXT',
+    'ALTER TABLE strategy_calls ADD COLUMN booking_type TEXT DEFAULT \'strategy_call\'',
   ];
   for (const m of migrations) { try { db.run(m); } catch(e) { /* column exists */ } }
 
@@ -454,6 +457,7 @@ async function startServer() {
   reminders.init(dbHelpers);
   emailService.init();
   zoom.init();
+  sendblue.init();
   jobs.init({ getAll, runQuery, getOne });
 
   // Create tenant middleware with our getOne function
@@ -1474,7 +1478,7 @@ async function startServer() {
   // ═══════════════════════════════════════════════════════
 
   app.post('/api/strategy-call', async (req, res) => {
-    const { name, email, phone, spa_name, start, end, timezone, qualifying } = req.body;
+    const { name, email, phone, spa_name, website, start, end, timezone, type, qualifying } = req.body;
     if (!name || !phone || !start || !end) {
       return res.status(400).json({ error: 'Name, phone, start, and end are required' });
     }
@@ -1510,12 +1514,11 @@ async function startServer() {
       // Create Zoom meeting
       const zoomMeeting = await zoom.createMeeting({ name, spa_name, start_time: start, end_time: end });
       const zoomLink = zoomMeeting?.join_url || null;
-      if (zoomLink) {
-        runQuery('UPDATE strategy_calls SET zoom_link = ?, timezone = ? WHERE id = ?', [zoomLink, timezone || 'America/Phoenix', scId]);
-      }
+      runQuery('UPDATE strategy_calls SET zoom_link = ?, timezone = ?, website = ?, booking_type = ? WHERE id = ?',
+        [zoomLink, timezone || 'America/Phoenix', website || null, type || 'strategy_call', scId]);
 
       const prospectTz = timezone || 'America/Phoenix';
-      const booking = { id: bookingId, name, email, phone, start_time: start, end_time: end, zoom_link: zoomLink, timezone: prospectTz };
+      const booking = { id: bookingId, name, email, phone, spa_name: spa_name || null, website: website || null, start_time: start, end_time: end, zoom_link: zoomLink, timezone: prospectTz };
       await reminders.sendConfirmation(booking);
       reminders.scheduleReminders(booking);
 
@@ -2320,6 +2323,95 @@ async function startServer() {
     }
   });
   app.get('/strategy-call', (req, res) => res.sendFile(path.join(__dirname, 'public', 'strategy-call.html')));
+
+  // ═══ RESCHEDULE ROUTE ═══
+  app.get('/reschedule/:id', (req, res) => {
+    // Redirect to strategy-call page with reschedule param
+    // The booking ID lets us pre-fill their info and cancel the old slot
+    res.sendFile(path.join(__dirname, 'public', 'strategy-call.html'));
+  });
+
+  app.get('/api/reschedule/:id', (req, res) => {
+    const booking = getOne('SELECT b.*, sc.spa_name, sc.zoom_link, sc.timezone FROM bookings b LEFT JOIN strategy_calls sc ON sc.booking_id = b.id WHERE b.id = ?', [parseInt(req.params.id)]);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    res.json({
+      name: booking.name,
+      email: booking.email,
+      phone: booking.phone,
+      spa_name: booking.spa_name || null,
+      start_time: booking.start_time,
+      timezone: booking.timezone || 'America/Phoenix',
+    });
+  });
+
+  app.post('/api/reschedule/:id', async (req, res) => {
+    const { start, end } = req.body;
+    if (!start || !end) return res.status(400).json({ error: 'Start and end required' });
+
+    const oldBooking = getOne('SELECT b.*, sc.id as sc_id, sc.spa_name, sc.zoom_link, sc.timezone, sc.name as sc_name, sc.email as sc_email, sc.phone as sc_phone FROM bookings b LEFT JOIN strategy_calls sc ON sc.booking_id = b.id WHERE b.id = ?', [parseInt(req.params.id)]);
+    if (!oldBooking) return res.status(404).json({ error: 'Booking not found' });
+
+    try {
+      // Cancel old reminders for this booking
+      runQuery("UPDATE reminders SET status = 'cancelled' WHERE booking_id = ? AND status = 'pending'", [oldBooking.id]);
+
+      // Update booking time
+      runQuery('UPDATE bookings SET start_time = ?, end_time = ? WHERE id = ?', [start, end, oldBooking.id]);
+
+      // Update strategy_call time
+      if (oldBooking.sc_id) {
+        runQuery('UPDATE strategy_calls SET start_time = ?, end_time = ? WHERE id = ?', [start, end, oldBooking.sc_id]);
+      }
+
+      // Create new Zoom meeting
+      const zoomMeeting = await zoom.createMeeting({
+        name: oldBooking.sc_name || oldBooking.name,
+        spa_name: oldBooking.spa_name,
+        start_time: start,
+        end_time: end
+      });
+      const zoomLink = zoomMeeting?.join_url || oldBooking.zoom_link;
+      if (zoomLink && oldBooking.sc_id) {
+        runQuery('UPDATE strategy_calls SET zoom_link = ? WHERE id = ?', [zoomLink, oldBooking.sc_id]);
+      }
+
+      // Reschedule reminders
+      const tz = oldBooking.timezone || 'America/Phoenix';
+      const booking = {
+        id: oldBooking.id,
+        name: oldBooking.sc_name || oldBooking.name,
+        email: oldBooking.sc_email || oldBooking.email,
+        phone: oldBooking.sc_phone || oldBooking.phone,
+        spa_name: oldBooking.spa_name || null,
+        start_time: start,
+        end_time: end,
+        zoom_link: zoomLink,
+        timezone: tz
+      };
+      reminders.scheduleReminders(booking);
+
+      // Send reschedule confirmation
+      const timeStr = new Date(start).toLocaleString('en-US', {
+        timeZone: tz, weekday: 'short', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+      });
+      const firstName = booking.name.split(' ')[0];
+      const { sendSMS } = require('./lib/sms');
+      const sendblueLib = require('./lib/sendblue');
+      const msg = `Hey ${firstName}, you're all set for ${timeStr}. I'll send a Zoom link before we hop on. See you then!`;
+      if (sendblueLib.isConfigured()) {
+        await sendblueLib.sendMessage(booking.phone, msg);
+      } else {
+        await sendSMS(booking.phone, msg);
+      }
+
+      res.json({ success: true, newTime: start });
+    } catch (err) {
+      console.error('Reschedule error:', err.message);
+      res.status(500).json({ error: 'Reschedule failed' });
+    }
+  });
+
   app.get('/meeting', (req, res) => res.sendFile(path.join(__dirname, 'public', 'meeting.html')));
   app.get('/demo-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-dashboard.html')));
 

@@ -442,6 +442,62 @@ var totalSteps = isPilot ? 3 : 4;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var SERVER_TZ = 'America/Phoenix';
 
+// ═══ RESCHEDULE MODE ═══
+var rescheduleMatch = window.location.pathname.match(/^\/reschedule\/(\d+)/);
+var rescheduleId = rescheduleMatch ? rescheduleMatch[1] : null;
+if (rescheduleId) {
+  // Skip to step 3 (time picker), hide steps 1+2
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').classList.add('active');
+  document.getElementById('step3').querySelector('.btn-back').style.display = 'none';
+  currentStep = 3;
+  document.getElementById('stepIndicator').textContent = 'Reschedule';
+  document.getElementById('progressFill').style.width = '66%';
+  document.title = 'Reschedule Your Call — VelosLuxe';
+  document.querySelector('#step3 .step-title').textContent = 'Pick a new day and time';
+  document.querySelector('#step3 .step-subtitle').innerHTML = 'No worries — let\'s find a time that works better. All times in <strong id="userTzLabel2">' + tzShort + '</strong>.';
+  loadDates();
+
+  // Override the confirm button to POST to reschedule endpoint
+  document.getElementById('btn3').removeEventListener('click', function(){});
+  document.getElementById('btn3').onclick = function() {
+    var btn = document.getElementById('btn3');
+    btn.disabled = true;
+    btn.textContent = 'Rescheduling...';
+    fetch('/api/reschedule/' + rescheduleId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start: data.slot.start, end: data.slot.end })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.success) {
+        if (typeof fbq === 'function') fbq('track', 'Schedule', { content_name: 'reschedule' });
+        document.getElementById('thankyouTitle').textContent = "You're Rescheduled!";
+        document.getElementById('thankyouSub').textContent = "All set — I'll send a new Zoom link before we hop on. See you then!";
+        document.getElementById('thankyouChecklist').style.display = 'none';
+        var dateObj = new Date(data.slot.start);
+        var dateFormatted = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        document.getElementById('bookingDetail').innerHTML =
+          '<div class="thankyou-row"><span class="thankyou-label">New Date</span><span class="thankyou-value">' + dateFormatted + '</span></div>' +
+          '<div class="thankyou-row"><span class="thankyou-label">New Time</span><span class="thankyou-value">' + formatTimeLocal(data.slot.start) + ' ' + tzShort + '</span></div>';
+        goTo(4);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Confirm New Time';
+        alert('Something went wrong. Please try again.');
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = 'Confirm New Time';
+      alert('Connection error. Please try again.');
+    });
+  };
+  document.getElementById('btn3').textContent = 'Confirm New Time';
+}
+
 // ═══ PREVIEW MODE: jump straight to thank you ═══
 var previewThankyou = new URLSearchParams(window.location.search).get('preview') === 'thankyou';
 if (previewThankyou) {
