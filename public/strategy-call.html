@@ -364,12 +364,12 @@
   <!-- ═══ STEP 4: THANK YOU ═══ -->
   <div class="screen thankyou" id="step4">
     <div class="thankyou-icon">&#10003;</div>
-    <h2>You're Booked!</h2>
-    <p class="thankyou-sub">We're looking forward to it. Our team will analyze your situation beforehand so we can make every minute count.</p>
+    <h2 id="thankyouTitle">You're Booked!</h2>
+    <p class="thankyou-sub" id="thankyouSub">We're looking forward to it. Our team will analyze your situation beforehand so we can make every minute count.</p>
 
     <div class="thankyou-detail" id="bookingDetail"></div>
 
-    <div class="thankyou-checklist">
+    <div class="thankyou-checklist" id="thankyouChecklist">
       <h3>Before Your Call</h3>
       <div class="check-item"><span class="check-icon">&#10003;</span> Check your email for a calendar invite and confirmation</div>
       <div class="check-item"><span class="check-icon">&#10003;</span> Think about your biggest frustration with lead follow-up or missed calls</div>
@@ -377,16 +377,41 @@
       <div class="check-item"><span class="check-icon">&#10003;</span> That's it — we handle the rest. Come with questions, leave with answers.</div>
     </div>
 
-    <a href="/" class="btn-next" style="margin-top:2rem; text-decoration:none">Back to VelosLuxe</a>
+    <!-- Pilot: offer quiz after booking -->
+    <div id="pilotQuizOffer" style="display:none; margin-top:2rem; padding:1.5rem; border-radius:16px; background:rgba(201,164,108,.06); border:1px solid rgba(201,164,108,.15); text-align:center;">
+      <p style="font-size:.95rem; color:var(--text-bright); margin-bottom:.5rem; font-weight:600;">Want to see exactly where your revenue is leaking?</p>
+      <p style="font-size:.85rem; color:var(--text); margin-bottom:1.25rem;">Take our 2-minute Growth Score quiz — we'll have your results ready before the call.</p>
+      <a href="/quiz.html" class="btn-next" style="text-decoration:none; display:inline-flex; padding:.75rem 2rem; font-size:.88rem;">Take the Growth Quiz &rarr;</a>
+    </div>
+
+    <a href="/" id="thankyouBackBtn" class="btn-next" style="margin-top:2rem; text-decoration:none">Back to VelosLuxe</a>
   </div>
 </div>
 
 <script>
 // ═══ STATE ═══
 var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', decisionMaker: '', source: '', date: '', slot: null };
+var isPilot = new URLSearchParams(window.location.search).get('pilot') === '1';
 var currentStep = 1;
+var totalSteps = isPilot ? 3 : 4;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var SERVER_TZ = 'America/Phoenix';
+
+// ═══ PILOT MODE: skip step 1, remap steps ═══
+if (isPilot) {
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('step2').querySelector('.btn-back').style.display = 'none';
+  currentStep = 2;
+  document.getElementById('stepIndicator').textContent = 'Step 1 of 3';
+  document.getElementById('progressFill').style.width = '33%';
+  document.title = 'Book Your 14-Day Pilot — VelosLuxe';
+  document.querySelector('.step-title').textContent; // leave step2 title as-is
+  // Populate default qualifying data for pilot leads
+  data.services = ['Pilot Program'];
+  data.revenue = 'N/A';
+  data.challenges = ['Pilot inquiry'];
+}
 
 // Detect friendly timezone name
 var tzShort = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop();
@@ -450,8 +475,14 @@ function goTo(step) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('step' + step).classList.add('active');
   currentStep = step;
-  document.getElementById('stepIndicator').textContent = 'Step ' + step + ' of 4';
-  document.getElementById('progressFill').style.width = (step * 25) + '%';
+  if (isPilot) {
+    var pilotStep = step <= 1 ? 1 : step - 1;
+    document.getElementById('stepIndicator').textContent = 'Step ' + pilotStep + ' of 3';
+    document.getElementById('progressFill').style.width = (pilotStep * 33.3) + '%';
+  } else {
+    document.getElementById('stepIndicator').textContent = 'Step ' + step + ' of 4';
+    document.getElementById('progressFill').style.width = (step * 25) + '%';
+  }
   window.scrollTo(0, 0);
   if (step === 3) {
     document.getElementById('userTzLabel').textContent = tzShort + ' (' + userTz.replace(/_/g, ' ') + ')';
@@ -579,6 +610,7 @@ document.getElementById('btn3').addEventListener('click', function() {
       start: data.slot.start,
       end: data.slot.end,
       timezone: userTz,
+      type: isPilot ? 'pilot' : 'strategy_call',
       qualifying: {
         services: data.services,
         revenue: data.revenue,
@@ -590,7 +622,7 @@ document.getElementById('btn3').addEventListener('click', function() {
   .then(function(r) { return r.json(); })
   .then(function(res) {
     if (res.success) {
-      if (typeof fbq === 'function') fbq('track', 'Schedule', { content_name: 'strategy_call' });
+      if (typeof fbq === 'function') fbq('track', 'Schedule', { content_name: isPilot ? 'pilot_booking' : 'strategy_call' });
       showThankYou(fullName);
     } else {
       btn.disabled = false;
@@ -617,6 +649,14 @@ function showThankYou(name) {
     '<div class="thankyou-row"><span class="thankyou-label">Date</span><span class="thankyou-value">' + dateFormatted + '</span></div>' +
     '<div class="thankyou-row"><span class="thankyou-label">Time</span><span class="thankyou-value">' + formatTimeLocal(data.slot.start) + ' ' + tzShort + '</span></div>' +
     '<div class="thankyou-row"><span class="thankyou-label">Duration</span><span class="thankyou-value">30 minutes</span></div>';
+
+  if (isPilot) {
+    document.getElementById('thankyouTitle').textContent = "You're All Set!";
+    document.getElementById('thankyouSub').textContent = "Your 14-day pilot call is booked. We'll walk through your setup and have Sophia answering your calls within 48 hours.";
+    document.getElementById('thankyouChecklist').style.display = 'none';
+    document.getElementById('pilotQuizOffer').style.display = 'block';
+    document.getElementById('thankyouBackBtn').textContent = 'Back to VelosLuxe';
+  }
 
   goTo(4);
 }
