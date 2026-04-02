@@ -477,19 +477,6 @@
   <a href="/quiz" class="btn-dark">Get My Free Growth Score</a>
 </div>
 
-<!-- EXIT POPUP -->
-<div class="exit-overlay" id="exitPopup">
-  <div class="exit-popup">
-    <button class="exit-close" onclick="document.getElementById('exitPopup').classList.remove('active')">&times;</button>
-    <h3>Before you go</h3>
-    <p>See exactly where your med spa is leaking revenue. Takes 2 minutes.</p>
-    <div class="exit-form" id="exitForm">
-      <input type="email" placeholder="Your email" id="exitEmail">
-      <button onclick="submitExit()">Send My Report</button>
-    </div>
-    <div class="exit-note">No spam. Just your personalized revenue report.</div>
-  </div>
-</div>
 
 <!-- COOKIE BANNER -->
 <div class="cookie" id="cookieBanner">
@@ -515,10 +502,6 @@
   function acceptCookies(){document.getElementById('cookieBanner').classList.remove('active');localStorage.setItem('ck','1')}
   if(!localStorage.getItem('ck'))setTimeout(function(){document.getElementById('cookieBanner').classList.add('active')},2000);
 
-  // Exit intent
-  var exitDone=false;
-  document.addEventListener('mouseout',function(e){if(e.clientY<5&&!exitDone&&!sessionStorage.getItem('ex')){document.getElementById('exitPopup').classList.add('active');exitDone=true;sessionStorage.setItem('ex','1')}});
-  function submitExit(){var em=document.getElementById('exitEmail').value;if(!em||!em.includes('@'))return;fetch('/api/quiz-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'exit_popup'})}).catch(function(){});document.getElementById('exitForm').innerHTML='<p style="color:var(--sage);font-weight:600">Check your inbox!</p>';if(typeof fbq==='function')fbq('track','Lead',{content_name:'exit_popup'})}
 
   // Sticky CTA
   var sc=document.getElementById('stickyCta');
