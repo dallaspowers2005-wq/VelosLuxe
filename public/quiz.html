@@ -23,7 +23,7 @@
   <!-- End Facebook Pixel -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #FDFAF6; --bg-card: #FFFFFF; --bg-glass: rgba(255,255,255,.85);
@@ -31,7 +31,7 @@
       --text: #57534E; --text-bright: #1C1917;
       --gold: #B08D6A; --gold-light: #C9A97C;
       --sage: #7FA886; --rose: #C97B7B; --violet: #9B8FB0; --blue: #7BA3C9;
-      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-sans: 'DM Sans', -apple-system, sans-serif;
       --font-serif: 'Playfair Display', Georgia, serif;
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -71,7 +71,7 @@
     .menu-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
     .dropdown-menu {
       display: none; position: absolute; top: 100%; left: 0; margin-top: .75rem;
-      background: var(--bg-card); border: 1px solid rgba(255,255,255,.15); border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
       padding: .5rem 0; min-width: 200px; z-index: 200;
       box-shadow: 0 12px 40px rgba(0,0,0,.5);
       animation: dropIn .2s ease;
@@ -82,8 +82,8 @@
       display: block; padding: .7rem 1.25rem; color: var(--text); font-size: .85rem;
       text-decoration: none; transition: all .15s;
     }
-    .dropdown-menu a:hover { background: rgba(255,255,255,.05); color: var(--text-bright); }
-    .dropdown-menu .dropdown-divider { height: 1px; background: rgba(255,255,255,.08); margin: .35rem 0; }
+    .dropdown-menu a:hover { background: rgba(0,0,0,.03); color: var(--text-bright); }
+    .dropdown-menu .dropdown-divider { height: 1px; background: var(--border); margin: .35rem 0; }
 
     /* ═══ PROGRESS BAR ═══ */
     .progress-wrap { margin-bottom: 3rem; }
@@ -130,7 +130,7 @@
       box-shadow: 0 0 40px rgba(201,164,108,.2);
     }
     .btn-start:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201,164,108,.35); }
-    .cover-trust { margin-top: 2rem; font-size: .75rem; color: rgba(255,255,255,.3); }
+    .cover-trust { margin-top: 2rem; font-size: .75rem; color: var(--text-light, #A8A29E); }
 
     /* ═══ QUESTION SCREEN ═══ */
     .question-screen { padding: 1rem 0; }
@@ -204,7 +204,7 @@
     }
     .btn-results:hover { background: var(--gold-light); transform: translateY(-1px); }
     .btn-results:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-    .gate-privacy { font-size: .7rem; color: rgba(255,255,255,.2); margin-top: 1rem; }
+    .gate-privacy { font-size: .7rem; color: var(--text-light, #A8A29E); margin-top: 1rem; }
 
     /* ═══ RESULTS SCREEN ═══ */
     .results-screen { padding: 1rem 0 4rem; }
