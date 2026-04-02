@@ -4,36 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Service | VelosLuxe</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #0A1628;
-    --navy-light: #111D33;
-    --cyan: #00D4FF;
-    --white: #F1F5F9;
-    --muted: #94A3B8;
-    --dim: #64748B;
-    --border: rgba(255,255,255,0.08);
-    --surface: #131E32;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: var(--navy);
-    color: var(--white);
-    font-family: 'Sora', sans-serif;
+    background: #FDFAF6;
+    color: #57534E;
+    font-family: 'Inter', -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
   }
   nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(168,145,120,.15);
+    background: #FDFAF6;
   }
-  .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-  .logo span { color: var(--cyan); }
-  nav a { color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 28px; transition: color 0.2s; }
-  nav a:hover { color: var(--white); }
+  .logo { font-size: 1rem; font-weight: 700; letter-spacing: .18em; color: #1C1917; text-decoration: none; }
+  .logo span { color: #B08D6A; }
+  nav a { color: #57534E; text-decoration: none; font-size: 14px; margin-left: 28px; transition: color 0.2s; }
+  nav a:hover { color: #1C1917; }
 
   .content {
     max-width: 720px;
@@ -41,26 +35,28 @@
     padding: 60px 24px 80px;
   }
   h1 {
-    font-size: 36px;
-    font-weight: 700;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: #1C1917;
     margin-bottom: 8px;
   }
   .last-updated {
     font-size: 13px;
-    color: var(--dim);
+    color: #A8A29E;
     margin-bottom: 40px;
   }
   h2 {
-    font-size: 20px;
+    font-size: 1.15rem;
     font-weight: 600;
     margin-top: 40px;
     margin-bottom: 16px;
-    color: var(--cyan);
+    color: #B08D6A;
   }
   p, li {
     font-size: 14.5px;
     line-height: 1.8;
-    color: var(--muted);
+    color: #57534E;
     margin-bottom: 14px;
   }
   ul {
@@ -68,14 +64,14 @@
     margin-bottom: 16px;
   }
   li { margin-bottom: 6px; }
-  strong { color: var(--white); font-weight: 500; }
-  a { color: var(--cyan); text-decoration: none; }
+  strong { color: #1C1917; font-weight: 500; }
+  a { color: #B08D6A; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
   .highlight-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--cyan);
+    background: #F7F2EB;
+    border: 1px solid rgba(168,145,120,.15);
+    border-left: 3px solid #B08D6A;
     border-radius: 8px;
     padding: 20px 24px;
     margin: 24px 0;
@@ -87,27 +83,27 @@
     text-align: center;
     padding: 24px;
     font-size: 11px;
-    color: var(--dim);
-    border-top: 1px solid var(--border);
+    color: #A8A29E;
+    border-top: 1px solid rgba(168,145,120,.15);
   }
-  footer a { color: var(--muted); text-decoration: none; margin: 0 12px; }
+  footer a { color: #78716C; text-decoration: none; margin: 0 12px; }
+  footer a:hover { color: #B08D6A; }
 
   @media (max-width: 540px) {
     nav { padding: 16px 20px; }
     .content { padding: 40px 20px 60px; }
-    h1 { font-size: 28px; }
+    h1 { font-size: 1.6rem; }
   }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">Velos<span>Luxe</span></div>
+  <a href="/" class="logo">VELOS<span>LUXE</span></a>
   <div>
     <a href="/">Home</a>
-    <a href="/book">Book</a>
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
   </div>
 </nav>
 

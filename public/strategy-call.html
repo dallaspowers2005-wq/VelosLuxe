@@ -26,11 +26,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0e0e18; --bg-card: #1a1a2e; --bg-glass: rgba(26,26,46,.6);
-      --border: rgba(255,255,255,.15); --border-hover: rgba(255,255,255,.28);
-      --text: #dddae8; --text-bright: #ffffff; --text-mid: #b5b2c8;
-      --gold: #c9a46c; --gold-light: #e2c99b;
-      --sage: #6ecf8a; --rose: #e87777; --violet: #8b7bc8; --blue: #5b9cf5;
+      --bg: #FDFAF6; --bg-card: #FFFFFF; --bg-glass: rgba(255,255,255,.85);
+      --border: rgba(168,145,120,.15); --border-hover: rgba(168,145,120,.3);
+      --text: #57534E; --text-bright: #1C1917; --text-mid: #78716C;
+      --gold: #B08D6A; --gold-light: #C9A97C;
+      --sage: #7FA886; --rose: #C97B7B; --violet: #9B8FB0; --blue: #7BA3C9;
       --font-sans: 'Inter', -apple-system, sans-serif;
       --font-serif: 'Playfair Display', Georgia, serif;
     }
@@ -41,11 +41,7 @@
       font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
       overflow-x: hidden; min-height: 100vh;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: .02;
-    }
+    body::before { display: none; }
     h1, h2, h3 { color: var(--text-bright); line-height: 1.15; }
 
     .shell {
@@ -85,12 +81,12 @@
       display: block; padding: .7rem 1.25rem; color: var(--text); font-size: .85rem;
       text-decoration: none; transition: all .15s;
     }
-    .dropdown-menu a:hover { background: rgba(255,255,255,.05); color: var(--text-bright); }
+    .dropdown-menu a:hover { background: rgba(0,0,0,.03); color: var(--text-bright); }
     .dropdown-menu .dropdown-divider { height: 1px; background: var(--border); margin: .35rem 0; }
 
     /* ═══ PROGRESS BAR ═══ */
     .progress-wrap { margin-bottom: 3rem; }
-    .progress-bar { height: 3px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+    .progress-bar { height: 3px; background: rgba(0,0,0,.08); border-radius: 4px; overflow: hidden; }
     .progress-fill {
       height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
       border-radius: 4px; transition: width .5s cubic-bezier(.16,1,.3,1);
@@ -122,7 +118,7 @@
       border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 2rem;
       font-size: .85rem; color: var(--sage); line-height: 1.65;
     }
-    .value-banner strong { color: #8fe0a3; }
+    .value-banner strong { color: var(--sage); }
 
     /* ═══ PILL OPTIONS ═══ */
     .pill-group { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 2rem; }
@@ -141,7 +137,7 @@
     }
     .pill-dot {
       width: 8px; height: 8px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.2); flex-shrink: 0;
+      border: 2px solid var(--border-hover); flex-shrink: 0;
       transition: all .2s;
     }
     .pill.selected .pill-dot { border-color: var(--gold); background: var(--gold); }
@@ -161,7 +157,7 @@
       outline: none; transition: border-color .2s;
     }
     .field-input:focus { border-color: var(--gold); }
-    .field-input::placeholder { color: rgba(255,255,255,.35); }
+    .field-input::placeholder { color: rgba(0,0,0,.3); }
 
     /* ═══ CALENDAR ═══ */
     .date-scroll { display: flex; gap: .6rem; overflow-x: auto; padding-bottom: .5rem; margin-bottom: 2rem; }
