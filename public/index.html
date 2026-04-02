@@ -61,12 +61,16 @@
 
     /* ═══ HERO ═══ */
     .hero { padding: 11rem 0 6rem; text-align: center; }
-    .hero-hipaa { display: inline-flex; align-items: center; gap: .5rem; font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--sage); margin-bottom: 2rem; }
-    .hero-hipaa svg { width: 14px; height: 14px; stroke: var(--sage); fill: none; stroke-width: 2; }
+    .hero-trust-strip { display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .hero-trust-strip span { display: flex; align-items: center; gap: .35rem; }
+    .hero-trust-strip svg { width: 13px; height: 13px; stroke: var(--sage); fill: none; stroke-width: 2; }
+    .hero-trust-strip .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-light); }
     .hero h1 { font-family: var(--serif); font-size: clamp(2.6rem, 5.5vw, 4rem); font-weight: 400; line-height: 1.12; max-width: 700px; margin: 0 auto 1.25rem; }
     .hero h1 em { font-style: italic; color: var(--gold); }
-    .hero-sub { font-size: 1.05rem; color: var(--text); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.75; }
-    .hero-ctas { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .hero-sub { font-size: 1.05rem; color: var(--text); max-width: 520px; margin: 0 auto 2rem; line-height: 1.75; }
+    .hero-ctas { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .hero-proof { font-size: .78rem; color: var(--text-secondary); max-width: 400px; margin: 0 auto; line-height: 1.5; }
+    .hero-proof strong { color: var(--text); font-weight: 600; }
     .btn-dark { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 2rem; background: var(--dark); color: #fff; font-weight: 600; font-size: .88rem; border-radius: 8px; transition: all .2s; text-decoration: none; }
     .btn-dark:hover { background: var(--dark-mid); transform: translateY(-1px); }
     .btn-outline { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 2rem; border: 1px solid var(--border); color: var(--text); font-weight: 500; font-size: .88rem; border-radius: 8px; transition: all .2s; text-decoration: none; }
@@ -258,13 +262,19 @@
 <!-- 1. HERO -->
 <section class="hero">
   <div class="wrap">
-    <div class="hero-hipaa"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> HIPAA Compliant &middot; BAA Included</div>
-    <h1>Your med spa is losing <em>$148,800/yr</em> to missed calls</h1>
-    <p class="hero-sub">Sophia is an AI receptionist that answers every call, responds to every lead in seconds, and books appointments into your calendar. 24/7.</p>
-    <div class="hero-ctas">
-      <a href="/quiz" class="btn-dark">See Your Revenue Leak</a>
-      <a href="/strategy-call?pilot=1" class="btn-outline">Start 14-Day Pilot</a>
+    <div class="hero-trust-strip">
+      <span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> HIPAA Compliant</span>
+      <span class="dot"></span>
+      <span>BAA Included</span>
+      <span class="dot"></span>
+      <span>48-Hour Setup</span>
     </div>
+    <h1>Your med spa is losing <em>$148,800/yr</em> to missed calls</h1>
+    <p class="hero-sub">Sophia answers every call and books every appointment — so no patient chooses the spa down the street. 24/7.</p>
+    <div class="hero-ctas">
+      <a href="/quiz" class="btn-dark">See My Revenue Leak &rarr;</a>
+    </div>
+    <p class="hero-proof"><strong>78% of patients book with whoever responds first.</strong> How fast are you responding? <span style="color:var(--text-light)">— Lead Connect Survey</span></p>
   </div>
 </section>
 
