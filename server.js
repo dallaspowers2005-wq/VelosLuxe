@@ -18,6 +18,7 @@ const vapiHelper = require('./lib/vapi');
 const jobs = require('./lib/jobs');
 const { getAdapter, listPlatforms } = require('./lib/integrations');
 const { trackConversion } = require('./lib/tracking');
+const gcalSync = require('./lib/gcal-sync');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -508,6 +509,7 @@ async function startServer() {
     // Concierge platforms — set concierge status and send appropriate SMS
     const conciergePlatforms = ['vagaro', 'mangomint', 'aestheticspro'];
     const platformSlug = (current_platform || '').toLowerCase().replace(/\s+/g, '_');
+    const knownPlatforms = ['vagaro', 'mangomint', 'aestheticspro', 'zenoti', 'acuity', 'boulevard', 'square', 'google_calendar', 'webhook'];
 
     if (conciergePlatforms.includes(platformSlug)) {
       const timelines = { vagaro: '3-5 days', mangomint: '1-3 days', aestheticspro: '1-3 days' };
@@ -523,6 +525,27 @@ async function startServer() {
           await sendSMS(contact_phone, `Thanks for signing up with VelosLuxe! To connect ${current_platform}, there's one quick step from your account — check your email or book a setup call and we'll walk you through it live. Typically takes ${timeline}.`);
         } catch (err) {
           console.error('Concierge SMS error:', err.message);
+        }
+      }
+    } else if (!knownPlatforms.includes(platformSlug) && platformSlug) {
+      // Unknown platform — route through OpenClaw universal connector
+      runQuery(
+        `UPDATE onboarding_submissions SET concierge_status = 'openclaw_pending', concierge_requested_at = datetime('now') WHERE id = ?`,
+        [id]
+      );
+
+      // Generate the inbound webhook URL for this client's CRM
+      const clientSlug = spa_name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+      const webhookUrl = `${req.protocol}://${req.get('host')}/api/webhook/inbound/${clientSlug}`;
+
+      console.log(`[onboarding] Unknown platform "${current_platform}" — routing through OpenClaw. Webhook: ${webhookUrl}`);
+      notifyTeam(`🔌 **OpenClaw Setup Needed:** ${spa_name} uses "${current_platform}" (not in our direct adapters). Webhook URL for their CRM: ${webhookUrl}`);
+
+      if (contact_phone) {
+        try {
+          await sendSMS(contact_phone, `Thanks for signing up with VelosLuxe! We're setting up the connection to ${current_platform} now — our system supports any platform. We'll let you know as soon as it's live!`);
+        } catch (err) {
+          console.error('OpenClaw onboarding SMS error:', err.message);
         }
       }
     } else {
@@ -980,13 +1003,34 @@ async function startServer() {
         const allPlatforms = listPlatforms();
         const platformSlug = (sub.current_platform || '').toLowerCase().replace(/\s+/g, '_');
         const platformMeta = allPlatforms.find(p => p.platformName === platformSlug);
-        const purpose = platformMeta?.capabilities?.booking && platformMeta?.capabilities?.crm ? 'both'
-          : platformMeta?.capabilities?.booking ? 'booking' : 'crm';
 
-        integrationId = insertAndGetId(
-          'INSERT INTO client_integrations (client_id, platform, purpose, auth_type, credentials, status) VALUES (?, ?, ?, ?, ?, ?)',
-          [client.id, platformSlug, purpose, platformMeta?.authType || 'api_key', credStr, 'active']
-        );
+        if (platformMeta) {
+          // Known platform — create direct integration
+          const purpose = platformMeta.capabilities?.booking && platformMeta.capabilities?.crm ? 'both'
+            : platformMeta.capabilities?.booking ? 'booking' : 'crm';
+
+          integrationId = insertAndGetId(
+            'INSERT INTO client_integrations (client_id, platform, purpose, auth_type, credentials, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [client.id, platformSlug, purpose, platformMeta.authType || 'api_key', credStr, 'active']
+          );
+        } else {
+          // Unknown platform — create OpenClaw universal integration
+          const openclawCreds = JSON.stringify({
+            moltbot_hook_url: process.env.MOLTBOT_HOOK_URL || 'http://127.0.0.1:18789/hooks/velosluxe',
+            moltbot_hook_token: process.env.MOLTBOT_HOOK_TOKEN || '',
+            crm_platform: sub.current_platform || 'unknown'
+          });
+          const openclawConfig = JSON.stringify({
+            client_slug: client.slug,
+            original_credentials: credStr
+          });
+
+          integrationId = insertAndGetId(
+            'INSERT INTO client_integrations (client_id, platform, purpose, auth_type, credentials, config, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [client.id, 'openclaw', 'both', 'api_key', openclawCreds, openclawConfig, 'active']
+          );
+          console.log(`[${client.slug}] Created OpenClaw integration for unknown platform: ${sub.current_platform}`);
+        }
       } catch (err) {
         console.error('Integration creation error:', err.message);
       }
@@ -2298,7 +2342,8 @@ async function startServer() {
   app.use('/admin', express.static(path.join(__dirname, 'admin')));
   app.use(express.static(path.join(__dirname, 'public')));
 
-  // Extensionless routes for compliance pages
+  // Extensionless routes for pages
+  app.get('/quiz', (req, res) => res.sendFile(path.join(__dirname, 'public', 'quiz.html')));
   app.get('/book', (req, res) => res.sendFile(path.join(__dirname, 'public', 'book.html')));
   app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacy.html')));
   app.get('/terms', (req, res) => res.sendFile(path.join(__dirname, 'public', 'terms.html')));
@@ -2412,6 +2457,254 @@ async function startServer() {
     }
   });
 
+  // ═══ OPENCLAW INBOUND WEBHOOK — receives normalized CRM data from Moltbot ═══
+  app.post('/api/webhook/inbound/:slug', async (req, res) => {
+    const token = req.headers['authorization'];
+    const expected = process.env.OPENCLAW_WEBHOOK_TOKEN;
+    if (expected && token !== `Bearer ${expected}`) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { slug } = req.params;
+    const client = getOne("SELECT * FROM clients WHERE slug = ? AND status = 'active'", [slug]);
+    if (!client) return res.status(404).json({ error: 'Client not found' });
+
+    const { type, name, phone, email, service, appointment_time, notes } = req.body;
+
+    try {
+      if (type === 'new_lead' || type === 'contact') {
+        // Upsert contact
+        if (phone) {
+          const existing = getOne('SELECT id FROM contacts WHERE client_id = ? AND phone = ?', [client.id, phone]);
+          if (existing) {
+            runQuery("UPDATE contacts SET name = COALESCE(?, name), email = COALESCE(?, email) WHERE id = ?",
+              [name, email, existing.id]);
+          } else {
+            insertAndGetId(
+              'INSERT INTO contacts (client_id, name, phone, email, source) VALUES (?, ?, ?, ?, ?)',
+              [client.id, name || null, phone, email || null, 'openclaw_inbound']
+            );
+          }
+        }
+
+        // Also store as lead
+        if (name) {
+          insertAndGetId(
+            'INSERT INTO leads (client_id, name, email, spa_name, source) VALUES (?, ?, ?, ?, ?)',
+            [client.id, name, email || null, notes || null, 'openclaw_inbound']
+          );
+        }
+
+        console.log(`[${slug}] OpenClaw inbound: new contact — ${name || phone}`);
+        return res.json({ success: true, type: 'contact_created' });
+      }
+
+      if (type === 'new_appointment' || type === 'booking') {
+        // Create appointment
+        insertAndGetId(
+          'INSERT INTO appointments (client_id, contact_phone, contact_name, service, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?)',
+          [client.id, phone || null, name || null, service || null, appointment_time || null, 'confirmed']
+        );
+
+        // Upsert contact with appointment time
+        if (phone) {
+          const existing = getOne('SELECT id FROM contacts WHERE client_id = ? AND phone = ?', [client.id, phone]);
+          if (existing) {
+            runQuery("UPDATE contacts SET name = COALESCE(?, name), email = COALESCE(?, email), last_appointment_at = ? WHERE id = ?",
+              [name, email, appointment_time, existing.id]);
+          } else {
+            insertAndGetId(
+              'INSERT INTO contacts (client_id, name, phone, email, last_appointment_at, source) VALUES (?, ?, ?, ?, ?, ?)',
+              [client.id, name || null, phone, email || null, appointment_time, 'openclaw_inbound']
+            );
+          }
+        }
+
+        console.log(`[${slug}] OpenClaw inbound: new appointment — ${name || phone} for ${service}`);
+        return res.json({ success: true, type: 'appointment_created' });
+      }
+
+      if (type === 'cancellation') {
+        if (phone && appointment_time) {
+          runQuery(
+            "UPDATE appointments SET status = 'cancelled' WHERE client_id = ? AND contact_phone = ? AND appointment_time = ?",
+            [client.id, phone, appointment_time]
+          );
+        }
+        console.log(`[${slug}] OpenClaw inbound: cancellation — ${name || phone}`);
+        return res.json({ success: true, type: 'appointment_cancelled' });
+      }
+
+      // Unknown type — log but accept
+      console.log(`[${slug}] OpenClaw inbound: unknown type "${type}" — payload stored`);
+      return res.json({ success: true, type: 'received' });
+    } catch (err) {
+      console.error(`[${slug}] OpenClaw inbound error:`, err.message);
+      return res.status(500).json({ error: 'Internal error' });
+    }
+  });
+
+  // ═══ GOOGLE CALENDAR SYNC — receives push notifications from Google ═══
+  app.post('/api/gcal/notify', async (req, res) => {
+    // Google sends headers, not body, for push notifications
+    const channelId = req.headers['x-goog-channel-id'];
+    const resourceState = req.headers['x-goog-resource-state'];
+
+    // Immediately respond 200 — Google retries on non-2xx
+    res.status(200).end();
+
+    // 'sync' is the initial verification ping — ignore
+    if (resourceState === 'sync' || !channelId) return;
+
+    // Find the integration that owns this channel
+    const integration = getOne(
+      "SELECT * FROM client_integrations WHERE platform = 'google_calendar' AND status = 'active' AND config LIKE ?",
+      [`%${channelId}%`]
+    );
+    if (!integration) {
+      console.log(`[gcal] Push notification for unknown channel: ${channelId}`);
+      return;
+    }
+
+    const client = getOne('SELECT * FROM clients WHERE id = ?', [integration.client_id]);
+    if (!client) return;
+
+    let credentials, config;
+    try { credentials = JSON.parse(integration.credentials); } catch { return; }
+    try { config = JSON.parse(integration.config || '{}'); } catch { config = {}; }
+
+    const calendarId = config.calendar_id || 'primary';
+
+    try {
+      // Refresh token if needed
+      const accessToken = await gcalSync.getValidToken(credentials, (refreshed) => {
+        runQuery('UPDATE client_integrations SET credentials = ? WHERE id = ?',
+          [JSON.stringify(refreshed), integration.id]);
+      });
+
+      // Incremental sync
+      const result = await gcalSync.syncEvents(accessToken, calendarId, config.sync_token || null);
+      if (!result.success) {
+        console.error(`[${client.slug}] GCal sync error:`, result.error);
+        return;
+      }
+
+      // Process each event
+      for (const event of result.events) {
+        // Skip events we created (from VelosLuxe outbound)
+        if ((event.description || '').includes('Booked via VelosLuxe')) continue;
+
+        // Check for duplicate by gcal event ID
+        const existingAppt = getOne(
+          "SELECT id FROM appointments WHERE client_id = ? AND service LIKE ?",
+          [client.id, `%gcal:${event.id}%`]
+        );
+        if (existingAppt && event.status !== 'cancelled') continue;
+
+        const parsed = gcalSync.parseEventToVelosLuxe(event);
+
+        if (parsed.type === 'cancellation' && existingAppt) {
+          runQuery("UPDATE appointments SET status = 'cancelled' WHERE id = ?", [existingAppt.id]);
+          console.log(`[${client.slug}] GCal sync: cancelled appointment from ${parsed.name}`);
+          continue;
+        }
+
+        if (parsed.type === 'new_appointment' && !existingAppt) {
+          // Create appointment
+          insertAndGetId(
+            'INSERT INTO appointments (client_id, contact_phone, contact_name, service, appointment_time, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [client.id, parsed.phone || null, parsed.name, `${parsed.service || 'Appointment'} [gcal:${event.id}]`, parsed.appointment_time, 'confirmed']
+          );
+
+          // Upsert contact
+          if (parsed.phone || parsed.email) {
+            const contactKey = parsed.phone || parsed.email;
+            const existing = parsed.phone
+              ? getOne('SELECT id FROM contacts WHERE client_id = ? AND phone = ?', [client.id, parsed.phone])
+              : getOne('SELECT id FROM contacts WHERE client_id = ? AND email = ?', [client.id, parsed.email]);
+
+            if (existing) {
+              runQuery("UPDATE contacts SET name = COALESCE(?, name), email = COALESCE(?, email), last_appointment_at = ? WHERE id = ?",
+                [parsed.name, parsed.email, parsed.appointment_time, existing.id]);
+            } else {
+              insertAndGetId(
+                'INSERT INTO contacts (client_id, name, phone, email, last_appointment_at, source) VALUES (?, ?, ?, ?, ?, ?)',
+                [client.id, parsed.name, parsed.phone || null, parsed.email || null, parsed.appointment_time, 'gcal_sync']
+              );
+            }
+          }
+
+          console.log(`[${client.slug}] GCal sync: new appointment — ${parsed.name} for ${parsed.service} at ${parsed.appointment_time}`);
+        }
+      }
+
+      // Save sync token for next incremental sync
+      if (result.nextSyncToken) {
+        config.sync_token = result.nextSyncToken;
+        runQuery('UPDATE client_integrations SET config = ? WHERE id = ?',
+          [JSON.stringify(config), integration.id]);
+      }
+    } catch (err) {
+      console.error(`[${client?.slug || '?'}] GCal sync error:`, err.message);
+    }
+  });
+
+  // ═══ GOOGLE CALENDAR WATCH SETUP — auto-registers push notifications ═══
+  app.post('/api/internal/clients/:id/gcal-watch', async (req, res) => {
+    const clientId = parseInt(req.params.id);
+    const client = getOne('SELECT * FROM clients WHERE id = ?', [clientId]);
+    if (!client) return res.status(404).json({ error: 'Client not found' });
+
+    const integration = getOne(
+      "SELECT * FROM client_integrations WHERE client_id = ? AND platform = 'google_calendar' AND status = 'active' LIMIT 1",
+      [clientId]
+    );
+    if (!integration) return res.status(404).json({ error: 'No active Google Calendar integration' });
+
+    let credentials, config;
+    try { credentials = JSON.parse(integration.credentials); } catch { return res.status(400).json({ error: 'Bad credentials' }); }
+    try { config = JSON.parse(integration.config || '{}'); } catch { config = {}; }
+
+    const calendarId = config.calendar_id || 'primary';
+    const webhookUrl = `${req.protocol}://${req.get('host')}/api/gcal/notify`;
+    const channelId = `velosluxe-gcal-${client.slug}-${Date.now()}`;
+
+    try {
+      const accessToken = await gcalSync.getValidToken(credentials, (refreshed) => {
+        runQuery('UPDATE client_integrations SET credentials = ? WHERE id = ?',
+          [JSON.stringify(refreshed), integration.id]);
+        credentials = refreshed;
+      });
+
+      // Stop old watch if exists
+      if (config.watch_channel_id && config.watch_resource_id) {
+        await gcalSync.stopWatch(accessToken, config.watch_channel_id, config.watch_resource_id).catch(() => {});
+      }
+
+      const result = await gcalSync.setupWatch(accessToken, calendarId, webhookUrl, channelId);
+      if (!result.success) {
+        return res.status(400).json({ error: `Watch setup failed: ${result.error}` });
+      }
+
+      // Do initial sync to get syncToken
+      const syncResult = await gcalSync.syncEvents(accessToken, calendarId, null);
+
+      // Save watch metadata + sync token
+      config.watch_channel_id = result.channelId;
+      config.watch_resource_id = result.resourceId;
+      config.watch_expiration = result.expiration;
+      config.sync_token = syncResult.nextSyncToken || null;
+      runQuery('UPDATE client_integrations SET config = ? WHERE id = ?',
+        [JSON.stringify(config), integration.id]);
+
+      console.log(`[${client.slug}] GCal watch set up — channel ${channelId}, expires ${new Date(parseInt(result.expiration)).toISOString()}`);
+      res.json({ success: true, channelId, expiration: result.expiration });
+    } catch (err) {
+      console.error(`[${client.slug}] GCal watch setup error:`, err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get('/meeting', (req, res) => res.sendFile(path.join(__dirname, 'public', 'meeting.html')));
   app.get('/demo-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'demo-dashboard.html')));
 
@@ -2512,6 +2805,57 @@ async function startServer() {
 
   // Start background jobs (review requests + inactive follow-ups)
   jobs.startJobs();
+
+  // ═══ GOOGLE CALENDAR WATCH RENEWAL (every 6 hours) ═══
+  async function renewGcalWatches() {
+    const integrations = getAll(
+      "SELECT ci.*, c.slug FROM client_integrations ci JOIN clients c ON c.id = ci.client_id WHERE ci.platform = 'google_calendar' AND ci.status = 'active'"
+    );
+
+    for (const integration of integrations) {
+      let config;
+      try { config = JSON.parse(integration.config || '{}'); } catch { continue; }
+      if (!config.watch_channel_id) continue;
+
+      // Renew if expiring within 12 hours
+      const expiration = parseInt(config.watch_expiration || '0');
+      if (expiration && expiration - Date.now() > 12 * 60 * 60 * 1000) continue;
+
+      let credentials;
+      try { credentials = JSON.parse(integration.credentials); } catch { continue; }
+
+      try {
+        const accessToken = await gcalSync.getValidToken(credentials, (refreshed) => {
+          runQuery('UPDATE client_integrations SET credentials = ? WHERE id = ?',
+            [JSON.stringify(refreshed), integration.id]);
+          credentials = refreshed;
+        });
+
+        // Stop old watch
+        if (config.watch_resource_id) {
+          await gcalSync.stopWatch(accessToken, config.watch_channel_id, config.watch_resource_id).catch(() => {});
+        }
+
+        // Set up new watch
+        const calendarId = config.calendar_id || 'primary';
+        const webhookUrl = `https://velosluxe.com/api/gcal/notify`;
+        const channelId = `velosluxe-gcal-${integration.slug}-${Date.now()}`;
+
+        const result = await gcalSync.setupWatch(accessToken, calendarId, webhookUrl, channelId);
+        if (result.success) {
+          config.watch_channel_id = result.channelId;
+          config.watch_resource_id = result.resourceId;
+          config.watch_expiration = result.expiration;
+          runQuery('UPDATE client_integrations SET config = ? WHERE id = ?',
+            [JSON.stringify(config), integration.id]);
+          console.log(`[${integration.slug}] GCal watch renewed — expires ${new Date(parseInt(result.expiration)).toISOString()}`);
+        }
+      } catch (err) {
+        console.error(`[${integration.slug}] GCal watch renewal error:`, err.message);
+      }
+    }
+  }
+  setInterval(renewGcalWatches, 6 * 60 * 60 * 1000); // Every 6 hours
 
   // ═══ START SERVER ═══
   app.listen(PORT, () => {
