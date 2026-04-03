@@ -533,6 +533,10 @@
   // Sticky CTA
   var sc=document.getElementById('stickyCta');
   window.addEventListener('scroll',function(){if(sc)sc.style.display=window.scrollY>400?'block':'none'});
+
+  // Track CTA clicks
+  document.querySelectorAll('a[href="/quiz"]').forEach(function(a){a.addEventListener('click',function(){if(typeof fbq==='function')fbq('track','InitiateCheckout',{content_name:'quiz_click'})})});
+  document.querySelectorAll('a[href*="strategy-call"]').forEach(function(a){a.addEventListener('click',function(){if(typeof fbq==='function')fbq('track','Lead',{content_name:'strategy_call_click'})})});
 </script>
 </body>
 </html>

@@ -607,7 +607,7 @@
     <div class="results-cta" id="resultsCta">
       <h3>You Don't Have to <em>Keep Losing</em> This Money</h3>
       <p>15 minutes. We'll walk through your specific leaks and show you exactly how to plug them — using the tools you already have. Nothing to switch. Nothing to set up. Just revenue you're currently losing, recovered.</p>
-      <a href="/strategy-call" class="btn-book">Claim My Free Strategy Call &rarr;</a>
+      <a href="/strategy-call" class="btn-book" onclick="if(typeof fbq==='function')fbq('track','Lead',{content_name:'quiz_results_cta'})">Claim My Free Strategy Call &rarr;</a>
       <div class="no-pitch">No sales pitch. No contracts. Free forever if you don't see the value.</div>
     </div>
     <div class="results-cta" id="resultsBooked" style="display:none">
@@ -709,6 +709,7 @@ function startQuiz() {
   document.getElementById('questionScreen').classList.add('active');
   document.getElementById('progressWrap').style.display = 'block';
   renderQuestion();
+  if (typeof fbq === 'function') fbq('trackCustom', 'QuizStart');
 }
 
 /* Gate form validation */
@@ -763,6 +764,7 @@ function renderQuestion() {
 function selectOption(idx) {
   var q = questions[currentQ];
   answers[q.key] = { index: idx, text: q.options[idx], score: q.scores[idx], value: q.values ? q.values[idx] : null };
+  if (typeof fbq === 'function') fbq('trackCustom', 'QuizAnswer', { question: currentQ + 1, total: totalQuestions });
 
   // Highlight
   var opts = document.querySelectorAll('.q-option');
