@@ -473,14 +473,14 @@
     <div class="cover">
       <div class="cover-badge">Free Assessment</div>
       <h1>See Where Your Med Spa<br>Is <em>Leaking Revenue</em></h1>
-      <p class="cover-sub">Answer 8 quick questions. Get a personalized Growth Score showing exactly how much you're leaving on the table — and what to fix first.</p>
+      <p class="cover-sub">6 quick questions. See exactly how much revenue you're leaving on the table — and what to fix first.</p>
       <div class="cover-meta">
         <div class="cover-meta-item">
-          <div class="cover-meta-val">2 min</div>
+          <div class="cover-meta-val">60 sec</div>
           <div class="cover-meta-label">To Complete</div>
         </div>
         <div class="cover-meta-item">
-          <div class="cover-meta-val">8</div>
+          <div class="cover-meta-val">6</div>
           <div class="cover-meta-label">Questions</div>
         </div>
         <div class="cover-meta-item">
@@ -622,65 +622,51 @@
 <script>
 var questions = [
   {
-    label: 'About Your Practice',
-    title: 'How long have you been operating your med spa?',
-    options: ['Less than 1 year', '1-3 years', '3-5 years', '5+ years'],
-    scores: [4, 8, 10, 12],
-    key: 'years'
-  },
-  {
-    label: 'Practice Size',
-    title: 'How many treatment rooms do you currently have?',
-    options: ['1-2 rooms', '3-4 rooms', '5-7 rooms', '8+ rooms'],
-    scores: [6, 10, 12, 14],
-    key: 'rooms'
-  },
-  {
-    label: 'Patient Retention',
-    title: 'What percentage of your patients rebook before leaving?',
-    subtitle: 'Industry benchmark: 80% prebooking rate for top performers.',
-    options: ['Under 20%', '20-40%', '40-60%', 'Over 60%', "I don't track this"],
-    scores: [2, 5, 8, 14, 1],
-    key: 'rebook'
-  },
-  {
-    label: 'Lead Response',
-    title: 'How quickly does someone respond when a new patient inquires?',
-    subtitle: '78% of patients choose whoever responds first.',
-    options: ['Within minutes', 'Within a few hours', 'Same day', 'Next day or later', 'It depends on who is working'],
-    scores: [14, 8, 5, 2, 3],
-    key: 'response'
-  },
-  {
     label: 'Missed Calls',
-    title: 'How many calls go to voicemail per week?',
-    subtitle: 'Most callers hang up and call the next spa.',
-    options: ['Rarely — we answer almost every call', 'A few (3-5 per week)', 'Quite a few (5-10 per week)', 'A lot (10+ per week)', "I honestly don't know"],
-    scores: [14, 8, 4, 2, 3],
+    title: 'When a patient calls and nobody picks up, what happens?',
+    subtitle: 'Be honest — this is the #1 revenue leak we find.',
+    options: ['They leave a voicemail we usually return', 'They probably call another spa', 'I honestly don\'t know'],
+    scores: [6, 2, 3],
     key: 'missed'
   },
   {
-    label: 'Consultation Conversion',
-    title: 'What percentage of consultations convert to a paid treatment same-day?',
-    options: ['Over 70%', '50-70%', '30-50%', 'Under 30%', "I don't track this"],
-    scores: [14, 10, 6, 3, 1],
-    key: 'conversion'
+    label: 'Response Speed',
+    title: 'How fast does a new lead get a response from your team?',
+    subtitle: '78% of patients book with whoever responds first.',
+    options: ['Within a few minutes', 'Within a few hours', 'It depends on who\'s working'],
+    scores: [14, 6, 3],
+    key: 'response'
   },
   {
-    label: 'Average Revenue',
-    title: "What's your average treatment value?",
-    subtitle: "This helps us estimate your revenue potential.",
-    options: ['Under $200', '$200-$400', '$400-$700', '$700-$1,200', '$1,200+'],
-    scores: [6, 8, 10, 12, 14],
+    label: 'No-Shows',
+    title: 'How often do patients no-show or cancel last-minute?',
+    options: ['Rarely — we have a good system', 'A few per week', 'It\'s a constant problem'],
+    scores: [14, 6, 2],
+    key: 'rebook'
+  },
+  {
+    label: 'After Hours',
+    title: 'What happens to calls and inquiries after your front desk goes home?',
+    options: ['We have some coverage', 'Voicemail until morning', 'We lose those leads entirely'],
+    scores: [10, 4, 2],
+    key: 'afterhours'
+  },
+  {
+    label: 'Treatment Value',
+    title: 'What does your average patient spend per visit?',
+    subtitle: 'This helps us calculate your specific revenue leak.',
+    options: ['Under $300', '$300 — $700', 'Over $700'],
+    scores: [6, 10, 14],
     key: 'avgTicket',
-    values: [150, 300, 550, 950, 1400]
+    values: [200, 500, 950]
   },
   {
-    label: 'Your Goal',
-    title: "What's your #1 priority for the next 12 months?",
-    options: ['Get more new patients', 'Increase revenue per patient', 'Build predictable recurring revenue', 'Free up my own time', 'Scale to multiple locations'],
-    scores: [8, 10, 10, 8, 12],
-    key: 'goal'
+    label: 'Your Biggest Frustration',
+    title: 'What frustrates you most about your current patient intake?',
+    subtitle: 'Pick the one that hits hardest.',
+    options: ['We can\'t answer every call and it costs us patients', 'Following up with leads takes too long and we lose them', 'I\'m spending too much on staff who still miss things'],
+    scores: [8, 8, 8],
+    key: 'frustration'
   }
 ];
 
@@ -806,26 +792,25 @@ function showResults() {
   var score = Math.round((totalScore / maxScore) * 100);
 
   // Revenue leakage calculations — includes LTV (avg patient worth 4-6 visits)
-  var avgTicket = answers.avgTicket ? answers.avgTicket.value : 400;
-  var ltv = avgTicket * 5; // avg patient lifetime value = 5 visits
-  var missedIdx = answers.missed ? answers.missed.index : 2;
-  var responseIdx = answers.response ? answers.response.index : 2;
-  var conversionIdx = answers.conversion ? answers.conversion.index : 2;
-  var rebookIdx = answers.rebook ? answers.rebook.index : 2;
+  var avgTicket = answers.avgTicket ? answers.avgTicket.value : 500;
+  var ltv = avgTicket * 5;
+  var missedIdx = answers.missed ? answers.missed.index : 1;
+  var responseIdx = answers.response ? answers.response.index : 1;
+  var rebookIdx = answers.rebook ? answers.rebook.index : 1;
 
-  // Missed calls leak — each missed call = lost LTV, not just one visit
-  var missedCallsPerWeek = [2, 5, 8, 14, 7][missedIdx];
-  var missedCallRevenue = Math.round(missedCallsPerWeek * 4.3 * ltv * 0.3);
+  // Missed calls leak (3 options: voicemail/they leave/don't know)
+  var missedCallsPerWeek = [4, 10, 7][missedIdx];
+  var missedCallRevenue = Math.round(missedCallsPerWeek * 4.3 * ltv * 0.25);
   missedCallRevenue = Math.max(missedCallRevenue, 3200);
 
-  // Slow response leak — leads that go cold because you didn't respond fast enough
-  var responseMultiplier = [0.08, 0.25, 0.4, 0.6, 0.45][responseIdx];
-  var slowResponseRevenue = Math.round(25 * responseMultiplier * ltv * 0.2);
+  // Slow response leak (3 options: minutes/hours/depends)
+  var responseMultiplier = [0.1, 0.35, 0.4][responseIdx];
+  var slowResponseRevenue = Math.round(20 * responseMultiplier * ltv * 0.2);
   slowResponseRevenue = Math.max(slowResponseRevenue, 2800);
 
-  // Low rebooking leak — patients who don't return = lost recurring LTV
-  var rebookLoss = [0.55, 0.4, 0.25, 0.1, 0.45][rebookIdx];
-  var rebookRevenue = Math.round(50 * rebookLoss * avgTicket * 0.4);
+  // No-show leak (3 options: rarely/few per week/constant)
+  var rebookLoss = [0.1, 0.35, 0.55][rebookIdx];
+  var rebookRevenue = Math.round(40 * rebookLoss * avgTicket * 0.4);
   rebookRevenue = Math.max(rebookRevenue, 2400);
 
   var totalLossMonthly = missedCallRevenue + slowResponseRevenue + rebookRevenue;
@@ -853,24 +838,25 @@ function showResults() {
     });
   }
 
-  // Determine tier
+  // Determine tier + self-persuasion (reflect their own answers back)
+  var frustrationText = answers.frustration ? answers.frustration.text : '';
   var tier, tierName, tierClass, mirror, fixTitle, fixDesc;
 
   if (score >= 70) {
     tier = 'high'; tierName = 'High Performer'; tierClass = 'score-tier-high';
-    mirror = '<p>Your practice has <strong>strong fundamentals</strong>. You\'re ahead of most med spas when it comes to operations and patient experience. But even top performers have blind spots — and at your revenue level, small optimizations can unlock <strong>significant upside</strong>. The numbers below factor in patient lifetime value — one lost patient isn\'t one lost visit, it\'s <strong>5-8 lost visits</strong> over the next two years.</p>';
-    fixTitle = 'Optimize your rebooking and follow-up automation';
-    fixDesc = 'At your stage, the biggest ROI comes from systemizing what\'s already working. Automated rebooking, review generation, and reactivation campaigns can recover $8,000-$15,000/month — without adding a single new patient.';
+    mirror = '<p>Your practice has <strong>strong fundamentals</strong>. But even top performers leave money on the table.' + (frustrationText ? ' You told us your biggest frustration is: <strong>"' + frustrationText + '"</strong> — that alone is worth fixing.' : '') + ' Every lost patient isn\'t one visit — it\'s <strong>$' + ltv.toLocaleString() + '+ in lifetime treatments</strong> they\'ll get somewhere else.</p>';
+    fixTitle = 'Optimize what\'s already working';
+    fixDesc = 'Automated rebooking, review generation, and after-hours coverage can recover $8,000-$15,000/month — without adding a single new patient.';
   } else if (score >= 40) {
     tier = 'growth'; tierName = 'Growth-Ready'; tierClass = 'score-tier-growth';
-    mirror = '<p>Your med spa has <strong>real potential</strong>, but key systems are missing that are costing you every month. You\'re likely working harder than you need to — <strong>the gap isn\'t effort, it\'s infrastructure</strong>. These numbers include patient lifetime value: every lead you lose isn\'t one appointment — it\'s <strong>$' + ltv.toLocaleString() + '+ in treatments</strong> they\'ll get somewhere else.</p>';
-    fixTitle = 'Fix your lead response time and missed call problem first';
-    fixDesc = 'This is your highest-leverage move. Responding to every inquiry in under 60 seconds and answering every call — even after hours — typically recovers $5,000-$10,000/month when you account for patient lifetime value. Everything else compounds on top of that.';
+    mirror = '<p>Your med spa has <strong>real demand</strong>, but the intake process is leaking revenue.' + (frustrationText ? ' You said it yourself: <strong>"' + frustrationText + '"</strong> — and the numbers below show exactly what that costs.' : '') + ' Every lead you lose isn\'t one appointment — it\'s <strong>$' + ltv.toLocaleString() + '+ in treatments</strong> walking out the door.</p>';
+    fixTitle = 'Fix your response time and call coverage first';
+    fixDesc = 'Responding to every inquiry in under 60 seconds and answering every call — even after hours — typically recovers $5,000-$10,000/month. Everything else compounds on top of that.';
   } else {
     tier = 'foundation'; tierName = 'Foundation Phase'; tierClass = 'score-tier-foundation';
-    mirror = '<p>Your practice has <strong>significant gaps</strong> that are costing you thousands every month. The good news: <strong>these are fixable, and fast</strong>. Most of the revenue you\'re losing isn\'t because of bad treatments or low demand — it\'s because patients can\'t reach you, aren\'t being followed up with, and aren\'t being asked to rebook. Each lost patient represents <strong>$' + ltv.toLocaleString() + '+ in lifetime value</strong>.</p>';
-    fixTitle = 'You need a system that answers every call and responds to every lead — today';
-    fixDesc = 'At your current stage, the single most impactful change is ensuring no lead or call goes unanswered. When you factor in lifetime value, every missed call could be worth $' + ltv.toLocaleString() + '+. This alone can shift your revenue trajectory within the first week.';
+    mirror = '<p>Your practice has <strong>significant gaps</strong> costing you thousands every month. The good news: <strong>this is fixable, and fast</strong>.' + (frustrationText ? ' You identified the core issue: <strong>"' + frustrationText + '"</strong> — and you\'re right.' : '') + ' Each lost patient represents <strong>$' + ltv.toLocaleString() + '+ in lifetime value</strong>.</p>';
+    fixTitle = 'You need a system that answers every call — today';
+    fixDesc = 'The single most impactful change is ensuring no call goes unanswered. Every missed call is worth $' + ltv.toLocaleString() + '+. This alone can shift your revenue within the first week.';
   }
 
   // Render results
