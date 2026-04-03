@@ -130,10 +130,10 @@
       font-size: .88rem; color: var(--text-bright);
       user-select: none;
     }
-    .pill:hover { border-color: var(--border-hover); background: rgba(21,21,32,.9); }
+    .pill:hover { border-color: var(--gold); background: rgba(158,124,79,.06); }
     .pill.selected {
-      border-color: var(--gold); background: rgba(201,164,108,.1);
-      box-shadow: 0 0 20px rgba(201,164,108,.1);
+      border-color: var(--gold); background: rgba(158,124,79,.12);
+      box-shadow: 0 0 0 3px rgba(158,124,79,.08);
     }
     .pill-dot {
       width: 8px; height: 8px; border-radius: 50%;
@@ -279,7 +279,7 @@
         <a href="/#faq">FAQ</a>
       </div>
     </div>
-    <div class="topbar-step" id="stepIndicator">Step 1 of 4</div>
+    <div class="topbar-step" id="stepIndicator">Step 1 of 3</div>
   </div>
 
   <div class="progress-wrap">
@@ -434,7 +434,7 @@
 var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', website: '', decisionMaker: '', source: '', date: '', slot: null };
 var isPilot = new URLSearchParams(window.location.search).get('pilot') === '1';
 var currentStep = 1;
-var totalSteps = isPilot ? 3 : 4;
+var totalSteps = isPilot ? 3 : 3;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var SERVER_TZ = 'America/Phoenix';
 
@@ -585,8 +585,9 @@ function goTo(step) {
     document.getElementById('stepIndicator').textContent = 'Step ' + pilotStep + ' of 3';
     document.getElementById('progressFill').style.width = (pilotStep * 33.3) + '%';
   } else {
-    document.getElementById('stepIndicator').textContent = 'Step ' + step + ' of 4';
-    document.getElementById('progressFill').style.width = (step * 25) + '%';
+    var displayStep = Math.min(step, 3);
+    document.getElementById('stepIndicator').textContent = 'Step ' + displayStep + ' of 3';
+    document.getElementById('progressFill').style.width = (displayStep * 33.3) + '%';
   }
   window.scrollTo(0, 0);
   if (step === 3) {
