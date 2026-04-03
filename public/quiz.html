@@ -95,7 +95,7 @@
     }
 
     /* ═══ SCREENS ═══ */
-    .screen { display: none; flex-direction: column; flex: 1; animation: fadeUp .4s ease; }
+    .screen { display: none; flex-direction: column; flex: 1; animation: fadeUp .2s ease; }
     .screen.active { display: flex; }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
@@ -158,7 +158,7 @@
       cursor: pointer; transition: all .2s;
       font-size: .9rem; color: var(--text-bright);
     }
-    .q-option:hover { border-color: var(--border-hover); background: rgba(15,15,26,.9); }
+    .q-option:hover { border-color: var(--border-hover); background: var(--bg-glass); }
     .q-option.selected {
       border-color: var(--gold); background: rgba(176,141,106,.06);
       box-shadow: 0 0 20px rgba(176,141,106,.08);
@@ -747,7 +747,7 @@ function prevQuestion() {
     var screen = document.getElementById('questionScreen');
     screen.style.animation = 'none';
     screen.offsetHeight;
-    screen.style.animation = 'fadeUp .4s ease';
+    screen.style.animation = 'fadeUp .2s ease';
     renderQuestion();
   }
 }
@@ -791,15 +791,15 @@ function selectOption(idx) {
       var screen = document.getElementById('questionScreen');
       screen.style.animation = 'none';
       screen.offsetHeight;
-      screen.style.animation = 'fadeUp .4s ease';
+      screen.style.animation = 'fadeUp .2s ease';
       renderQuestion();
     } else {
-      // Show gate for lead capture before results
+      // Skip gate — go straight to results
       document.getElementById('progressFill').style.width = '100%';
       document.getElementById('questionScreen').classList.remove('active');
-      document.getElementById('gateScreen').classList.add('active');
+      showResults();
     }
-  }, 600);
+  }, 400);
 }
 
 function showResults() {
