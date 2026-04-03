@@ -432,7 +432,8 @@
 <script>
 // ═══ STATE ═══
 var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', website: '', decisionMaker: '', source: '', date: '', slot: null };
-var isPilot = new URLSearchParams(window.location.search).get('pilot') === '1';
+var params = new URLSearchParams(window.location.search);
+var isPilot = params.get('pilot') === '1';
 var currentStep = 1;
 var totalSteps = isPilot ? 3 : 3;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -502,17 +503,29 @@ if (previewThankyou) {
   setTimeout(function() { showThankYou('Test User'); }, 100);
 }
 
-// ═══ PILOT MODE: skip step 1, remap steps ═══
-if (isPilot) {
+// ═══ QUIZ PREFILL MODE: skip step 1, use quiz data ═══
+var isFromQuiz = params.get('from') === 'quiz';
+if (isFromQuiz) {
   document.getElementById('step1').style.display = 'none';
   document.getElementById('step2').classList.add('active');
   document.getElementById('step2').querySelector('.btn-back').style.display = 'none';
   currentStep = 2;
-  document.getElementById('stepIndicator').textContent = 'Step 1 of 3';
-  document.getElementById('progressFill').style.width = '33%';
+  document.getElementById('stepIndicator').textContent = 'Step 1 of 2';
+  document.getElementById('progressFill').style.width = '50%';
+  data.services = ['Quiz Lead — Score: ' + (params.get('score') || 'N/A') + ', Tier: ' + (params.get('tier') || 'N/A')];
+  data.revenue = 'Est. loss: $' + (parseInt(params.get('loss') || 0).toLocaleString()) + '/mo';
+  data.challenges = [params.get('missed') || '', params.get('response') || '', params.get('goal') || ''].filter(Boolean);
+}
+
+// ═══ PILOT MODE: skip step 1, remap steps ═══
+if (isPilot && !isFromQuiz) {
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('step2').querySelector('.btn-back').style.display = 'none';
+  currentStep = 2;
+  document.getElementById('stepIndicator').textContent = 'Step 1 of 2';
+  document.getElementById('progressFill').style.width = '50%';
   document.title = 'Book Your 14-Day Pilot — VelosLuxe';
-  document.querySelector('.step-title').textContent; // leave step2 title as-is
-  // Populate default qualifying data for pilot leads
   data.services = ['Pilot Program'];
   data.revenue = 'N/A';
   data.challenges = ['Pilot inquiry'];
@@ -580,10 +593,11 @@ function goTo(step) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('step' + step).classList.add('active');
   currentStep = step;
-  if (isPilot) {
-    var pilotStep = step <= 1 ? 1 : step - 1;
-    document.getElementById('stepIndicator').textContent = 'Step ' + pilotStep + ' of 3';
-    document.getElementById('progressFill').style.width = (pilotStep * 33.3) + '%';
+  if (isFromQuiz || isPilot) {
+    var remapped = step <= 1 ? 1 : step - 1;
+    var total = 2;
+    document.getElementById('stepIndicator').textContent = 'Step ' + Math.min(remapped, total) + ' of ' + total;
+    document.getElementById('progressFill').style.width = (Math.min(remapped, total) / total * 100) + '%';
   } else {
     var displayStep = Math.min(step, 3);
     document.getElementById('stepIndicator').textContent = 'Step ' + displayStep + ' of 3';

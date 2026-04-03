@@ -911,6 +911,19 @@ function showResults() {
   document.getElementById('fixTitle').textContent = fixTitle;
   document.getElementById('fixDesc').textContent = fixDesc;
 
+  // Build prefilled strategy-call URL with quiz data
+  var quizParams = new URLSearchParams();
+  quizParams.set('from', 'quiz');
+  quizParams.set('score', score);
+  quizParams.set('loss', totalLossMonthly);
+  quizParams.set('tier', tier);
+  if (answers.missed) quizParams.set('missed', answers.missed.text);
+  if (answers.response) quizParams.set('response', answers.response.text);
+  if (answers.avgTicket) quizParams.set('avg_ticket', answers.avgTicket.value);
+  if (answers.goal) quizParams.set('goal', answers.goal.text);
+  var ctaLink = document.querySelector('#resultsCta .btn-book');
+  if (ctaLink) ctaLink.href = '/strategy-call?' + quizParams.toString();
+
   // Swap CTA if already booked
   if (new URLSearchParams(window.location.search).get('booked') === '1') {
     document.getElementById('resultsCta').style.display = 'none';
