@@ -119,22 +119,6 @@
     .proof-author{font-size:.85rem;font-weight:600;color:var(--dark)}
     .proof-author-title{font-size:.75rem;color:var(--text-secondary)}
 
-    /* PILOT — EXCITEMENT */
-    .pilot-card{max-width:680px;margin:0 auto;border:1px solid var(--border);border-radius:16px;background:var(--white);padding:3rem}
-    .pilot-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sage);margin-bottom:1.5rem}
-    .pilot-badge span{width:6px;height:6px;border-radius:50%;background:var(--sage)}
-    .pilot-card h3{font-family:var(--serif);font-size:1.8rem;font-weight:400;margin-bottom:.75rem}
-    .pilot-card h3 em{font-style:italic;color:var(--gold)}
-    .pilot-desc{font-size:1rem;color:var(--text);line-height:1.7;margin-bottom:2rem;max-width:540px}
-    .pilot-items{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem}
-    .pilot-item{display:flex;align-items:flex-start;gap:.6rem;font-size:.92rem;color:var(--text)}
-    .pilot-item strong{color:var(--dark)}
-    .pilot-check{color:var(--sage);font-weight:700;flex-shrink:0;margin-top:1px}
-    .pilot-price{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.35rem}
-    .pilot-price-big{font-family:var(--serif);font-size:2.5rem;font-weight:400;color:var(--gold)}
-    .pilot-price-note{font-size:.88rem;color:var(--text-secondary)}
-    .pilot-credit{font-size:.85rem;color:var(--sage);font-weight:500;margin-bottom:2rem}
-
     /* FOUNDER */
     .founder-card{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:2.5rem;background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2.5rem}
     .founder-img{width:100px;height:100px;border-radius:50%;flex-shrink:0;overflow:hidden}
@@ -197,7 +181,6 @@
       .problem-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}
       .features-grid{grid-template-columns:1fr}
       .proof-grid{grid-template-columns:1fr;max-width:500px;margin:0 auto}
-      .pilot-items{grid-template-columns:1fr}
       .founder-card{flex-direction:column;text-align:center}
     }
     @media(max-width:600px){
@@ -209,7 +192,6 @@
       .hero h1{font-size:1.9rem}
       .hero{padding:7rem 0 3.5rem}
       section{padding:4rem 0}
-      .pilot-card{padding:2rem 1.5rem}
     }
   </style>
 </head>
@@ -220,8 +202,8 @@
   <a href="#" class="nav-logo">VELOS<span>LUXE</span></a>
   <div class="nav-links">
     <a href="#features">Features</a>
-    <a href="#pilot">Pilot Program</a>
     <a href="#faq">FAQ</a>
+    <a href="/strategy-call?direct=1">Book a Call</a>
     <a href="/quiz" class="nav-cta">See My Revenue Leak</a>
   </div>
   <div class="hamburger" id="hamburger" onclick="this.classList.toggle('open');document.getElementById('mobileMenu').classList.toggle('open')">
@@ -230,8 +212,8 @@
 </nav>
 <div class="mobile-overlay" id="mobileMenu">
   <a href="#features" onclick="closeMobile()">Features</a>
-  <a href="#pilot" onclick="closeMobile()">Pilot Program</a>
   <a href="#faq" onclick="closeMobile()">FAQ</a>
+  <a href="/strategy-call?direct=1" onclick="closeMobile()">Book a Call</a>
   <a href="/quiz" class="btn-outline">See My Revenue Leak</a>
 </div>
 
@@ -354,35 +336,6 @@
   </div>
 </section>
 
-<!-- 6. PILOT — CONFIDENCE -->
-<section class="pilot" id="pilot">
-  <div class="wrap">
-    <div class="section-header">
-      <div class="section-label">Risk-Free</div>
-      <h2 class="section-title">See the results before you <em>commit</em></h2>
-    </div>
-    <div class="pilot-card">
-      <div class="pilot-badge"><span></span> Limited Availability</div>
-      <h3>14-Day <em>Pilot Program</em></h3>
-      <p class="pilot-desc">We set up Sophia, turn her on for two weeks, and let the numbers speak. You keep every appointment she books — even if you don't continue.</p>
-      <div class="pilot-items">
-        <div class="pilot-item"><span class="pilot-check">&#10003;</span><span><strong>100% of calls answered</strong> — 24/7 for 14 days</span></div>
-        <div class="pilot-item"><span class="pilot-check">&#10003;</span><span><strong>Instant lead response</strong> — every form, DM, and missed call</span></div>
-        <div class="pilot-item"><span class="pilot-check">&#10003;</span><span><strong>Direct calendar booking</strong> — syncs with your system</span></div>
-        <div class="pilot-item"><span class="pilot-check">&#10003;</span><span><strong>Full report</strong> — calls, appointments, revenue recovered</span></div>
-      </div>
-      <div class="pilot-price">
-        <span class="pilot-price-big">$500</span>
-        <span class="pilot-price-note">one-time &middot; no contract &middot; no commitment</span>
-      </div>
-      <div class="pilot-credit">&#10003; $500 credits toward your first month if you continue</div>
-      <div style="margin-top:.25rem">
-        <a href="/strategy-call?pilot=1" class="btn-cta"><span style="color:#ffffff">See If This Is Right For Me</span></a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- 7. FOUNDER -->
 <section class="founder">
   <div class="wrap">
@@ -424,6 +377,7 @@
     <p class="final-sub">Find out how close you are. Takes 2 minutes. No commitment.</p>
     <div class="hero-ctas">
       <a href="/quiz" class="btn-cta"><span style="color:#ffffff">See My Revenue Leak &rarr;</span></a>
+      <a href="/strategy-call?direct=1" class="btn-outline">Book a Call &rarr;</a>
     </div>
     <p class="final-phone">Prefer to talk? Call or text Dallas: <a href="tel:+19285821712">(928) 582-1712</a></p>
   </div>
