@@ -434,7 +434,53 @@
 var data = { services: [], revenue: '', challenges: [], firstName: '', lastName: '', email: '', phone: '', spaName: '', website: '', decisionMaker: '', source: '', date: '', slot: null };
 var params = new URLSearchParams(window.location.search);
 var isPilot = params.get('pilot') === '1';
+var isProposal = params.get('source') === 'proposal';
 var currentStep = 1;
+
+// Auto-fill from proposal link
+if (isProposal) {
+  var prefillName = params.get('name') || '';
+  var prefillSpa = params.get('spa') || '';
+  var prefillWebsite = params.get('website') || '';
+  var prefillServices = (params.get('services') || '').split(',').filter(Boolean);
+  var prefillCity = params.get('city') || '';
+
+  // Pre-fill text fields after DOM loads
+  setTimeout(function() {
+    if (prefillName) {
+      var parts = prefillName.split(' ');
+      var fnInput = document.getElementById('firstName');
+      var lnInput = document.getElementById('lastName');
+      if (fnInput) { fnInput.value = parts[0] || ''; data.firstName = parts[0] || ''; }
+      if (lnInput) { lnInput.value = parts.slice(1).join(' ') || ''; data.lastName = parts.slice(1).join(' ') || ''; }
+    }
+    if (prefillSpa) {
+      var spaInput = document.getElementById('spaName');
+      if (spaInput) { spaInput.value = prefillSpa; data.spaName = prefillSpa; }
+    }
+    if (prefillWebsite) {
+      var webInput = document.getElementById('website');
+      if (webInput) { webInput.value = prefillWebsite; data.website = prefillWebsite; }
+    }
+    // Pre-select services
+    if (prefillServices.length > 0) {
+      var serviceMap = { 'Botox': 'Botox / Fillers', 'Dermal Fillers': 'Botox / Fillers', 'Fillers': 'Botox / Fillers', 'Laser': 'Laser Treatments', 'Laser Hair Removal': 'Laser Treatments', 'CoolSculpting': 'Body Contouring', 'Body Contouring': 'Body Contouring', 'HydraFacial': 'Facials / Peels', 'Chemical Peel': 'Facials / Peels', 'Facial': 'Facials / Peels', 'IV Therapy': 'IV Therapy', 'Semaglutide': 'Weight Loss', 'Microneedling': 'Facials / Peels', 'Morpheus8': 'Laser Treatments' };
+      var selected = new Set();
+      prefillServices.forEach(function(s) { selected.add(serviceMap[s] || s); });
+      document.querySelectorAll('#servicesGroup .pill').forEach(function(pill) {
+        if (selected.has(pill.textContent.trim())) {
+          pill.classList.add('selected');
+          data.services.push(pill.textContent.trim());
+        }
+      });
+    }
+    // Skip to step 2 (their details) since step 1 (services/revenue/challenges) is less relevant when coming from a proposal
+    if (prefillSpa) {
+      data.source = 'Proposal - ' + prefillSpa;
+      goTo(2);
+    }
+  }, 100);
+}
 var totalSteps = isPilot ? 3 : 3;
 var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var SERVER_TZ = 'America/Phoenix';
@@ -531,6 +577,21 @@ if (isPilot && !isFromQuiz) {
   data.challenges = ['Pilot inquiry'];
 }
 
+// ═══ DIRECT MODE: skip step 1 entirely (used for warm prospects who already talked to Dallas) ═══
+var isDirect = params.get('direct') === '1';
+if (isDirect && !isFromQuiz && !isPilot && !isProposal) {
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('step2').querySelector('.btn-back').style.display = 'none';
+  currentStep = 2;
+  document.getElementById('stepIndicator').textContent = 'Step 1 of 2';
+  document.getElementById('progressFill').style.width = '50%';
+  data.services = ['Direct booking'];
+  data.revenue = 'N/A';
+  data.challenges = ['Direct'];
+  data.source = 'Direct link';
+}
+
 // Detect friendly timezone name
 var tzShort = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop();
 
@@ -593,7 +654,7 @@ function goTo(step) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('step' + step).classList.add('active');
   currentStep = step;
-  if (isFromQuiz || isPilot) {
+  if (isFromQuiz || isPilot || isDirect) {
     var remapped = step <= 1 ? 1 : step - 1;
     var total = 2;
     document.getElementById('stepIndicator').textContent = 'Step ' + Math.min(remapped, total) + ' of ' + total;
